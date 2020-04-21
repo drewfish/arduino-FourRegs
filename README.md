@@ -142,7 +142,7 @@ PWSAKDLY:  bramcfg=0x0
 
 
 ### void printFourRegWDT(FourRegOptions &opts)
-Prints out configuration for the power manager.
+Prints out configuration for the watchdog timer.
 
 
 License
