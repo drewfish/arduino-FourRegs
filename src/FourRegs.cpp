@@ -298,9 +298,9 @@ void printFourRegOSC32KCTRL(FourRegOptions &opts) {
         PRINTFLAG(OSC32KCTRL->XOSC32K, RUNSTDBY);
         PRINTFLAG(OSC32KCTRL->XOSC32K, ONDEMAND);
         PRINTFLAG(OSC32KCTRL->XOSC32K, WRTLOCK);
-        opts.print.print(" startup=");
+        opts.print.print(" STARTUP=");
         PRINTHEX(OSC32KCTRL->XOSC32K.bit.STARTUP);
-        opts.print.print(" cgm=");
+        opts.print.print(" CGM=");
         PRINTHEX(OSC32KCTRL->XOSC32K.bit.CGM);
         opts.print.println("");
     } else {
@@ -325,7 +325,7 @@ void printFourRegOSC32KCTRL(FourRegOptions &opts) {
     PRINTFLAG(OSC32KCTRL->OSCULP32K, EN32K);
     PRINTFLAG(OSC32KCTRL->OSCULP32K, EN1K);
     PRINTFLAG(OSC32KCTRL->OSCULP32K, WRTLOCK);
-    opts.print.print(" calib=");
+    opts.print.print(" CALIB=");
     PRINTHEX(OSC32KCTRL->OSCULP32K.bit.CALIB);
     opts.print.println("");
 }
@@ -366,23 +366,23 @@ void printFourRegOSCCTRL(FourRegOptions &opts) {
         OSCCTRL_DFLLVAL_Type dfllval;
         while (OSCCTRL->DFLLSYNC.bit.DFLLVAL) {}
         COPYVOL(dfllval, OSCCTRL->DFLLVAL);
-        opts.print.print("DFLLVAL:  fine=");
+        opts.print.print("DFLLVAL:  FINE=");
         opts.print.print(dfllval.bit.FINE);
-        opts.print.print(" coarse=");
+        opts.print.print(" COARSE=");
         opts.print.print(dfllval.bit.COARSE);
         if (ctrlb.bit.MODE) {
-            opts.print.print(" diff=");
+            opts.print.print(" DIFF=");
             opts.print.print(dfllval.bit.DIFF);
         }
         opts.print.println("");
         OSCCTRL_DFLLMUL_Type dfllmul;
         while (OSCCTRL->DFLLSYNC.bit.DFLLMUL) {}
         COPYVOL(dfllmul, OSCCTRL->DFLLMUL);
-        opts.print.print("DFLLMUL:  mul=");
+        opts.print.print("DFLLMUL:  MUL=");
         opts.print.print(dfllmul.bit.MUL);
-        opts.print.print(" fstep=");
+        opts.print.print(" FSTEP=");
         opts.print.print(dfllmul.bit.FSTEP);
-        opts.print.print(" cstep=");
+        opts.print.print(" CSTEP=");
         opts.print.print(dfllmul.bit.CSTEP);
         opts.print.println("");
     } else {
@@ -402,13 +402,13 @@ void printFourRegOSCCTRL(FourRegOptions &opts) {
             PRINTFLAG(OSCCTRL->XOSCCTRL[xoscid], RUNSTDBY);
             PRINTFLAG(OSCCTRL->XOSCCTRL[xoscid], ONDEMAND);
             PRINTFLAG(OSCCTRL->XOSCCTRL[xoscid], LOWBUFGAIN);
-            opts.print.print(" iptat=");
+            opts.print.print(" IPTAT=");
             opts.print.print(OSCCTRL->XOSCCTRL[xoscid].bit.IPTAT);
-            opts.print.print(" imult=");
+            opts.print.print(" IMULT=");
             opts.print.print(OSCCTRL->XOSCCTRL[xoscid].bit.IMULT);
             PRINTFLAG(OSCCTRL->XOSCCTRL[xoscid], ENALC);
             PRINTFLAG(OSCCTRL->XOSCCTRL[xoscid], SWBEN);
-            opts.print.print(" startup=");
+            opts.print.print(" STARTUP=");
             PRINTHEX(OSCCTRL->XOSCCTRL[xoscid].bit.STARTUP);
             opts.print.print(" cfdpresc=");
             opts.print.print(OSCCTRL->XOSCCTRL[xoscid].bit.CFDPRESC);
@@ -431,21 +431,21 @@ void printFourRegOSCCTRL(FourRegOptions &opts) {
             PRINTFLAG(OSCCTRL->Dpll[dpllid].DPLLCTRLA, ENABLE);
             PRINTFLAG(OSCCTRL->Dpll[dpllid].DPLLCTRLA, RUNSTDBY);
             PRINTFLAG(OSCCTRL->Dpll[dpllid].DPLLCTRLA, ONDEMAND);
-            opts.print.print(" filter=");
+            opts.print.print(" FILTER=");
             PRINTHEX(OSCCTRL->Dpll[dpllid].DPLLCTRLB.bit.FILTER);
             PRINTFLAG(OSCCTRL->Dpll[dpllid].DPLLCTRLB, WUF);
-            opts.print.print(" refclk=");
+            opts.print.print(" REFCLK=");
             //FUTURE -- table for DPLLCTRLB REFCLK
             PRINTHEX(OSCCTRL->Dpll[dpllid].DPLLCTRLB.bit.REFCLK);
-            opts.print.print(" ltime=");
+            opts.print.print(" LTIME=");
             PRINTHEX(OSCCTRL->Dpll[dpllid].DPLLCTRLB.bit.LTIME);
             PRINTFLAG(OSCCTRL->Dpll[dpllid].DPLLCTRLB, LBYPASS);
             PRINTFLAG(OSCCTRL->Dpll[dpllid].DPLLCTRLB, DCOEN);
             if (OSCCTRL->Dpll[dpllid].DPLLCTRLB.bit.DCOEN) {
-                opts.print.print(" dcofilter=");
+                opts.print.print(" DCOFILTER=");
                 PRINTHEX(OSCCTRL->Dpll[dpllid].DPLLCTRLB.bit.DCOFILTER);
             }
-            opts.print.print(" div=");
+            opts.print.print(" DIV=");
             opts.print.print(OSCCTRL->Dpll[dpllid].DPLLCTRLB.bit.DIV);
             opts.print.print(" ldr=");
             opts.print.print(OSCCTRL->Dpll[dpllid].DPLLRATIO.bit.LDR);
@@ -489,7 +489,7 @@ void printFourRegPM(FourRegOptions &opts) {
     opts.print.print("STDBYCFG: ");
     opts.print.print(" ramcfg=");
     printFourRegPM_CFG(opts, PM->STDBYCFG.bit.RAMCFG);
-    opts.print.print(" fastwkup=");
+    opts.print.print(" FASTWKUP=");
     PRINTHEX(PM->STDBYCFG.bit.FASTWKUP);
     opts.print.println("");
 
@@ -500,7 +500,7 @@ void printFourRegPM(FourRegOptions &opts) {
 
     opts.print.print("PWSAKDLY: ");
     PRINTFLAG(PM->PWSAKDLY, IGNACK);
-    opts.print.print(" dlyval=");
+    opts.print.print(" DLYVAL=");
     PRINTHEX(PM->PWSAKDLY.bit.DLYVAL);
     opts.print.println("");
 }
@@ -526,9 +526,9 @@ void printFourRegTC_CTRLA(FourRegOptions &opts, volatile TC_CTRLA_Type& ctrla) {
     PRINTFLAG(ctrla, CAPTEN1);
     PRINTFLAG(ctrla, COPEN0);
     PRINTFLAG(ctrla, COPEN1);
-    opts.print.print(" captmode0=");
+    opts.print.print(" CAPTMODE0=");
     PRINTHEX(ctrla.bit.CAPTMODE0);
-    opts.print.print(" captmode1=");
+    opts.print.print(" CAPTMODE1=");
     PRINTHEX(ctrla.bit.CAPTMODE1);
     opts.print.println("");
 }
@@ -567,7 +567,7 @@ void printFourRegTC_EVCTRL(FourRegOptions &opts, volatile TC_EVCTRL_Type& evctrl
     opts.print.println("");
 }
 void printFourRegTC_WAVE(FourRegOptions &opts, volatile TC_WAVE_Type& wave) {
-    opts.print.print("WAVE:  wavegen=");
+    opts.print.print("WAVE:  WAVEGEN=");
     PRINTHEX(wave.bit.WAVEGEN);
     opts.print.println("");
 }
@@ -712,7 +712,7 @@ void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
         case 0x2: opts.print.print("DITH5"); break;
         case 0x3: opts.print.print("DITH6"); break;
     }
-    opts.print.print(" prescaler=");
+    opts.print.print(" PRESCALER=");
     PRINTHEX(tcc->CTRLA.bit.PRESCALER);
     printFourReg_TC_TCC_PRESCSYNC(opts, tcc->CTRLA.bit.PRESCSYNC);
     PRINTFLAG(tcc->CTRLA, ALOCK);
@@ -888,17 +888,17 @@ void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
             break;
         case 0x1:
             opts.print.print(tcc->PER.DITH4.PER);
-            opts.print.print(" dither=");
+            opts.print.print(" DITHER=");
             opts.print.print(tcc->PER.DITH4.DITHER);
             break;
         case 0x2:
             opts.print.print(tcc->PER.DITH5.PER);
-            opts.print.print(" dither=");
+            opts.print.print(" DITHER=");
             opts.print.print(tcc->PER.DITH5.DITHER);
             break;
         case 0x3:
             opts.print.print(tcc->PER.DITH6.PER);
-            opts.print.print(" dither=");
+            opts.print.print(" DITHER=");
             opts.print.print(tcc->PER.DITH6.DITHER);
             break;
     }
@@ -915,17 +915,17 @@ void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
                 break;
             case 0x1:
                 opts.print.print(tcc->CC[id].DITH4.CC);
-                opts.print.print(" dither=");
+                opts.print.print(" DITHER=");
                 opts.print.print(tcc->CC[id].DITH4.DITHER);
                 break;
             case 0x2:
                 opts.print.print(tcc->CC[id].DITH5.CC);
-                opts.print.print(" dither=");
+                opts.print.print(" DITHER=");
                 opts.print.print(tcc->CC[id].DITH5.DITHER);
                 break;
             case 0x3:
                 opts.print.print(tcc->CC[id].DITH6.CC);
-                opts.print.print(" dither=");
+                opts.print.print(" DITHER=");
                 opts.print.print(tcc->CC[id].DITH6.DITHER);
                 break;
         }
@@ -952,13 +952,13 @@ void printFourRegWDT(FourRegOptions &opts) {
     PRINTFLAG(ctrla, WEN);
     PRINTFLAG(ctrla, ALWAYSON);
 
-    opts.print.print("CONFIG:  window=");
+    opts.print.print("CONFIG:  WINDOW=");
     PRINTHEX(WDT->CONFIG.bit.WINDOW);
-    opts.print.print("per=");
+    opts.print.print("PER=");
     PRINTHEX(WDT->CONFIG.bit.PER);
     opts.print.println("");
 
-    opts.print.print("EWCTRL:  ewoffset=");
+    opts.print.print("EWCTRL:  EWOFFSET=");
     PRINTHEX(WDT->EWCTRL.bit.EWOFFSET);
     opts.print.println("");
 }

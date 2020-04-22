@@ -106,8 +106,8 @@ example output:
 --------------------------- OSC32KCTRL
 EVCTRL:
 RTCCTRL:  rtcsel=ULP1K
-XOSC32K:  ENABLE XTALEN EN32K startup=0x0 cgm=0x1
-OSCULP32K:  EN32K EN1K calib=0x27
+XOSC32K:  ENABLE XTALEN EN32K STARTUP=0x0 CGM=0x1
+OSCULP32K:  EN32K EN1K CALIB=0x27
 ```
 
 
@@ -120,10 +120,10 @@ example output:
 EVCTRL:
 DFLLCTRLA:  ENABLE
 DFLLCTRLB:  closed-loop USBCRM CCDIS WAITLOCK
-DFLLVAL:  fine=131 coarse=31
-DFLLMUL:  mul=0 fstep=1 cstep=1
-DPLL0:  ENABLE filter=0x0 refclk=0x0 ltime=0x0 LBYPASS div=0 ldr=119.0
-DPLL1:  ENABLE filter=0x0 refclk=0x0 ltime=0x0 LBYPASS div=0 ldr=99.0
+DFLLVAL:  FINE=131 COARSE=31
+DFLLMUL:  MUL=0 FSTEP=1 CSTEP=1
+DPLL0:  ENABLE FILTER=0x0 REFCLK=0x0 LTIME=0x0 LBYPASS DIV=0 ldr=119.0
+DPLL1:  ENABLE FILTER=0x0 REFCLK=0x0 LTIME=0x0 LBYPASS DIV=0 ldr=99.0
 ```
 
 
@@ -135,9 +135,9 @@ example output:
 --------------------------- PM
 CTRLA:
 HIBCFG:  ramcfg=RET bramcfg=RET
-STDBYCFG:  ramcfg=RET fastwkup=0x0
+STDBYCFG:  ramcfg=RET FASTWKUP=0x0
 BKUPCFG:  bramcfg=RET
-PWSAKDLY:  bramcfg=0x0
+PWSAKDLY:  DLYVAL=0x0
 ```
 
 
@@ -147,10 +147,10 @@ Prints out configuration for a TC peripheral.
 example output:
 ```text
 --------------------------- TC4 COUNT8
-CTRLA:  prescsync=GCLK captmode0=0x0 captmode1=0x0
+CTRLA:  prescsync=GCLK CAPTMODE0=0x0 CAPTMODE1=0x0
 CTRLB:  dir=DOWN cmd=NONE
 EVCTRL:  evact=OFF
-WAVE:  wavegen=0x3
+WAVE:  WAVEGEN=0x3
 DRVCTRL:
 PER:  150
 CC0:  100
