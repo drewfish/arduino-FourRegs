@@ -158,6 +158,10 @@ CC1:  0
 ```
 
 
+### void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx)
+Prints out configuration for a TCC peripheral.
+
+
 ### void printFourRegWDT(FourRegOptions &opts)
 Prints out configuration for the watchdog timer.
 

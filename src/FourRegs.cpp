@@ -36,6 +36,7 @@ SOFTWARE.
 #define PRINTSCALE(x) (opts.print.print(1 << (x)))
 #define PRINTPAD2(x) do { if (x < 10) { opts.print.print("0"); } opts.print.print(x, DEC); } while(0)
 #define COPYVOL(dst,src) do { memcpy((void*)(&(dst)), (void*)(&(src)), sizeof(dst)); } while(0)
+//FUTURE -- PRINTVEC(src,name,max) -- name[]=10011100
 
 
 // table 14-4 (datasheet rev E)
@@ -505,16 +506,21 @@ void printFourRegPM(FourRegOptions &opts) {
 }
 
 
-void printFourRegTC_CTRLA(FourRegOptions &opts, volatile TC_CTRLA_Type& ctrla) {
-    opts.print.print("CTRLA: ");
-    PRINTFLAG(ctrla, RUNSTDBY);
-    PRINTFLAG(ctrla, ONDEMAND);
+void printFourReg_TC_TCC_PRESCSYNC(FourRegOptions &opts, uint8_t prescsync) {
     opts.print.print(" prescsync=");
-    switch(ctrla.bit.PRESCSYNC) {
+    switch(prescsync) {
         case 0x0: opts.print.print("GCLK"); break;
         case 0x1: opts.print.print("PRESC"); break;
         case 0x2: opts.print.print("RESYNC"); break;
     }
+}
+
+
+void printFourRegTC_CTRLA(FourRegOptions &opts, volatile TC_CTRLA_Type& ctrla) {
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(ctrla, RUNSTDBY);
+    PRINTFLAG(ctrla, ONDEMAND);
+    printFourReg_TC_TCC_PRESCSYNC(opts, ctrla.bit.PRESCSYNC);
     PRINTFLAG(ctrla, ALOCK);
     PRINTFLAG(ctrla, CAPTEN0);
     PRINTFLAG(ctrla, CAPTEN1);
@@ -668,6 +674,265 @@ void printFourRegTC(FourRegOptions &opts, Tc* tc, uint8_t idx) {
 }
 
 
+typedef union {
+  struct {
+    uint32_t SRC:2;            /*!< bit:  0.. 1  Fault A Source                     */
+    uint32_t :1;               /*!< bit:      2  Reserved                           */
+    uint32_t KEEP:1;           /*!< bit:      3  Fault A Keeper                     */
+    uint32_t QUAL:1;           /*!< bit:      4  Fault A Qualification              */
+    uint32_t BLANK:2;          /*!< bit:  5.. 6  Fault A Blanking Mode              */
+    uint32_t RESTART:1;        /*!< bit:      7  Fault A Restart                    */
+    uint32_t HALT:2;           /*!< bit:  8.. 9  Fault A Halt Mode                  */
+    uint32_t CHSEL:2;          /*!< bit: 10..11  Fault A Capture Channel            */
+    uint32_t CAPTURE:3;        /*!< bit: 12..14  Fault A Capture Action             */
+    uint32_t BLANKPRESC:1;     /*!< bit:     15  Fault A Blanking Prescaler         */
+    uint32_t BLANKVAL:8;       /*!< bit: 16..23  Fault A Blanking Time              */
+    uint32_t FILTERVAL:4;      /*!< bit: 24..27  Fault A Filter Value               */
+    uint32_t :4;               /*!< bit: 28..31  Reserved                           */
+  } bit;                       /*!< Structure used for bit  access                  */
+  uint32_t reg;                /*!< Type      used for register access              */
+} FourReg_TCC_FCTRL_Type;
+void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
+    uint8_t id;
+    while (tcc->SYNCBUSY.bit.ENABLE) {}
+    if (!opts.showDisabled && !tcc->CTRLA.bit.ENABLE) {
+        return;
+    }
+    opts.print.print("--------------------------- TCC");
+    opts.print.println(idx);
+
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(tcc->CTRLA, ENABLE);
+    PRINTFLAG(tcc->CTRLA, RUNSTDBY);
+    uint8_t dith = tcc->CTRLA.bit.RESOLUTION;
+    opts.print.print(" resolution=");
+    switch(dith) {
+        case 0x0: opts.print.print("NONE"); break;
+        case 0x1: opts.print.print("DITH4"); break;
+        case 0x2: opts.print.print("DITH5"); break;
+        case 0x3: opts.print.print("DITH6"); break;
+    }
+    opts.print.print(" prescaler=");
+    PRINTHEX(tcc->CTRLA.bit.PRESCALER);
+    printFourReg_TC_TCC_PRESCSYNC(opts, tcc->CTRLA.bit.PRESCSYNC);
+    PRINTFLAG(tcc->CTRLA, ALOCK);
+    PRINTFLAG(tcc->CTRLA, MSYNC);
+    PRINTFLAG(tcc->CTRLA, DMAOS);
+    PRINTFLAG(tcc->CTRLA, CPTEN0);
+    PRINTFLAG(tcc->CTRLA, CPTEN1);
+    PRINTFLAG(tcc->CTRLA, CPTEN2);
+    PRINTFLAG(tcc->CTRLA, CPTEN3);
+    PRINTFLAG(tcc->CTRLA, CPTEN4);
+    PRINTFLAG(tcc->CTRLA, CPTEN5);
+    opts.print.println("");
+
+    while (tcc->SYNCBUSY.bit.CTRLB) {}
+    opts.print.print("CTRLB:  dir=");
+    opts.print.print(tcc->CTRLBSET.bit.DIR ? "UP": "DOWN");
+    PRINTFLAG(tcc->CTRLBSET, LUPD);
+    PRINTFLAG(tcc->CTRLBSET, ONESHOT);
+    opts.print.print(" IDXCMD=");
+    PRINTHEX(tcc->CTRLBSET.bit.IDXCMD);
+    opts.print.print(" cmd=");
+    switch(tcc->CTRLBSET.bit.CMD) {
+        case 0x0: opts.print.print("NONE"); break;
+        case 0x1: opts.print.print("RETRIGGER"); break;
+        case 0x2: opts.print.print("STOP"); break;
+        case 0x3: opts.print.print("UPDATE"); break;
+        case 0x4: opts.print.print("READSYNC"); break;
+        case 0x5: opts.print.print("DMAOS"); break;
+    }
+    opts.print.println("");
+
+    for (id = 0; id < 2; id++) {
+        FourReg_TCC_FCTRL_Type fctrl;
+        if (id == 0) {
+            opts.print.print("FCTRLA: ");
+            fctrl.reg = tcc->FCTRLA.reg;
+        } else {
+            opts.print.print("FCTRLB: ");
+            fctrl.reg = tcc->FCTRLB.reg;
+        }
+        opts.print.print(" SRC=");
+        PRINTHEX(fctrl.bit.SRC);
+        PRINTFLAG(fctrl, KEEP);
+        PRINTFLAG(fctrl, QUAL);
+        opts.print.print(" BLANK=");
+        PRINTHEX(fctrl.bit.BLANK);
+        PRINTFLAG(fctrl, RESTART);
+        opts.print.print(" HALT=");
+        PRINTHEX(fctrl.bit.HALT);
+        opts.print.print(" chsel=CC");
+        opts.print.print(fctrl.bit.CHSEL);
+        opts.print.print(" CAPTURE=");
+        PRINTHEX(fctrl.bit.CAPTURE);
+        PRINTFLAG(fctrl, BLANKPRESC);
+        opts.print.print(" BLANKVAL=");
+        PRINTHEX(fctrl.bit.BLANKVAL);
+        opts.print.print(" FILTERVAL=");
+        PRINTHEX(fctrl.bit.FILTERVAL);
+        opts.print.println("");
+    }
+
+    opts.print.print("WEXCTRL: ");
+    opts.print.print(" OTMX=");
+    PRINTHEX(tcc->WEXCTRL.bit.OTMX);
+    PRINTFLAG(tcc->WEXCTRL, DTIEN0);
+    PRINTFLAG(tcc->WEXCTRL, DTIEN1);
+    PRINTFLAG(tcc->WEXCTRL, DTIEN2);
+    PRINTFLAG(tcc->WEXCTRL, DTIEN3);
+    opts.print.print(" DTLS=");
+    opts.print.print(tcc->WEXCTRL.bit.DTLS);
+    opts.print.print(" DTHS=");
+    opts.print.print(tcc->WEXCTRL.bit.DTHS);
+    opts.print.println("");
+
+    opts.print.print("DRVCTRL: ");
+    for (id = 0; id < 8; id++) {
+        if (tcc->DRVCTRL.vec.NRE & (1<<id)) {
+            opts.print.print(" NRE");
+            opts.print.print(id);
+        }
+    }
+    for (id = 0; id < 8; id++) {
+        if (tcc->DRVCTRL.vec.NRV & (1<<id)) {
+            opts.print.print(" NRV");
+            opts.print.print(id);
+        }
+    }
+    for (id = 0; id < 8; id++) {
+        if (tcc->DRVCTRL.vec.INVEN & (1<<id)) {
+            opts.print.print(" INVEN");
+            opts.print.print(id);
+        }
+    }
+    opts.print.print(" FILTERVAL0=");
+    PRINTHEX(tcc->DRVCTRL.bit.FILTERVAL0);
+    opts.print.print(" FILTERVAL1=");
+    PRINTHEX(tcc->DRVCTRL.bit.FILTERVAL1);
+    opts.print.println("");
+
+    opts.print.print("EVCTRL: ");
+    opts.print.print(" EVACT0=");
+    PRINTHEX(tcc->EVCTRL.bit.EVACT0);
+    opts.print.print(" EVACT1=");
+    PRINTHEX(tcc->EVCTRL.bit.EVACT1);
+    PRINTFLAG(tcc->EVCTRL, OVFEO);
+    PRINTFLAG(tcc->EVCTRL, TRGEO);
+    PRINTFLAG(tcc->EVCTRL, CNTEO);
+    PRINTFLAG(tcc->EVCTRL, TCINV0);
+    PRINTFLAG(tcc->EVCTRL, TCINV1);
+    PRINTFLAG(tcc->EVCTRL, TCEI0);
+    PRINTFLAG(tcc->EVCTRL, TCEI1);
+    PRINTFLAG(tcc->EVCTRL, MCEI0);
+    PRINTFLAG(tcc->EVCTRL, MCEI1);
+    PRINTFLAG(tcc->EVCTRL, MCEI2);
+    PRINTFLAG(tcc->EVCTRL, MCEI3);
+    PRINTFLAG(tcc->EVCTRL, MCEI4);
+    PRINTFLAG(tcc->EVCTRL, MCEI5);
+    PRINTFLAG(tcc->EVCTRL, MCEO0);
+    PRINTFLAG(tcc->EVCTRL, MCEO1);
+    PRINTFLAG(tcc->EVCTRL, MCEO2);
+    PRINTFLAG(tcc->EVCTRL, MCEO3);
+    PRINTFLAG(tcc->EVCTRL, MCEO4);
+    PRINTFLAG(tcc->EVCTRL, MCEO5);
+    opts.print.println("");
+
+    while (tcc->SYNCBUSY.bit.PATT) {}
+    opts.print.print("PATT:  ");
+    for (id = 0; id < 8; id++) {
+        if (tcc->PATT.vec.PGE & (1<<id)) {
+            if (tcc->PATT.vec.PGV & (1<<id)) {
+                opts.print.print("1");
+            } else {
+                opts.print.print("0");
+            }
+        } else {
+            opts.print.print(".");
+        }
+    }
+    opts.print.println("");
+
+    while (tcc->SYNCBUSY.bit.WAVE) {}
+    opts.print.print("WAVE: ");
+    opts.print.print(" WAVEGEN=");
+    PRINTHEX(tcc->WAVE.bit.WAVEGEN);
+    opts.print.print(" RAMP=");
+    PRINTHEX(tcc->WAVE.bit.RAMP);
+    PRINTFLAG(tcc->WAVE, CIPEREN);
+    for (id = 0; id < 4; id++) {
+        if (tcc->WAVE.vec.CICCEN & (1<<id)) {
+            opts.print.print(" CICCEN");
+            opts.print.print(id);
+        }
+    }
+    for (id = 0; id < 6; id++) {
+        opts.print.print(" POL");
+        opts.print.print(id);
+        opts.print.print("=");
+        opts.print.print(tcc->WAVE.vec.POL & (1<<id));
+    }
+    for (id = 0; id < 4; id++) {
+        if (tcc->WAVE.vec.SWAP & (1<<id)) {
+            opts.print.print(" SWAP");
+            opts.print.print(id);
+        }
+    }
+    opts.print.println("");
+
+    while (tcc->SYNCBUSY.bit.PER) {}
+    opts.print.print("PER:  ");
+    switch(dith) {
+        case 0x0:
+            opts.print.print(tcc->PER.bit.PER);
+            break;
+        case 0x1:
+            opts.print.print(tcc->PER.DITH4.PER);
+            opts.print.print(" dither=");
+            opts.print.print(tcc->PER.DITH4.DITHER);
+            break;
+        case 0x2:
+            opts.print.print(tcc->PER.DITH5.PER);
+            opts.print.print(" dither=");
+            opts.print.print(tcc->PER.DITH5.DITHER);
+            break;
+        case 0x3:
+            opts.print.print(tcc->PER.DITH6.PER);
+            opts.print.print(" dither=");
+            opts.print.print(tcc->PER.DITH6.DITHER);
+            break;
+    }
+    opts.print.println("");
+
+    for (id = 0; id < 6; id++) {
+        while (tcc->SYNCBUSY.vec.CC & (1<<id)) {}
+        opts.print.print("CC");
+        opts.print.print(id);
+        opts.print.print(":  ");
+        switch(dith) {
+            case 0x0:
+                opts.print.print(tcc->CC[id].bit.CC);
+                break;
+            case 0x1:
+                opts.print.print(tcc->CC[id].DITH4.CC);
+                opts.print.print(" dither=");
+                opts.print.print(tcc->CC[id].DITH4.DITHER);
+                break;
+            case 0x2:
+                opts.print.print(tcc->CC[id].DITH5.CC);
+                opts.print.print(" dither=");
+                opts.print.print(tcc->CC[id].DITH5.DITHER);
+                break;
+            case 0x3:
+                opts.print.print(tcc->CC[id].DITH6.CC);
+                opts.print.print(" dither=");
+                opts.print.print(tcc->CC[id].DITH6.DITHER);
+                break;
+        }
+    }
+}
+
+
 // ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/wdt.h
 void printFourRegWDT(FourRegOptions &opts) {
     WDT_CTRLA_Type ctrla;
@@ -743,11 +1008,15 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegSERCOM(opts, SERCOM5, 5);
     //FUTURE printFourRegSERCOM(opts, SERCOM5, 6);
     //FUTURE printFourRegSERCOM(opts, SERCOM5, 7);
-    //FUTURE printFourRegTCC(opts, TCC0, 0);
-    //FUTURE printFourRegTCC(opts, TCC1, 1);
-    //FUTURE printFourRegTCC(opts, TCC2, 2);
-    //FUTURE printFourRegTCC(opts, TCC3, 3);
-    //FUTURE printFourRegTCC(opts, TCC4, 4);
+    printFourRegTCC(opts, TCC0, 0);
+    printFourRegTCC(opts, TCC1, 1);
+    printFourRegTCC(opts, TCC2, 2);
+#ifdef TCC3
+    printFourRegTCC(opts, TCC3, 3);
+#endif
+#ifdef TCC4
+    printFourRegTCC(opts, TCC4, 4);
+#endif
     printFourRegTC(opts, TC0, 0);
     printFourRegTC(opts, TC1, 1);
     printFourRegTC(opts, TC2, 2);
