@@ -141,6 +141,23 @@ PWSAKDLY:  bramcfg=0x0
 ```
 
 
+### void printFourRegTC(FourRegOptions &opts, Tc* tc, uint8_t idx)
+Prints out configuration for a TC peripheral.
+
+example output:
+```text
+--------------------------- TC4 COUNT8
+CTRLA:  prescsync=GCLK captmode0=0x0 captmode1=0x0
+CTRLB:  dir=DOWN cmd=NONE
+EVCTRL:  evact=OFF
+WAVE:  wavegen=0x3
+DRVCTRL:
+PER:  150
+CC0:  100
+CC1:  0
+```
+
+
 ### void printFourRegWDT(FourRegOptions &opts)
 Prints out configuration for the watchdog timer.
 
