@@ -752,8 +752,12 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegTC(opts, TC1, 1);
     printFourRegTC(opts, TC2, 2);
     printFourRegTC(opts, TC3, 3);
+#ifdef TC4
     printFourRegTC(opts, TC4, 4);
+#endif
+#ifdef TC5
     printFourRegTC(opts, TC5, 5);
+#endif
 #ifdef TC6
     printFourRegTC(opts, TC6, 6);
 #endif
