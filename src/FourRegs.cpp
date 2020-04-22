@@ -499,9 +499,172 @@ void printFourRegPM(FourRegOptions &opts) {
 
     opts.print.print("PWSAKDLY: ");
     PRINTFLAG(PM->PWSAKDLY, IGNACK);
-    opts.print.print(" bramcfg=");
+    opts.print.print(" dlyval=");
     PRINTHEX(PM->PWSAKDLY.bit.DLYVAL);
     opts.print.println("");
+}
+
+
+void printFourRegTC_CTRLA(FourRegOptions &opts, volatile TC_CTRLA_Type& ctrla) {
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(ctrla, RUNSTDBY);
+    PRINTFLAG(ctrla, ONDEMAND);
+    opts.print.print(" prescsync=");
+    switch(ctrla.bit.PRESCSYNC) {
+        case 0x0: opts.print.print("GCLK"); break;
+        case 0x1: opts.print.print("PRESC"); break;
+        case 0x2: opts.print.print("RESYNC"); break;
+    }
+    PRINTFLAG(ctrla, ALOCK);
+    PRINTFLAG(ctrla, CAPTEN0);
+    PRINTFLAG(ctrla, CAPTEN1);
+    PRINTFLAG(ctrla, COPEN0);
+    PRINTFLAG(ctrla, COPEN1);
+    opts.print.print(" captmode0=");
+    PRINTHEX(ctrla.bit.CAPTMODE0);
+    opts.print.print(" captmode1=");
+    PRINTHEX(ctrla.bit.CAPTMODE1);
+    opts.print.println("");
+}
+void printFourRegTC_CTRLB(FourRegOptions &opts, volatile TC_CTRLBSET_Type& ctrlb) {
+    opts.print.print("CTRLB:  dir=");
+    opts.print.print(ctrlb.bit.DIR ? "UP": "DOWN");
+    PRINTFLAG(ctrlb, LUPD);
+    PRINTFLAG(ctrlb, ONESHOT);
+    opts.print.print(" cmd=");
+    switch(ctrlb.bit.CMD) {
+        case 0x0: opts.print.print("NONE"); break;
+        case 0x1: opts.print.print("RETRIGGER"); break;
+        case 0x2: opts.print.print("STOP"); break;
+        case 0x3: opts.print.print("UPDATE"); break;
+        case 0x4: opts.print.print("READSYNC"); break;
+    }
+    opts.print.println("");
+}
+void printFourRegTC_EVCTRL(FourRegOptions &opts, volatile TC_EVCTRL_Type& evctrl) {
+    opts.print.print("EVCTRL:  evact=");
+    switch(evctrl.bit.EVACT) {
+        case 0x0: opts.print.print("OFF"); break;
+        case 0x1: opts.print.print("RETRIGGER"); break;
+        case 0x2: opts.print.print("COUNT"); break;
+        case 0x3: opts.print.print("START"); break;
+        case 0x4: opts.print.print("STAMP"); break;
+        case 0x5: opts.print.print("PPW"); break;
+        case 0x6: opts.print.print("PWP"); break;
+        case 0x7: opts.print.print("PW"); break;
+    }
+    PRINTFLAG(evctrl, TCINV);
+    PRINTFLAG(evctrl, TCEI);
+    PRINTFLAG(evctrl, OVFEO);
+    PRINTFLAG(evctrl, MCEO0);
+    PRINTFLAG(evctrl, MCEO1);
+    opts.print.println("");
+}
+void printFourRegTC_WAVE(FourRegOptions &opts, volatile TC_WAVE_Type& wave) {
+    opts.print.print("WAVE:  wavegen=");
+    PRINTHEX(wave.bit.WAVEGEN);
+    opts.print.println("");
+}
+void printFourRegTC_DRVCTRL(FourRegOptions &opts, volatile TC_DRVCTRL_Type& drvctrl) {
+    opts.print.print("DRVCTRL: ");
+    PRINTFLAG(drvctrl, INVEN0);
+    PRINTFLAG(drvctrl, INVEN1);
+    opts.print.println("");
+}
+void printFourRegTC_8(FourRegOptions &opts, TcCount8& tc, uint8_t idx) {
+    opts.print.print("--------------------------- TC");
+    opts.print.print(idx);
+    opts.print.println(" COUNT8");
+    while (tc.SYNCBUSY.bit.ENABLE) {}
+    if (!tc.CTRLA.bit.ENABLE) {
+        opts.print.println("--disabled--");
+        return;
+    }
+    printFourRegTC_CTRLA(opts, tc.CTRLA);
+    while (tc.SYNCBUSY.bit.CTRLB) {}
+    printFourRegTC_CTRLB(opts, tc.CTRLBSET);
+    printFourRegTC_EVCTRL(opts, tc.EVCTRL);
+    printFourRegTC_WAVE(opts, tc.WAVE);
+    printFourRegTC_DRVCTRL(opts, tc.DRVCTRL);
+    while (tc.SYNCBUSY.bit.PER) {}
+    opts.print.print("PER:  ");
+    opts.print.println(tc.PER.bit.PER);
+    while (tc.SYNCBUSY.bit.CC0) {}
+    opts.print.print("CC0:  ");
+    opts.print.println(tc.CC[0].bit.CC);
+    while (tc.SYNCBUSY.bit.CC1) {}
+    opts.print.print("CC1:  ");
+    opts.print.println(tc.CC[1].bit.CC);
+}
+void printFourRegTC_16(FourRegOptions &opts, TcCount16& tc, uint8_t idx) {
+    opts.print.print("--------------------------- TC");
+    opts.print.print(idx);
+    opts.print.println(" COUNT16");
+    while (tc.SYNCBUSY.bit.ENABLE) {}
+    if (!tc.CTRLA.bit.ENABLE) {
+        opts.print.println("--disabled--");
+        return;
+    }
+    printFourRegTC_CTRLA(opts, tc.CTRLA);
+    while (tc.SYNCBUSY.bit.CTRLB) {}
+    printFourRegTC_CTRLB(opts, tc.CTRLBSET);
+    printFourRegTC_EVCTRL(opts, tc.EVCTRL);
+    printFourRegTC_WAVE(opts, tc.WAVE);
+    printFourRegTC_DRVCTRL(opts, tc.DRVCTRL);
+    while (tc.SYNCBUSY.bit.CC0) {}
+    opts.print.print("CC0:  ");
+    opts.print.println(tc.CC[0].bit.CC);
+    while (tc.SYNCBUSY.bit.CC1) {}
+    opts.print.print("CC1:  ");
+    opts.print.println(tc.CC[1].bit.CC);
+}
+void printFourRegTC_32(FourRegOptions &opts, TcCount32& tc, uint8_t idx) {
+    opts.print.print("--------------------------- TC");
+    opts.print.print(idx);
+    opts.print.println(" COUNT32");
+    while (tc.SYNCBUSY.bit.ENABLE) {}
+    if (!tc.CTRLA.bit.ENABLE) {
+        opts.print.println("--disabled--");
+        return;
+    }
+    printFourRegTC_CTRLA(opts, tc.CTRLA);
+    while (tc.SYNCBUSY.bit.CTRLB) {}
+    printFourRegTC_CTRLB(opts, tc.CTRLBSET);
+    printFourRegTC_EVCTRL(opts, tc.EVCTRL);
+    printFourRegTC_WAVE(opts, tc.WAVE);
+    printFourRegTC_DRVCTRL(opts, tc.DRVCTRL);
+    while (tc.SYNCBUSY.bit.CC0) {}
+    opts.print.print("CC0:  ");
+    opts.print.println(tc.CC[0].bit.CC);
+    while (tc.SYNCBUSY.bit.CC1) {}
+    opts.print.print("CC1:  ");
+    opts.print.println(tc.CC[1].bit.CC);
+}
+void printFourRegTC(FourRegOptions &opts, Tc* tc, uint8_t idx) {
+    while (tc->COUNT8.SYNCBUSY.bit.ENABLE) {}
+    if (!opts.showDisabled && !tc->COUNT8.CTRLA.bit.ENABLE) {
+        return;
+    }
+    while (tc->COUNT8.SYNCBUSY.bit.STATUS) {}
+    if (tc->COUNT8.STATUS.bit.SLAVE) {
+        opts.print.print("--------------------------- TC");
+        opts.print.print(idx);
+        opts.print.println(" --slave--");
+        return;
+    }
+    uint32_t mode = tc->COUNT8.CTRLA.bit.MODE;
+    if (mode == 0x0) {
+        printFourRegTC_16(opts, tc->COUNT16, idx);
+        return;
+    }
+    if (mode == 0x1) {
+        printFourRegTC_8(opts, tc->COUNT8, idx);
+        return;
+    }
+    if (mode == 0x2) {
+        printFourRegTC_32(opts, tc->COUNT32, idx);
+        return;
+    }
 }
 
 
@@ -585,17 +748,17 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegTCC(opts, TCC2, 2);
     //FUTURE printFourRegTCC(opts, TCC3, 3);
     //FUTURE printFourRegTCC(opts, TCC4, 4);
-    //FUTURE printFourRegTC(opts, TC0, 0);
-    //FUTURE printFourRegTC(opts, TC1, 1);
-    //FUTURE printFourRegTC(opts, TC2, 2);
-    //FUTURE printFourRegTC(opts, TC3, 3);
-    //FUTURE printFourRegTC(opts, TC4, 4);
-    //FUTURE printFourRegTC(opts, TC5, 5);
+    printFourRegTC(opts, TC0, 0);
+    printFourRegTC(opts, TC1, 1);
+    printFourRegTC(opts, TC2, 2);
+    printFourRegTC(opts, TC3, 3);
+    printFourRegTC(opts, TC4, 4);
+    printFourRegTC(opts, TC5, 5);
 #ifdef TC6
-    //FUTURE printFourRegTC(opts, TC6, 6);
+    printFourRegTC(opts, TC6, 6);
 #endif
 #ifdef TC7
-    //FUTURE printFourRegTC(opts, TC7, 7);
+    printFourRegTC(opts, TC7, 7);
 #endif
     //FUTURE printFourRegTRNG(opts);
     //FUTURE printFourRegUSB(opts);
