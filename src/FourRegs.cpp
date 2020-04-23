@@ -39,6 +39,10 @@ SOFTWARE.
 //FUTURE -- PRINTVEC(src,name,max) -- name[]=10011100
 
 
+// When using platformio.org, peripheral details can be found in
+// ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/
+
+
 // table 14-4 (datasheet rev E)
 static const char gclkgen_src_00[] = "XOSC0";
 static const char gclkgen_src_01[] = "XOSC1";
@@ -113,7 +117,6 @@ static const char* const gclkchans[] = {
     gclkchan_32, gclkchan_33, gclkchan_34, gclkchan_35, gclkchan_36, gclkchan_37, gclkchan_38, gclkchan_39,
     gclkchan_40, gclkchan_41, gclkchan_42, gclkchan_43, gclkchan_44, gclkchan_45, gclkchan_46, gclkchan_47,
 };
-// ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/gclk.h
 void printFourRegGCLK(FourRegOptions &opts) {
     opts.print.println("--------------------------- GCLK");
     for (uint8_t genid = 0; genid < 12; genid++) {
@@ -170,7 +173,6 @@ void printFourRegGCLK(FourRegOptions &opts) {
 }
 
 
-// ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/mclk.h
 void printFourRegMCLK(FourRegOptions &opts) {
     opts.print.println("--------------------------- MCLK");
     opts.print.print("HSDIV:  /");
@@ -271,7 +273,6 @@ void printFourRegMCLK(FourRegOptions &opts) {
 }
 
 
-// ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/osc32kctrl.h
 void printFourRegOSC32KCTRL(FourRegOptions &opts) {
     opts.print.println("--------------------------- OSC32KCTRL");
 
@@ -331,7 +332,6 @@ void printFourRegOSC32KCTRL(FourRegOptions &opts) {
 }
 
 
-// ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/oscctrl.h
 void printFourRegOSCCTRL(FourRegOptions &opts) {
     opts.print.println("--------------------------- OSCCTRL");
 
@@ -835,7 +835,6 @@ void printFourRegPM_CFG(FourRegOptions &opts, uint8_t v) {
         default:  opts.print.print("--unknown--"); break;
     }
 }
-// ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/pm.h
 void printFourRegPM(FourRegOptions &opts) {
     opts.print.println("--------------------------- PM");
 
@@ -1297,7 +1296,6 @@ void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
 }
 
 
-// ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/wdt.h
 void printFourRegWDT(FourRegOptions &opts) {
     WDT_CTRLA_Type ctrla;
     while (WDT->SYNCBUSY.reg) {}
