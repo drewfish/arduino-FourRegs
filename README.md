@@ -149,6 +149,10 @@ PWSAKDLY:  DLYVAL=0x0
 Prints out configuration for the realtime clock.
 
 
+### void printFourRegSUPC(FourRegOptions &opts)
+Prints out configuration for the supply controller.
+
+
 ### void printFourRegTC(FourRegOptions &opts, Tc* tc, uint8_t idx)
 Prints out configuration for a TC peripheral.
 

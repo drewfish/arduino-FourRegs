@@ -869,6 +869,110 @@ void printFourRegPM(FourRegOptions &opts) {
 }
 
 
+void printFourRegSUPC(FourRegOptions &opts) {
+    opts.print.println("--------------------------- SUPC");
+
+    if (opts.showDisabled || SUPC->BOD33.bit.ENABLE) {
+        opts.print.print("BOD33: ");
+        PRINTFLAG(SUPC->BOD33, ENABLE);
+        opts.print.print(" ACTION=");
+        PRINTHEX(SUPC->BOD33.bit.ACTION);
+        PRINTFLAG(SUPC->BOD33, STDBYCFG);
+        PRINTFLAG(SUPC->BOD33, RUNSTDBY);
+        PRINTFLAG(SUPC->BOD33, RUNHIB);
+        PRINTFLAG(SUPC->BOD33, RUNBKUP);
+        opts.print.print(" HYST=");
+        PRINTHEX(SUPC->BOD33.bit.HYST);
+        opts.print.print(" PSEL=");
+        PRINTHEX(SUPC->BOD33.bit.PSEL);
+        opts.print.print(" LEVEL=");
+        PRINTHEX(SUPC->BOD33.bit.LEVEL);
+        opts.print.print(" VBATLEVEL=");
+        PRINTHEX(SUPC->BOD33.bit.VBATLEVEL);
+        opts.print.println("");
+    } else {
+        if (opts.showDisabled) {
+            opts.print.println("BOD33:  --disabled--");
+        }
+    }
+
+    if (opts.showDisabled || SUPC->BOD12.bit.ENABLE) {
+        opts.print.print("BOD12: ");
+        PRINTFLAG(SUPC->BOD12, ENABLE);
+        PRINTFLAG(SUPC->BOD12, HYST);
+        opts.print.print(" ACTION=");
+        PRINTHEX(SUPC->BOD12.bit.ACTION);
+        PRINTFLAG(SUPC->BOD12, STDBYCFG);
+        PRINTFLAG(SUPC->BOD12, RUNSTDBY);
+        PRINTFLAG(SUPC->BOD12, ACTCFG);
+        opts.print.print(" PSEL=");
+        PRINTHEX(SUPC->BOD12.bit.PSEL);
+        opts.print.print(" LEVEL=");
+        PRINTHEX(SUPC->BOD12.bit.LEVEL);
+        opts.print.println("");
+    } else {
+        if (opts.showDisabled) {
+            opts.print.println("BOD12:  --disabled--");
+        }
+    }
+
+    if (opts.showDisabled || SUPC->VREG.bit.ENABLE) {
+        opts.print.print("VREG: ");
+        PRINTFLAG(SUPC->VREG, ENABLE);
+        PRINTFLAG(SUPC->VREG, SEL);
+        PRINTFLAG(SUPC->VREG, RUNBKUP);
+        PRINTFLAG(SUPC->VREG, VSEN);
+        opts.print.print(" VSPER=");
+        PRINTHEX(SUPC->VREG.bit.VSPER);
+        opts.print.println("");
+    } else {
+        if (opts.showDisabled) {
+            opts.print.println("VREG:  --disabled--");
+        }
+    }
+
+    opts.print.print("VREF: ");
+    PRINTFLAG(SUPC->VREF, TSEN);
+    PRINTFLAG(SUPC->VREF, VREFOE);
+    PRINTFLAG(SUPC->VREF, TSSEL);
+    PRINTFLAG(SUPC->VREF, RUNSTDBY);
+    PRINTFLAG(SUPC->VREF, ONDEMAND);
+    opts.print.print(" SEL=");
+    PRINTHEX(SUPC->VREF.bit.SEL);
+    opts.print.println("");
+
+    opts.print.print("BBPS: ");
+    PRINTFLAG(SUPC->BBPS, CONF);
+    PRINTFLAG(SUPC->BBPS, WAKEEN);
+    opts.print.println("");
+
+    if (opts.showDisabled || SUPC->BKOUT.bit.EN) {
+        opts.print.print("BKOUT: ");
+        if (SUPC->BKOUT.bit.EN & 0x1) {
+            opts.print.print(" 1=EN");
+            if (SUPC->BKOUT.bit.RTCTGL & 0x1) {
+                opts.print.print(",RTC");
+            }
+        }
+        if (SUPC->BKOUT.bit.EN & 0x2) {
+            opts.print.print(" 2=EN");
+            if (SUPC->BKOUT.bit.RTCTGL & 0x2) {
+                opts.print.print(",RTC");
+            }
+        }
+        opts.print.println("");
+    } else {
+        if (opts.showDisabled) {
+            opts.print.println("BKOUT:  --disabled--");
+        }
+    }
+
+    opts.print.print("BKIN:  ");
+    PRINTHEX(SUPC->BKIN.bit.BKIN);
+    opts.print.println("");
+}
+
+
 void printFourReg_TC_TCC_PRESCSYNC(FourRegOptions &opts, uint8_t prescsync) {
     opts.print.print(" prescsync=");
     switch(prescsync) {
@@ -1338,7 +1442,7 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegDSU(opts);
     printFourRegPAC(opts);
     printFourRegPM(opts);
-    //FUTURE printFourRegSUPC(opts);
+    printFourRegSUPC(opts);
     printFourRegWDT(opts);
 
     // show other peripherals
