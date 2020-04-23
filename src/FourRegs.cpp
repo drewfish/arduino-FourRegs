@@ -463,6 +463,286 @@ void printFourRegOSCCTRL(FourRegOptions &opts) {
 }
 
 
+void printFourRegRTC_BKUP(FourRegOptions &opts, volatile RTC_BKUP_Type *bkup) {
+    for (uint8_t id = 0; id < 8; id++) {
+        opts.print.print("BKUP");
+        opts.print.print(id);
+        opts.print.print(":  ");
+        opts.print.println(bkup[id].bit.BKUP);
+    }
+}
+
+void printFourRegRTC_FREQCORR(FourRegOptions &opts, volatile RTC_FREQCORR_Type &freqcorr) {
+    opts.print.print("FREQCORR:  ");
+    opts.print.print(freqcorr.bit.SIGN ? '-' : '+');
+    opts.print.println(freqcorr.bit.VALUE);
+}
+
+void printFourRegRTC_GP(FourRegOptions &opts, volatile RTC_GP_Type *gp) {
+    for (uint8_t id = 0; id < 4; id++) {
+        opts.print.print("GP");
+        opts.print.print(id);
+        opts.print.print(":  ");
+        opts.print.println(gp[id].bit.GP);
+    }
+}
+
+void printFourRegRTC_TAMPCTRLn(FourRegOptions &opts, uint8_t idx, uint8_t inact, uint8_t tamlvl, uint8_t debnc) {
+    if (inact == 0x0 && !opts.showDisabled) {
+        return;
+    }
+    opts.print.print(" ");
+    opts.print.print(idx);
+    opts.print.print("=");
+    switch (inact) {
+        case 0x0: opts.print.print("OFF"); break;
+        case 0x1: opts.print.print("WAKE"); break;
+        case 0x2: opts.print.print("CAPTURE"); break;
+        case 0x3: opts.print.print("ACTL"); break;
+    }
+    opts.print.print(tamlvl ? ",rise" : ",fall");
+    if (debnc) {
+        opts.print.print(",DEBNC");
+    }
+}
+
+void printFourRegRTC_TAMPCTRL(FourRegOptions &opts, volatile RTC_TAMPCTRL_Type &tampctrl) {
+    opts.print.print("TAMPCTRL: ");
+    printFourRegRTC_TAMPCTRLn(opts, 0, tampctrl.bit.IN0ACT, tampctrl.bit.TAMLVL0, tampctrl.bit.DEBNC0);
+    printFourRegRTC_TAMPCTRLn(opts, 1, tampctrl.bit.IN1ACT, tampctrl.bit.TAMLVL1, tampctrl.bit.DEBNC1);
+    printFourRegRTC_TAMPCTRLn(opts, 2, tampctrl.bit.IN2ACT, tampctrl.bit.TAMLVL2, tampctrl.bit.DEBNC2);
+    printFourRegRTC_TAMPCTRLn(opts, 3, tampctrl.bit.IN3ACT, tampctrl.bit.TAMLVL3, tampctrl.bit.DEBNC3);
+    printFourRegRTC_TAMPCTRLn(opts, 4, tampctrl.bit.IN4ACT, tampctrl.bit.TAMLVL4, tampctrl.bit.DEBNC4);
+    opts.print.println("");
+}
+
+void printFourRegRTC_MODE0(FourRegOptions &opts) {
+    uint8_t id;
+    opts.print.println("--------------------------- RTC COUNT32");
+
+    while (RTC->MODE0.SYNCBUSY.bit.ENABLE) {}
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(RTC->MODE0.CTRLA, ENABLE);
+    opts.print.print(" MODE=");
+    PRINTHEX(RTC->MODE0.CTRLA.bit.MODE);
+    PRINTFLAG(RTC->MODE0.CTRLA, MATCHCLR);
+    opts.print.print(" PRESCALER=");
+    PRINTHEX(RTC->MODE0.CTRLA.bit.PRESCALER);
+    PRINTFLAG(RTC->MODE0.CTRLA, BKTRST);
+    PRINTFLAG(RTC->MODE0.CTRLA, GPTRST);
+    PRINTFLAG(RTC->MODE0.CTRLA, COUNTSYNC);
+    opts.print.println("");
+
+    opts.print.print("CTRLB: ");
+    PRINTFLAG(RTC->MODE0.CTRLB, GP0EN);
+    PRINTFLAG(RTC->MODE0.CTRLB, GP2EN);
+    PRINTFLAG(RTC->MODE0.CTRLB, DEBMAJ);
+    PRINTFLAG(RTC->MODE0.CTRLB, DEBASYNC);
+    PRINTFLAG(RTC->MODE0.CTRLB, RTCOUT);
+    PRINTFLAG(RTC->MODE0.CTRLB, DMAEN);
+    opts.print.print(" DEBF=");
+    PRINTHEX(RTC->MODE0.CTRLB.bit.DEBF);
+    opts.print.print(" ACTF=");
+    PRINTHEX(RTC->MODE0.CTRLB.bit.ACTF);
+    opts.print.println("");
+
+    opts.print.print("EVCTRL: ");
+    for (id = 0; id < 8; id++) {
+        if (RTC->MODE0.EVCTRL.vec.PEREO & (1<<id)) {
+            opts.print.print(" PEREO");
+            opts.print.print(id);
+        }
+    }
+    PRINTFLAG(RTC->MODE0.EVCTRL, CMPEO0);
+    PRINTFLAG(RTC->MODE0.EVCTRL, CMPEO1);
+    PRINTFLAG(RTC->MODE0.EVCTRL, TAMPEREO);
+    PRINTFLAG(RTC->MODE0.EVCTRL, OVFEO);
+    PRINTFLAG(RTC->MODE0.EVCTRL, TAMPEVEI);
+    opts.print.println("");
+
+    while (RTC->MODE0.SYNCBUSY.bit.FREQCORR);
+    printFourRegRTC_FREQCORR(opts, RTC->MODE0.FREQCORR);
+
+    while (RTC->MODE0.SYNCBUSY.vec.COMP);
+    for (id = 0; id < 2; id++) {
+        opts.print.print("COMP");
+        opts.print.print(id);
+        opts.print.print(":  ");
+        opts.print.print(RTC->MODE0.COMP[id].bit.COMP);
+        opts.print.println("");
+    }
+
+    while (RTC->MODE0.SYNCBUSY.vec.GP);
+    printFourRegRTC_GP(opts, RTC->MODE0.GP);
+    printFourRegRTC_TAMPCTRL(opts, RTC->MODE0.TAMPCTRL);
+
+    opts.print.print("TIMESTAMP:  ");
+    opts.print.print(RTC->MODE0.TIMESTAMP.bit.COUNT);
+    opts.print.println("");
+
+    printFourRegRTC_BKUP(opts, RTC->MODE0.BKUP);
+}
+
+void printFourRegRTC_MODE1(FourRegOptions &opts) {
+    uint8_t id;
+    opts.print.println("--------------------------- RTC COUNT16");
+
+    while (RTC->MODE1.SYNCBUSY.bit.ENABLE) {}
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(RTC->MODE1.CTRLA, ENABLE);
+    opts.print.print(" MODE=");
+    PRINTHEX(RTC->MODE1.CTRLA.bit.MODE);
+    opts.print.print(" PRESCALER=");
+    PRINTHEX(RTC->MODE1.CTRLA.bit.PRESCALER);
+    PRINTFLAG(RTC->MODE1.CTRLA, BKTRST);
+    PRINTFLAG(RTC->MODE1.CTRLA, GPTRST);
+    PRINTFLAG(RTC->MODE1.CTRLA, COUNTSYNC);
+    opts.print.println("");
+
+    opts.print.print("CTRLB: ");
+    PRINTFLAG(RTC->MODE1.CTRLB, GP0EN);
+    PRINTFLAG(RTC->MODE1.CTRLB, GP2EN);
+    PRINTFLAG(RTC->MODE1.CTRLB, DEBMAJ);
+    PRINTFLAG(RTC->MODE1.CTRLB, DEBASYNC);
+    PRINTFLAG(RTC->MODE1.CTRLB, RTCOUT);
+    PRINTFLAG(RTC->MODE1.CTRLB, DMAEN);
+    opts.print.print(" DEBF=");
+    PRINTHEX(RTC->MODE1.CTRLB.bit.DEBF);
+    opts.print.print(" ACTF=");
+    PRINTHEX(RTC->MODE1.CTRLB.bit.ACTF);
+    opts.print.println("");
+
+    opts.print.print("EVCTRL: ");
+    for (id = 0; id < 8; id++) {
+        if (RTC->MODE1.EVCTRL.vec.PEREO & (1<<id)) {
+            opts.print.print(" PEREO");
+            opts.print.print(id);
+        }
+    }
+    PRINTFLAG(RTC->MODE1.EVCTRL, CMPEO0);
+    PRINTFLAG(RTC->MODE1.EVCTRL, CMPEO1);
+    PRINTFLAG(RTC->MODE1.EVCTRL, CMPEO2);
+    PRINTFLAG(RTC->MODE1.EVCTRL, CMPEO3);
+    PRINTFLAG(RTC->MODE1.EVCTRL, TAMPEREO);
+    PRINTFLAG(RTC->MODE1.EVCTRL, OVFEO);
+    PRINTFLAG(RTC->MODE1.EVCTRL, TAMPEVEI);
+    opts.print.println("");
+
+    while (RTC->MODE1.SYNCBUSY.bit.FREQCORR);
+    printFourRegRTC_FREQCORR(opts, RTC->MODE1.FREQCORR);
+
+    opts.print.print("PER:  ");
+    opts.print.print(RTC->MODE1.PER.bit.PER);
+    opts.print.println("");
+
+    while (RTC->MODE1.SYNCBUSY.vec.COMP);
+    for (id = 0; id < 4; id++) {
+        opts.print.print("COMP");
+        opts.print.print(id);
+        opts.print.print(":  ");
+        opts.print.print(RTC->MODE1.COMP[id].bit.COMP);
+        opts.print.println("");
+    }
+
+    while (RTC->MODE1.SYNCBUSY.vec.GP);
+    printFourRegRTC_GP(opts, RTC->MODE1.GP);
+    printFourRegRTC_TAMPCTRL(opts, RTC->MODE1.TAMPCTRL);
+
+    opts.print.print("TIMESTAMP:  ");
+    opts.print.print(RTC->MODE1.TIMESTAMP.bit.COUNT);
+    opts.print.println("");
+
+    printFourRegRTC_BKUP(opts, RTC->MODE1.BKUP);
+}
+
+void printFourRegRTC_MODE2(FourRegOptions &opts) {
+    uint8_t id;
+    opts.print.println("--------------------------- RTC CLOCK/CALENDAR");
+
+    while (RTC->MODE2.SYNCBUSY.bit.ENABLE) {}
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(RTC->MODE2.CTRLA, ENABLE);
+    opts.print.print(" MODE=");
+    PRINTHEX(RTC->MODE2.CTRLA.bit.MODE);
+    PRINTFLAG(RTC->MODE2.CTRLA, MATCHCLR);
+    opts.print.print(" PRESCALER=");
+    PRINTHEX(RTC->MODE2.CTRLA.bit.PRESCALER);
+    PRINTFLAG(RTC->MODE2.CTRLA, BKTRST);
+    PRINTFLAG(RTC->MODE2.CTRLA, GPTRST);
+    PRINTFLAG(RTC->MODE2.CTRLA, CLOCKSYNC);
+    opts.print.println("");
+
+    opts.print.print("CTRLB: ");
+    PRINTFLAG(RTC->MODE2.CTRLB, GP0EN);
+    PRINTFLAG(RTC->MODE2.CTRLB, GP2EN);
+    PRINTFLAG(RTC->MODE2.CTRLB, DEBMAJ);
+    PRINTFLAG(RTC->MODE2.CTRLB, DEBASYNC);
+    PRINTFLAG(RTC->MODE2.CTRLB, RTCOUT);
+    PRINTFLAG(RTC->MODE2.CTRLB, DMAEN);
+    opts.print.print(" DEBF=");
+    PRINTHEX(RTC->MODE2.CTRLB.bit.DEBF);
+    opts.print.print(" ACTF=");
+    PRINTHEX(RTC->MODE2.CTRLB.bit.ACTF);
+    opts.print.println("");
+
+    opts.print.print("EVCTRL: ");
+    for (id = 0; id < 8; id++) {
+        if (RTC->MODE2.EVCTRL.vec.PEREO & (1<<id)) {
+            opts.print.print(" PEREO");
+            opts.print.print(id);
+        }
+    }
+    PRINTFLAG(RTC->MODE2.EVCTRL, ALARMEO0);
+    PRINTFLAG(RTC->MODE2.EVCTRL, ALARMEO1);
+    PRINTFLAG(RTC->MODE2.EVCTRL, TAMPEREO);
+    PRINTFLAG(RTC->MODE2.EVCTRL, OVFEO);
+    PRINTFLAG(RTC->MODE2.EVCTRL, TAMPEVEI);
+    opts.print.println("");
+
+    while (RTC->MODE2.SYNCBUSY.bit.FREQCORR);
+    printFourRegRTC_FREQCORR(opts, RTC->MODE2.FREQCORR);
+
+    for (id = 0; id < 2; id++) {
+        while (RTC->MODE2.SYNCBUSY.vec.ALARM & (1<<id)) {}
+        uint8_t mask;
+        mask = RTC->MODE2.Mode2Alarm[id].MASK.bit.SEL;
+        if ((mask == 0x0) && !opts.showDisabled) {
+            continue;
+        }
+        opts.print.print("ALARM");
+        opts.print.print(id);
+        opts.print.print(":  ");
+        RTC_MODE2_ALARM_Type alarm;
+        alarm.reg = RTC->MODE2.Mode2Alarm[id].ALARM.reg;
+        if (mask >= 0x6) { PRINTPAD2(alarm.bit.YEAR); }
+        if (mask >= 0x5) { PRINTPAD2(alarm.bit.MONTH); }
+        if (mask >= 0x4) { PRINTPAD2(alarm.bit.DAY); }
+        if (mask >= 0x3) { PRINTPAD2(alarm.bit.HOUR); }
+        if (mask >= 0x2) { PRINTPAD2(alarm.bit.MINUTE); }
+        if (mask >= 0x1) { PRINTPAD2(alarm.bit.SECOND); }
+        if (mask == 0x0) { opts.print.print("--disabled--"); }
+        opts.print.println("");
+    }
+
+    while (RTC->MODE2.SYNCBUSY.vec.GP);
+    printFourRegRTC_GP(opts, RTC->MODE2.GP);
+    printFourRegRTC_TAMPCTRL(opts, RTC->MODE2.TAMPCTRL);
+    printFourRegRTC_BKUP(opts, RTC->MODE2.BKUP);
+
+}
+
+void printFourRegRTC(FourRegOptions &opts) {
+    if (!opts.showDisabled && !RTC->MODE0.CTRLA.bit.ENABLE) {
+        return;
+    }
+    switch (RTC->MODE0.CTRLA.bit.MODE) {
+        case 0x0: printFourRegRTC_MODE0(opts); break;
+        case 0x1: printFourRegRTC_MODE1(opts); break;
+        case 0x2: printFourRegRTC_MODE2(opts); break;
+    }
+}
+
+
 void printFourRegPM_CFG(FourRegOptions &opts, uint8_t v) {
     switch(v) {
         case 0x0: opts.print.print("RET"); break;
@@ -970,14 +1250,12 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegMCLK(opts);
     printFourRegOSC32KCTRL(opts);
     printFourRegOSCCTRL(opts);
-    //FUTURE printFourRegRTC(opts);
+    printFourRegRTC(opts);
 
     // show core peripherals
-    printFourRegPM(opts);
-    //FUTURE printFourRegCCL(opts);
     //FUTURE printFourRegDSU(opts);
-    //FUTURE printFourRegNVMCTRL(opts);
     //FUTURE printFourRegPAC(opts);
+    printFourRegPM(opts);
     //FUTURE printFourRegSUPC(opts);
     printFourRegWDT(opts);
 
@@ -986,6 +1264,7 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegADC(opts);
     //FUTURE printFourRegAES(opts);
     //FUTURE printFourRegCAN(opts);
+    //FUTURE printFourRegCCL(opts);
     //FUTURE printFourRegCMCC(opts);
     //FUTURE printFourRegDAC(opts);
     //FUTURE printFourRegDMAC(opts);
@@ -995,6 +1274,7 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegGMAC(opts);
     //FUTURE printFourRegI2S(opts);
     //FUTURE printFourRegICM(opts);
+    //FUTURE printFourRegNVMCTRL(opts);
     //FUTURE printFourRegPCC(opts);
     //FUTURE printFourRegPDEC(opts);
     //FUTURE printFourRegPORT(opts);
