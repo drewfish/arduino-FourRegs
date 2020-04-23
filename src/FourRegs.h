@@ -59,7 +59,7 @@ void printFourRegMCLK(FourRegOptions &opts);
 //FUTURE void printFourRegNVMCTRL(FourRegOptions &opts);
 void printFourRegOSC32KCTRL(FourRegOptions &opts);
 void printFourRegOSCCTRL(FourRegOptions &opts);
-//FUTURE void printFourRegPAC(FourRegOptions &opts);
+void printFourRegPAC(FourRegOptions &opts);
 //FUTURE void printFourRegPCC(FourRegOptions &opts);
 //FUTURE void printFourRegPDEC(FourRegOptions &opts);
 void printFourRegPM(FourRegOptions &opts);

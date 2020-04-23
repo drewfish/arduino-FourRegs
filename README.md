@@ -127,6 +127,10 @@ DPLL1:  ENABLE FILTER=0x0 REFCLK=0x0 LTIME=0x0 LBYPASS DIV=0 ldr=99.0
 ```
 
 
+### void printFourRegPAC(FourRegOptions &opts)
+Prints out configuration for the peripheral access controller.
+
+
 ### void printFourRegPM(FourRegOptions &opts)
 Prints out configuration for the power manager.
 

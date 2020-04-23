@@ -743,6 +743,90 @@ void printFourRegRTC(FourRegOptions &opts) {
 }
 
 
+void printFourRegPAC(FourRegOptions &opts) {
+    // a little tricker to figure out if nothing interesting is happening
+    if (!opts.showDisabled &&
+            !PAC->STATUSA.reg && !PAC->STATUSB.reg &&
+            !PAC->STATUSC.reg && !PAC->STATUSD.reg)
+    {
+        return;
+    }
+    opts.print.println("--------------------------- PAC");
+
+    opts.print.print("EVCTRL: ");
+    PRINTFLAG(PAC->EVCTRL, ERREO);
+    opts.print.println("");
+
+    opts.print.print("STATUSA: ");
+    if (PAC->STATUSA.bit.PAC_) { opts.print.print(" PAC"); }
+    if (PAC->STATUSA.bit.PM_) { opts.print.print(" PM"); }
+    if (PAC->STATUSA.bit.MCLK_) { opts.print.print(" MCLK"); }
+    if (PAC->STATUSA.bit.RSTC_) { opts.print.print(" RSTC"); }
+    if (PAC->STATUSA.bit.OSCCTRL_) { opts.print.print(" OSCCTRL"); }
+    if (PAC->STATUSA.bit.OSC32KCTRL_) { opts.print.print(" OSC32KCTRL"); }
+    if (PAC->STATUSA.bit.SUPC_) { opts.print.print(" SUPC"); }
+    if (PAC->STATUSA.bit.GCLK_) { opts.print.print(" GCLK"); }
+    if (PAC->STATUSA.bit.WDT_) { opts.print.print(" WDT"); }
+    if (PAC->STATUSA.bit.RTC_) { opts.print.print(" RTC"); }
+    if (PAC->STATUSA.bit.EIC_) { opts.print.print(" EIC"); }
+    if (PAC->STATUSA.bit.FREQM_) { opts.print.print(" FREQM"); }
+    if (PAC->STATUSA.bit.SERCOM0_) { opts.print.print(" SERCOM0"); }
+    if (PAC->STATUSA.bit.SERCOM1_) { opts.print.print(" SERCOM1"); }
+    if (PAC->STATUSA.bit.TC0_) { opts.print.print(" TC0"); }
+    if (PAC->STATUSA.bit.TC1_) { opts.print.print(" TC1"); }
+    opts.print.println("");
+
+    opts.print.print("STATUSB: ");
+    if (PAC->STATUSB.bit.USB_) { opts.print.print(" USB"); }
+    if (PAC->STATUSB.bit.DSU_) { opts.print.print(" DSU"); }
+    if (PAC->STATUSB.bit.NVMCTRL_) { opts.print.print(" NVMCTRL"); }
+    if (PAC->STATUSB.bit.CMCC_) { opts.print.print(" CMCC"); }
+    if (PAC->STATUSB.bit.PORT_) { opts.print.print(" PORT"); }
+    if (PAC->STATUSB.bit.DMAC_) { opts.print.print(" DMAC"); }
+    if (PAC->STATUSB.bit.HMATRIX_) { opts.print.print(" HMATRIX"); }
+    if (PAC->STATUSB.bit.EVSYS_) { opts.print.print(" EVSYS"); }
+    if (PAC->STATUSB.bit.SERCOM2_) { opts.print.print(" SERCOM2"); }
+    if (PAC->STATUSB.bit.SERCOM3_) { opts.print.print(" SERCOM3"); }
+    if (PAC->STATUSB.bit.TCC0_) { opts.print.print(" TCC0"); }
+    if (PAC->STATUSB.bit.TCC1_) { opts.print.print(" TCC1"); }
+    if (PAC->STATUSB.bit.TC2_) { opts.print.print(" TC2"); }
+    if (PAC->STATUSB.bit.TC3_) { opts.print.print(" TC3"); }
+    if (PAC->STATUSB.bit.TAL_) { opts.print.print(" TAL"); }
+    if (PAC->STATUSB.bit.RAMECC_) { opts.print.print(" RAMECC"); }
+    opts.print.println("");
+
+    opts.print.print("STATUSC: ");
+    if (PAC->STATUSC.bit.TCC2_) { opts.print.print(" TCC2"); }
+    if (PAC->STATUSC.bit.TCC3_) { opts.print.print(" TCC3"); }
+    if (PAC->STATUSC.bit.TC4_) { opts.print.print(" TC4"); }
+    if (PAC->STATUSC.bit.TC5_) { opts.print.print(" TC5"); }
+    if (PAC->STATUSC.bit.PDEC_) { opts.print.print(" PDEC"); }
+    if (PAC->STATUSC.bit.AC_) { opts.print.print(" AC"); }
+    if (PAC->STATUSC.bit.AES_) { opts.print.print(" AES"); }
+    if (PAC->STATUSC.bit.TRNG_) { opts.print.print(" TRNG"); }
+    if (PAC->STATUSC.bit.ICM_) { opts.print.print(" ICM"); }
+    if (PAC->STATUSC.bit.PUKCC_) { opts.print.print(" PUKCC"); }
+    if (PAC->STATUSC.bit.QSPI_) { opts.print.print(" QSPI"); }
+    if (PAC->STATUSC.bit.CCL_) { opts.print.print(" CCL"); }
+    opts.print.println("");
+
+    opts.print.print("STATUSD: ");
+    if (PAC->STATUSD.bit.SERCOM4_) { opts.print.print(" SERCOM4"); }
+    if (PAC->STATUSD.bit.SERCOM5_) { opts.print.print(" SERCOM5"); }
+    if (PAC->STATUSD.bit.SERCOM6_) { opts.print.print(" SERCOM6"); }
+    if (PAC->STATUSD.bit.SERCOM7_) { opts.print.print(" SERCOM7"); }
+    if (PAC->STATUSD.bit.TCC4_) { opts.print.print(" TCC4"); }
+    if (PAC->STATUSD.bit.TC6_) { opts.print.print(" TC6"); }
+    if (PAC->STATUSD.bit.TC7_) { opts.print.print(" TC7"); }
+    if (PAC->STATUSD.bit.ADC0_) { opts.print.print(" ADC0"); }
+    if (PAC->STATUSD.bit.ADC1_) { opts.print.print(" ADC1"); }
+    if (PAC->STATUSD.bit.DAC_) { opts.print.print(" DAC"); }
+    if (PAC->STATUSD.bit.I2S_) { opts.print.print(" I2S"); }
+    if (PAC->STATUSD.bit.PCC_) { opts.print.print(" PCC"); }
+    opts.print.println("");
+}
+
+
 void printFourRegPM_CFG(FourRegOptions &opts, uint8_t v) {
     switch(v) {
         case 0x0: opts.print.print("RET"); break;
@@ -1254,7 +1338,7 @@ void printFourRegs(FourRegOptions &opts) {
 
     // show core peripherals
     //FUTURE printFourRegDSU(opts);
-    //FUTURE printFourRegPAC(opts);
+    printFourRegPAC(opts);
     printFourRegPM(opts);
     //FUTURE printFourRegSUPC(opts);
     printFourRegWDT(opts);
