@@ -145,12 +145,25 @@ PWSAKDLY:  DLYVAL=0x0
 ```
 
 
+### void printFourRegPORT(FourRegOptions &opts)
+Prints out configuration for the I/O pin controller ports.
+
+
 ### void printFourRegRTC(FourRegOptions &opts)
 Prints out configuration for the realtime clock.
 
 
 ### void printFourRegSUPC(FourRegOptions &opts)
 Prints out configuration for the supply controller.
+
+example output:
+```text
+BOD12:  ENABLE HYST ACTION=0x1 PSEL=0x0 LEVEL=0xD
+VREG:  ENABLE VSPER=0x0
+VREF:  SEL=0x0
+BBPS:
+BKIN:  0x2
+```
 
 
 ### void printFourRegTC(FourRegOptions &opts, Tc* tc, uint8_t idx)

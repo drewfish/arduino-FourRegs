@@ -63,7 +63,7 @@ void printFourRegPAC(FourRegOptions &opts);
 //FUTURE void printFourRegPCC(FourRegOptions &opts);
 //FUTURE void printFourRegPDEC(FourRegOptions &opts);
 void printFourRegPM(FourRegOptions &opts);
-//FUTURE void printFourRegPORT(FourRegOptions &opts);
+void printFourRegPORT(FourRegOptions &opts);
 //FUTURE void printFourRegQSPI(FourRegOptions &opts);
 void printFourRegRTC(FourRegOptions &opts);
 //FUTURE void printFourRegSDHC(FourRegOptions &opts);

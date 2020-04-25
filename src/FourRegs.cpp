@@ -869,6 +869,281 @@ void printFourRegPM(FourRegOptions &opts) {
 }
 
 
+// table 6-1 (datasheet rev E)
+struct FourRegs_PMUX_Name {
+    char        id;
+    const char* name;
+};
+const FourRegs_PMUX_Name fourRegs_PMUX_names[14] = {
+    { 'A', "EIC" },
+    { 'B', "ANAREF,ADC0,ADC1,AC,DAC,PTC" }, // analog stuff
+    { 'C', "SERCOM" },
+    { 'D', "SERCOM" },
+    { 'E', "TC" },
+    { 'F', "TCC" },
+    { 'G', "TCC,PDEC" },
+    { 'H', "QSPI,CAN1,USB,CORTEX_CM4" },
+    { 'I', "SDHC,CAN0" },
+    { 'J', "I2S" },
+    { 'K', "PCC" },
+    { 'L', "GMAC" },
+    { 'M', "GCLK,AC" },
+    { 'N', "CCL" },
+};
+struct FourRegs_Pin {
+    const char* name;
+    const char* pmux[14];   // see PMUX names above
+};
+const FourRegs_Pin fourRegs_pins[4][32] = {
+    {
+        { "PA00", {   "EIC:0",                      NULL,        NULL, "SERCOM1:0", "TC2:0",     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PA01", {   "EIC:1",                      NULL,        NULL, "SERCOM1:1", "TC2:1",     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PA02", {   "EIC:2",            "ADC0:0,DAC:0",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PA03", {   "EIC:3",      "VREFA,ADC0:1,X0/Y0",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PA04", {   "EIC:4", "VREFB,ADC0:4,AC:0,X3/Y3",        NULL, "SERCOM0:0", "TC0:0",     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:IO" } },
+        { "PA05", {   "EIC:5",       "ADC0:5,AC:1,DAC:1",        NULL, "SERCOM0:1", "TC0:1",     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:I1" } },
+        { "PA06", {   "EIC:6", "VREFC,ADC0:6,AC:2,X4/Y4",        NULL, "SERCOM0:2", "TC1:0",     NULL,        NULL,         NULL,   "SDHC0:SDCD",       NULL,        NULL,           NULL,     NULL,  "CCL:I2" } },
+        { "PA07", {   "EIC:7",       "ADC0:7,AC:3,X5/Y5",        NULL, "SERCOM0:3", "TC1:1",     NULL,        NULL,         NULL,   "SDHC0:SDWP",       NULL,        NULL,           NULL,     NULL,  "CCL:O0" } },
+        { "PA08", { "EIC:NMI",     "ADC0:8,ADC1:2,X6/Y6", "SERCOM0:0", "SERCOM2:1", "TC0:0", "TCC0:0",    "TCC1:4", "QSPI:DATA0",  "SDHC0:SDCMD", "I2S:MCK0",        NULL,           NULL,     NULL,  "CCL:I3" } },
+        { "PA09", {   "EIC:9",     "ADC0:9,ADC1:3,X7/Y7", "SERCOM0:1", "SERCOM2:0", "TC0:1", "TCC0:1",    "TCC1:5", "QSPI:DATA1", "SDHC0:SDDAT0",  "I2S:FS0",        NULL,           NULL,     NULL,  "CCL:I4" } },
+        { "PA10", {  "EIC:10",           "ADC0:10,X8/Y8", "SERCOM0:2", "SERCOM2:2", "TC1:0", "TCC0:2",    "TCC1:6", "QSPI:DATA2", "SDHC0:SDDAT1", "I2S:SCK0",        NULL,           NULL, "GCLK:4",  "CCL:I5" } },
+        { "PA11", {  "EIC:11",           "ADC0:11,X9/Y9", "SERCOM0:3", "SERCOM2:3", "TC1:1", "TCC0:3",    "TCC1:7", "QSPI:DATA3", "SDHC0:SDDAT2",  "I2S:SDO",        NULL,           NULL, "GCLK:5",  "CCL:O1" } },
+        { "PA12", {  "EIC:12",                      NULL, "SERCOM2:0", "SERCOM4:1", "TC2:0", "TCC0:6",    "TCC1:2",         NULL,   "SDHC0:SDCD",       NULL,  "PCC:DEN1",    "GMAC:GRX1",   "AC:0",      NULL } },
+        { "PA13", {  "EIC:13",                      NULL, "SERCOM2:1", "SERCOM4:0", "TC2:1", "TCC0:7",    "TCC1:3",         NULL,   "SDCH0:SDWP",       NULL,  "PCC:DEN2",    "GMAC:GRX0",   "AC:1",      NULL } },
+        { "PA14", {  "EIC:14",                      NULL, "SERCOM2:2", "SERCOM4:2", "TC3:0", "TCC2:0",    "TCC1:2",         NULL,           NULL,       NULL,   "PCC:CLK",   "GMAC:GTXCK", "GCLK:0",      NULL } },
+        { "PA15", {  "EIC:15",                      NULL, "SERCOM2:3", "SERCOM4:3", "TC3:1", "TCC2:1",    "TCC1:3",         NULL,           NULL,       NULL,        NULL,   "GMAC:GRXER", "GCLK:1",      NULL } },
+        { "PA16", {   "EIC:0",                 "X10/Y10", "SERCOM1:0", "SERCOM3:1", "TC2:0", "TCC1:0",    "TCC0:4",         NULL,           NULL,       NULL, "PCC:DATA0", "GMAC:GRXDIV6", "GCLK:2",  "CCL:I0" } },
+        { "PA17", {   "EIC:1",                 "X11/Y11", "SERCOM1:1", "SERCOM3:0", "TC2:1", "TCC1:1",    "TCC0:5",         NULL,           NULL,       NULL, "PCC:DATA1",   "GMAC:GTXEN", "GCLK:3",  "CCL:I1" } },
+        { "PA18", {   "EIC:2",                 "X12/Y12", "SERCOM1:2", "SERCOM3:2", "TC3:0", "TCC1:2",    "TCC0:6",         NULL,           NULL,       NULL, "PCC:DATA2",    "GMAC:GTX0",   "AC:0",  "CCL:I2" } },
+        { "PA19", {   "EIC:3",                 "X13/Y13", "SERCOM1:3", "SERCOM3:3", "TC3:0", "TCC1:3",    "TCC0:7",         NULL,           NULL,       NULL, "PCC:DATA3",    "GMAC:GTX1",   "AC:1",  "CCL:O0" } },
+        { "PA20", {   "EIC:4",                 "X14/Y14", "SERCOM5:2", "SERCOM3:2", "TC7:0", "TCC1:4",    "TCC0:0",         NULL,  "SDHC1:SDCMD",  "I2S:FS0", "PCC:DATA4",    "GMAC:GMDC",     NULL,      NULL } },
+        { "PA21", {   "EIC:5",                 "X15/Y15", "SERCOM5:3", "SERCOM3:3", "TC7:1", "TCC1:5",    "TCC0:1",         NULL,   "SDHC1:SDCK",  "I2S:SDO", "PCC:DATA5",   "GMAC:GMDIO",     NULL,      NULL } },
+        { "PA22", {   "EIC:6",                 "X16/Y16", "SERCOM3:0", "SERCOM5:1", "TC4:0", "TCC1:6",    "TCC0:2",         NULL,      "CAN0:TX",  "I2S:SDI", "PCC:DATA6",           NULL,     NULL,  "CCL:I6" } },
+        { "PA23", {   "EIC:7",                 "X17/Y17", "SERCOM3:1", "SERCOM5:0", "TC4:1", "TCC1:7",    "TCC0:3",  "USB:SOF1K",      "CAN0:RX",  "I2S:FS1", "PCC:DATA7",           NULL,     NULL,  "CCL:I7" } },
+        { "PA24", {   "EIC:8",                      NULL, "SERCOM3:2", "SERCOM5:2", "TC5:0", "TCC2:2", "PDEC:QDI0",     "USB:DM",      "CAN0:TX",       NULL,        NULL,           NULL,     NULL,  "CCL:I8" } },
+        { "PA25", {   "EIC:9",                      NULL, "SERCOM3:3", "SERCOM5:3", "TC5:1",     NULL, "PDEC:QDI1",     "USB:DP",      "CAN0:RX",       NULL,        NULL,           NULL,     NULL,  "CCL:O2" } },
+        {/*PA26*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PA27", {  "EIC:11",                 "X18/Y18",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL, "GCLK:1",      NULL } },
+        {/*PA28*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        {/*PA29*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PA30", {  "EIC:14",                 "X19/Y19",        NULL, "SERCOM1:2", "TC6:0", "TCC2:0",        NULL, "CORTEX_CM4:SWCLK",     NULL,       NULL,        NULL,           NULL, "GCLK:0",  "CCL:I3" } },
+        { "PA31", {  "EIC:15",                      NULL,        NULL, "SERCOM1:3", "TC6:1", "TCC2:1",        NULL, "CORTEX_CM4:SWDIO",     NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:O0" } },
+    },
+    {
+        { "PB00", {   "EIC:0",         "ADC0:12,X30/Y30",        NULL, "SERCOM5:2", "TC7:0",     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:I1" } },
+        { "PB01", {   "EIC:1",         "ADC0:13,X31/Y31",        NULL, "SERCOM5:3", "TC7:1",     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:I2" } },
+        { "PB02", {   "EIC:2",         "ADCO:14,X20/Y20",        NULL, "SERCOM5:0", "TC6:0", "TCC2:2",        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:O2" } },
+        { "PB03", {   "EIC:3",         "ADC0:15,X21/Y21",        NULL, "SERCOM5:1", "TC6:1",     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PB04", {   "EIC:4",          "ADC1:6,X22/Y22",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PB05", {   "EIC:5",          "ADC1:7,X23/Y23",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PB06", {   "EIC:6",          "ADC1:8,X24/Y24",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:I6" } },
+        { "PB07", {   "EIC:7",          "ADC1:9,X25/Y25",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:I7" } },
+        { "PB08", {   "EIC:8",     "ADC0:2,ADC1:0,X1/Y1",        NULL, "SERCOM4:0", "TC4:0",     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:I8" } },
+        { "PB09", {   "EIC:9",     "ADC0:3,ADC1:1,X2/Y2",        NULL, "SERCOM4:1", "TC4:1",     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:O2" } },
+        { "PB10", {  "EIC:10",                      NULL,        NULL, "SERCOM4:2", "TC5:0", "TCC0:4",    "TCC1:0",   "QSPI:SCK", "SDHC0:SDDAT3",  "I2S:SDI",        NULL,           NULL, "GCLK:4", "CCL:I11" } },
+        { "PB11", {  "EIC:11",                      NULL,        NULL, "SERCOM4:3", "TC5:1", "TCC0:5",    "TCC1:1",    "QSPI:CS",   "SDHC0:SDCK",  "I2S:FS1",        NULL,           NULL, "GCLK:5",  "CCL:O1" } },
+        { "PB12", {  "EIC:12",                 "X26/Y26", "SERCOM4:0",        NULL, "TC4:0", "TCC3:0",    "TCC0:0",    "CAN1:TX",   "SDHC0:SDCD", "I2S:SCK1",        NULL,           NULL, "GCLK:6",      NULL } },
+        { "PB13", {  "EIC:13",                 "X27/Y27", "SERCOM4:1",        NULL, "TC4:1", "TCC3:1",    "TCC0:1",    "CAN1:RX",   "SDHC0:SDWP", "I2S:MCK1",        NULL,           NULL, "GCLK:7",      NULL } },
+        { "PB14", {  "EIC:14",                 "X28/Y28", "SERCOM4:2",        NULL, "TC5:0", "TCC4:0",    "TCC0:2",    "CAN1:TX",           NULL,       NULL, "PCC:DATA8",    "GMAC:GMDC", "GCLK:0",  "CCL:I9" } },
+        { "PB15", {  "EIC:15",                 "X29/Y29", "SERCOM4:3",        NULL, "TC5:1", "TCC4:1",    "TCC0:3",    "CAN1:RX",           NULL,       NULL, "PCC:DATA9",   "GMAC:GMDIO", "GCLK:1", "CCL:I10" } },
+        { "PB16", {   "EIC:0",                      NULL, "SERCOM5:0",        NULL, "TC6:0", "TCC3:0",    "TCC0:4",         NULL,   "SDHC1:SDCD", "I2S:SCK0",        NULL,           NULL, "GCLK:2", "CCL:I11" } },
+        { "PB17", {   "EIC:1",                      NULL, "SERCOM5:1",        NULL, "TC6:1", "TCC3:1",    "TCC0:5",         NULL,   "SDHC1:SDWP", "I2S:MCK0",        NULL,           NULL, "GCLK:3",  "CCL:O3" } },
+        { "PB18", {   "EIC:2",                      NULL, "SERCOM5:2", "SERCOM7:2",    NULL, "TCC1:0", "PDEC:QDI0",         NULL, "SDHC1:SDDAT0",       NULL,        NULL,           NULL, "GCLK:4",      NULL } },
+        { "PB19", {   "EIC:3",                      NULL, "SERCOM5:3", "SERCOM7:3",    NULL, "TCC1:1", "PDEC:QDI1",         NULL, "SDHC1:SDDAT1",       NULL,        NULL,           NULL, "GCLK:5",      NULL } },
+        { "PB20", {   "EIC:4",                      NULL, "SERCOM3:0", "SERCOM7:1",    NULL, "TCC1:2", "PDEC:QDI2",         NULL, "SDHC1:SDDAT2",       NULL,        NULL,           NULL, "GCLK:6",      NULL } },
+        { "PB21", {   "EIC:5",                      NULL, "SERCOM3:1", "SERCOM7:0",    NULL, "TCC1:3",        NULL,         NULL, "SDHC1:SDDAT3",       NULL,        NULL,           NULL, "GCLK:7",      NULL } },
+        { "PB22", {   "EIC:6",                      NULL, "SERCOM1:2", "SERCOM5:2", "TC7:0",     NULL, "PDEC:QDI2",  "USB:SOF1K",           NULL,       NULL,        NULL,           NULL, "GCLK:0",  "CCL:I0" } },
+        { "PB23", {   "EIC:7",                      NULL, "SERCOM1:3", "SERCOM5:3", "TC7:1",     NULL, "PDEC:QDI0",         NULL,           NULL,       NULL,        NULL,           NULL, "GCLK:1",      NULL } },
+        { "PB24", {   "EIC:8",                      NULL, "SERCOM0:0", "SERCOM2:1",    NULL,     NULL, "PDEC:QDI1",         NULL,           NULL,       NULL,        NULL,           NULL,  "AC:0:",      NULL } },
+        { "PB25", {   "EIC:9",                      NULL, "SERCOM0:1", "SERCOM2:0",    NULL,     NULL, "PDEC:QDI2",         NULL,           NULL,       NULL,        NULL,           NULL,  "AC:0:",      NULL } },
+        { "PB26", {  "EIC:12",                      NULL, "SERCOM2:0", "SERCOM4:1",    NULL, "TCC1:2",        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PB27", {  "EIC:13",                      NULL, "SERCOM2:1", "SERCOM4:0",    NULL, "TCC1:3",        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PB28", {  "EIC:14",                      NULL, "SERCOM2:2", "SERCOM4:2",    NULL, "TCC1:4",        NULL,         NULL,           NULL, "I2S:SCK1",        NULL,           NULL,     NULL,      NULL } },
+        { "PB29", {  "EIC:15",                      NULL, "SERCOM2:3", "SERCOM4:3",    NULL, "TCC1:5",        NULL,         NULL,           NULL, "I2S:MCK1",        NULL,           NULL,     NULL,      NULL } },
+        { "PB30", {  "EIC:14",                      NULL,        NULL, "SERCOM5:1", "TC0:0", "TCC4:0",    "TCC0:6", "CORTEX_CM4:SWO",       NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PB31", {  "EIC:15",                      NULL,        NULL, "SERCOM5:0", "TC0:1", "TCC4:1",    "TCC0:7",         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+    },
+    {
+        { "PC00", {   "EIC:0",                 "ADC1:10",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC01", {   "EIC:1",                 "ADC1:11",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC02", {   "EIC:2",                  "ADC1:4",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC03", {   "EIC:3",                  "ADC1:5",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC04", {   "EIC:4",                      NULL, "SERCOM6:0",        NULL,    NULL, "TCC0:0",        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC05", {   "EIC:5",                      NULL, "SERCOM6:1",        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC06", {   "EIC:6",                      NULL, "SERCOM6:2",        NULL,    NULL,     NULL,        NULL,         NULL,   "SDHC0:SDCD",       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC07", {   "EIC:9",                      NULL, "SERCOM6:3",        NULL,    NULL,     NULL,        NULL,         NULL,   "SDHC0:SDWP",       NULL,        NULL,           NULL,     NULL,      NULL } },
+        {/*PC08*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        {/*PC09*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC10", {  "EIC:10",                      NULL, "SERCOM6:2", "SERCOM7:2",    NULL, "TCC0:0",    "TCC1:4",         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC11", {  "EIC:11",                      NULL, "SERCOM6:3", "SERCOM7:3",    NULL, "TCC0:1",    "TCC1:5",         NULL,           NULL,       NULL,        NULL,    "GMAC:GMDC",     NULL,      NULL } },
+        { "PC12", {  "EIC:12",                      NULL, "SERCOM7:0", "SERCOM6:1",    NULL, "TCC0:2",    "TCC1:6",         NULL,           NULL,       NULL, "PCC:DATA0",   "GMAC:GMDIO",     NULL,      NULL } },
+        { "PC13", {  "EIC:13",                      NULL, "SERCOM7:1", "SERCOM6:0",    NULL, "TCC0:3",    "TCC1:7",         NULL,           NULL,       NULL, "PCC:DATA1",           NULL,     NULL,      NULL } },
+        { "PC14", {  "EIC:14",                      NULL, "SERCOM7:2", "SERCOM6:2",    NULL, "TCC0:4",    "TCC1:0",         NULL,           NULL,       NULL, "PCC:DATA2",    "GMAC:GRX3",     NULL,      NULL } },
+        { "PC15", {  "EIC:15",                      NULL, "SERCOM7:3", "SERCOM6:3",    NULL, "TCC0:5",    "TCC1:1",         NULL,           NULL,       NULL, "PCC:DATA3",    "GMAC:GRX2",     NULL,      NULL } },
+        { "PC16", {   "EIC:0",                      NULL, "SERCOM6:0", "SERCOM0:1", "TC3:0", "TCC0:0", "PDEC:QDI0",         NULL,           NULL,       NULL,        NULL,    "GMAC:GTX2",     NULL,      NULL } },
+        { "PC17", {   "EIC:1",                      NULL, "SERCOM6:1", "SERCOM0:0", "TC3:1", "TCC0:1", "PDEC:QDI1",         NULL,           NULL,       NULL,        NULL,    "GMAC:GTX3",     NULL,      NULL } },
+        { "PC18", {   "EIC:2",                      NULL, "SERCOM6:2", "SERCOM0:2",    NULL, "TCC0:2", "PDEC:QDI2",         NULL,           NULL,       NULL,        NULL,   "GMAC:GRXCK",     NULL,      NULL } },
+        { "PC19", {   "EIC:3",                      NULL, "SERCOM6:3", "SERCOM0:3",    NULL, "TCC0:3",        NULL,         NULL,           NULL,       NULL,        NULL,   "GMAC:GTXER",     NULL,      NULL } },
+        { "PC20", {   "EIC:4",                      NULL,        NULL,        NULL,    NULL, "TCC0:4",        NULL,         NULL,   "SDHC1:SDCD",       NULL,        NULL,   "GMAC:GRXDV",     NULL,  "CCL:I9" } },
+        { "PC21", {   "EIC:5",                      NULL,        NULL,        NULL,    NULL, "TCC0:5",        NULL,         NULL,   "SDHC1:SDWP",       NULL,        NULL,    "GMAC:GCOL",     NULL, "CCL:I10" } },
+        { "PC22", {   "EIC:6",                      NULL, "SERCOM1:0", "SERCOM3:1",    NULL, "TCC0:6",        NULL,         NULL,           NULL,       NULL,        NULL,    "GMAC:GMDC",     NULL,      NULL } },
+        { "PC23", {   "EIC:7",                      NULL, "SERCOM1:1", "SERCOM3:0",    NULL, "TCC0:7",        NULL,         NULL,           NULL,       NULL,        NULL,   "GMAC:GMDIO",     NULL,      NULL } },
+        { "PC24", {   "EIC:8",                      NULL, "SERCOM0:2", "SERCOM2:2",    NULL,     NULL,        NULL, "CORTEX_CM4:DATA3",     NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC25", {   "EIC:9",                      NULL, "SERCOM0:3", "SERCOM2:3",    NULL,     NULL,        NULL, "CORTEX_CM4:DATA2",     NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC26", {  "EIC:10",                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL, "CORTEX_CM4:DATA1",     NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC27", {  "EIC:11",                      NULL, "SERCOM1:0",        NULL,    NULL,     NULL,        NULL, "CORTEX_CM4:CLK",       NULL,       NULL,        NULL,           NULL, "CORTEX_CM4:SWO", "CCL:I4" } },
+        { "PC28", {  "EIC:12",                      NULL, "SERCOM1:1",        NULL,    NULL,     NULL,        NULL, "CORTEX_CM4:DATA0",     NULL,       NULL,        NULL,           NULL,     NULL,  "CCL:I5" } },
+        {/*PC29*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC30", {  "EIC:14",                 "ADC1:12",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+        { "PC31", {  "EIC:15",                 "ADC1:13",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,      NULL } },
+    },
+    {
+        { "PD00", {   "EIC:0",                 "ADC1:14",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        { "PD01", {   "EIC:1",                 "ADC1:15",        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD02*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD03*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD04*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD05*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD06*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD07*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        { "PD08", {   "EIC:3",                      NULL, "SERCOM7:0", "SERCOM6:1",    NULL, "TCC0:1",        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        { "PD09", {   "EIC:4",                      NULL, "SERCOM7:1", "SERCOM6:0",    NULL, "TCC0:2",        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        { "PD10", {   "EIC:5",                      NULL, "SERCOM7:2", "SERCOM6:2",    NULL, "TCC0:3",        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        { "PD11", {   "EIC:6",                      NULL, "SERCOM7:3", "SERCOM6:3",    NULL, "TCC0:4",        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        { "PD12", {   "EIC:7",                      NULL,        NULL,        NULL,    NULL, "TCC0:5",        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD13*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD14*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD15*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD16*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD17*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD18*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD19*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        { "PD20", {  "EIC:10",                      NULL, "SERCOM1:2", "SERCOM3:2",    NULL, "TCC1:0",        NULL,         NULL,   "SDHC1:SDCD",       NULL,        NULL,           NULL,     NULL,     NULL } },
+        { "PD21", {  "EIC:11",                      NULL, "SERCOM1:3", "SERCOM3:3",    NULL, "TCC1:1",        NULL,         NULL,   "SDHC1:SDWP",       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD22*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD23*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD24*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD25*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD26*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD27*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD28*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD29*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD30*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+        {/*PD31*/NULL, { NULL,                      NULL,        NULL,        NULL,    NULL,     NULL,        NULL,         NULL,           NULL,       NULL,        NULL,           NULL,     NULL,     NULL } },
+    },
+};
+void printFourRegPORT(FourRegOptions &opts) {
+    for (uint8_t gid = 0; gid < 4; gid++) {
+        opts.print.print("--------------------------- PORT");
+        opts.print.print(char('A' + gid));
+        opts.print.println("");
+        for (uint8_t pid = 0; pid < 32; pid++) {
+            if (!fourRegs_pins[gid][pid].name) {
+                // pin not defined in datasheet
+                continue;
+            }
+            uint32_t dir = (PORT->Group[gid].DIR.bit.DIR & (1 << pid));
+            uint8_t inen = PORT->Group[gid].PINCFG[pid].bit.INEN;
+            uint8_t pullen = PORT->Group[gid].PINCFG[pid].bit.PULLEN;
+            uint8_t pmuxen = PORT->Group[gid].PINCFG[pid].bit.PMUXEN;
+            bool disabled = !dir && !inen && !pullen && !pmuxen;    // [32.6.3.4] Digital Functionality Disabled
+            if (disabled && !opts.showDisabled) {
+                continue;
+            }
+            opts.print.print(fourRegs_pins[gid][pid].name);
+            opts.print.print(":  ");
+            if (pmuxen) {
+                uint8_t pmux;
+                if ((pid%2) == 0) {
+                    pmux = PORT->Group[gid].PMUX[pid/2].bit.PMUXE;
+                } else {
+                    pmux = PORT->Group[gid].PMUX[pid/2].bit.PMUXO;
+                }
+                opts.print.print("pmux ");
+                const char *pmuxName = fourRegs_pins[gid][pid].pmux[pmux];
+                if (!pmuxName) {
+                    pmuxName = fourRegs_PMUX_names[pmux].name;
+                }
+                opts.print.println(pmuxName);
+                continue;
+            }
+            if (dir) {
+                opts.print.print("output");
+                if (inen) {
+                    opts.print.print(" INEN");
+                }
+                PRINTFLAG(PORT->Group[gid].PINCFG[pid], DRVSTR);
+            } else {
+                opts.print.print("input");
+                if (inen) {
+                    opts.print.print(" INEN");
+                }
+                if (PORT->Group[gid].CTRL.bit.SAMPLING & (1<<pid)) {
+                    opts.print.print(" SAMPLING");
+                }
+                if (pullen) {
+                    opts.print.print(" pull=");
+                    opts.print.print(
+                            PORT->Group[gid].OUT.bit.OUT & (1<<pid) ?
+                            "UP" : "DOWN"
+                            );
+                }
+            }
+            opts.print.println("");
+        }
+        opts.print.print("EVCTRL: ");
+        if (PORT->Group[gid].EVCTRL.bit.PORTEI0 || opts.showDisabled) {
+            opts.print.print(" evt0=");
+            if (PORT->Group[gid].EVCTRL.bit.PORTEI0) {
+                opts.print.print("PORTEI0,");
+            }
+            switch (PORT->Group[gid].EVCTRL.bit.EVACT0) {
+                case 0x0: opts.print.print("OUT,"); break;
+                case 0x1: opts.print.print("SET,"); break;
+                case 0x2: opts.print.print("CLR,"); break;
+                case 0x3: opts.print.print("TGL,"); break;
+            }
+            opts.print.print(PORT->Group[gid].EVCTRL.bit.PID0);
+            opts.print.print(" evt1=");
+            if (PORT->Group[gid].EVCTRL.bit.PORTEI1) {
+                opts.print.print("PORTEI1,");
+            }
+            switch (PORT->Group[gid].EVCTRL.bit.EVACT1) {
+                case 0x0: opts.print.print("OUT,"); break;
+                case 0x1: opts.print.print("SET,"); break;
+                case 0x2: opts.print.print("CLR,"); break;
+                case 0x3: opts.print.print("TGL,"); break;
+            }
+            opts.print.print(PORT->Group[gid].EVCTRL.bit.PID1);
+            opts.print.print(" evt2=");
+            if (PORT->Group[gid].EVCTRL.bit.PORTEI2) {
+                opts.print.print("PORTEI2,");
+            }
+            switch (PORT->Group[gid].EVCTRL.bit.EVACT2) {
+                case 0x0: opts.print.print("OUT,"); break;
+                case 0x1: opts.print.print("SET,"); break;
+                case 0x2: opts.print.print("CLR,"); break;
+                case 0x3: opts.print.print("TGL,"); break;
+            }
+            opts.print.print(PORT->Group[gid].EVCTRL.bit.PID2);
+            opts.print.print(" evt3=");
+            if (PORT->Group[gid].EVCTRL.bit.PORTEI3) {
+                opts.print.print("PORTEI3,");
+            }
+            switch (PORT->Group[gid].EVCTRL.bit.EVACT3) {
+                case 0x0: opts.print.print("OUT,"); break;
+                case 0x1: opts.print.print("SET,"); break;
+                case 0x2: opts.print.print("CLR,"); break;
+                case 0x3: opts.print.print("TGL,"); break;
+            }
+            opts.print.print(PORT->Group[gid].EVCTRL.bit.PID3);
+        }
+        opts.print.println("");
+    }
+    //FUTURE -- walk Arduino g_APinDescription (see WVariant.h)
+}
+
+
 void printFourRegSUPC(FourRegOptions &opts) {
     opts.print.println("--------------------------- SUPC");
 
@@ -1463,7 +1738,7 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegNVMCTRL(opts);
     //FUTURE printFourRegPCC(opts);
     //FUTURE printFourRegPDEC(opts);
-    //FUTURE printFourRegPORT(opts);
+    printFourRegPORT(opts);
     //FUTURE printFourRegQSPI(opts);
     //FUTURE printFourRegSDHC(opts);
     //FUTURE printFourRegSERCOM(opts, SERCOM0, 0);
