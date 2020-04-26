@@ -160,6 +160,37 @@ PWSAKDLY:  DLYVAL=0x0
 ### void printFourRegPORT(FourRegOptions &opts)
 Prints out configuration for the I/O pin controller ports.
 
+example output:
+```text
+--------------------------- PORTA
+PA02:  input INEN
+PA04:  input INEN
+PA05:  input INEN
+PA06:  input INEN
+PA07:  input INEN
+PA12:  input INEN
+PA13:  input INEN
+PA15:  input INEN
+PA16:  input INEN
+PA17:  output INEN
+PA18:  input INEN
+PA19:  pmux EIC:3
+PA20:  input INEN
+PA24:  pmux USB:DM
+PA25:  pmux USB:DP
+PA30:  pmux CORTEX_CM4:SWCLK
+EVCTRL:
+--------------------------- PORTB
+PB02:  input INEN
+PB08:  input INEN
+PB09:  input INEN
+EVCTRL:
+--------------------------- PORTC
+EVCTRL:
+--------------------------- PORTD
+EVCTRL:
+```
+
 
 ### void printFourRegRTC(FourRegOptions &opts)
 Prints out configuration for the realtime clock.
