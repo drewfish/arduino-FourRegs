@@ -48,7 +48,7 @@ struct FourRegOptions {
 //FUTURE void printFourRegDAC(FourRegOptions &opts);
 //FUTURE void printFourRegDMAC(FourRegOptions &opts);
 //FUTURE void printFourRegDSU(FourRegOptions &opts);
-//FUTURE void printFourRegEIC(FourRegOptions &opts);
+void printFourRegEIC(FourRegOptions &opts);
 //FUTURE void printFourRegEVSYS(FourRegOptions &opts);
 //FUTURE void printFourRegFREQM(FourRegOptions &opts);
 void printFourRegGCLK(FourRegOptions &opts);

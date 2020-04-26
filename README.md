@@ -60,6 +60,18 @@ Function Reference
 Prints out configuration registers, as many as this library knows how.
 
 
+### void printFourRegEIC(FourRegOptions &opts)
+Prints out configuration for the external interrupt controller.
+
+example output:
+```text
+--------------------------- EIC
+EIC:  ENABLE cksel=GCLK_EIC
+EXTINT03:  FALL
+DPRESCALER:  PRESCALER0=0x0 STATES0=0x0 PRESCALER1=0x0 STATES1=0x0
+```
+
+
 ### void printFourRegGCLK(FourRegOptions &opts)
 Prints out configuration for the general clocks.
 

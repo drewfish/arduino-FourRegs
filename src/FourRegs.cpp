@@ -43,6 +43,85 @@ SOFTWARE.
 // ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/
 
 
+void printFourRegEIC_SENSE(FourRegOptions &opts, uint8_t sense) {
+    switch (sense) {
+        case 0x0: opts.print.print("none"); break;
+        case 0x1: opts.print.print("RISE"); break;
+        case 0x2: opts.print.print("FALL"); break;
+        case 0x3: opts.print.print("BOTH"); break;
+        case 0x4: opts.print.print("HIGH"); break;
+        case 0x5: opts.print.print("LOW"); break;
+    }
+}
+void printFourRegEIC(FourRegOptions &opts) {
+    while (EIC->SYNCBUSY.bit.ENABLE) {}
+    if (!EIC->CTRLA.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- EIC");
+
+    opts.print.print("EIC: ");
+    PRINTFLAG(EIC->CTRLA, ENABLE);
+    opts.print.print(" cksel=");
+    opts.print.print(EIC->CTRLA.bit.CKSEL ? "CLK_ULP32K" : "GCLK_EIC");
+    opts.print.println("");
+
+    if (EIC->NMICTRL.bit.NMISENSE || opts.showDisabled) {
+        opts.print.print("NMI:  ");
+        printFourRegEIC_SENSE(opts, EIC->NMICTRL.bit.NMISENSE);
+        if (EIC->NMICTRL.bit.NMIFILTEN) {
+            opts.print.print(" FILTEN");
+        }
+        if (EIC->NMICTRL.bit.NMIASYNCH) {
+            opts.print.print(" ASYNCH");
+        }
+        opts.print.println("");
+    } else {
+        if (opts.showDisabled) {
+            opts.print.println("NMI:  none");
+        }
+    }
+
+    for (uint8_t id = 0; id < 16; id++) {
+        uint8_t cfg = id / 8;
+        uint8_t pos = (id % 8) * 0x4;
+        uint32_t entry = 0xF & (EIC->CONFIG[cfg].reg >> pos);
+        if (((0x7 & entry) == 0) && !opts.showDisabled) {
+            continue;
+        }
+        opts.print.print("EXTINT");
+        PRINTPAD2(id);
+        opts.print.print(":  ");
+        printFourRegEIC_SENSE(opts, 0x7 & entry);
+        if (0x8 & entry) {
+            opts.print.print(" FILTEN");
+        }
+        if (EIC->ASYNCH.bit.ASYNCH & (1 << id)) {
+            opts.print.print(" ASYNCH");
+        }
+        if (EIC->DEBOUNCEN.bit.DEBOUNCEN & (1 << id)) {
+            opts.print.print(" DEBOUNCEN");
+        }
+        if (EIC->EVCTRL.bit.EXTINTEO & (1 << id)) {
+            opts.print.print(" EXTINTEO");
+        }
+        opts.print.println("");
+    }
+
+    opts.print.print("DPRESCALER: ");
+    PRINTFLAG(EIC->DPRESCALER, TICKON);
+    opts.print.print(" PRESCALER0=");
+    PRINTHEX(EIC->DPRESCALER.bit.PRESCALER0);
+    opts.print.print(" STATES0=");
+    PRINTHEX(EIC->DPRESCALER.bit.STATES0);
+    opts.print.print(" PRESCALER1=");
+    PRINTHEX(EIC->DPRESCALER.bit.PRESCALER1);
+    opts.print.print(" STATES1=");
+    PRINTHEX(EIC->DPRESCALER.bit.STATES1);
+    opts.print.println("");
+}
+
+
 // table 14-4 (datasheet rev E)
 static const char gclkgen_src_00[] = "XOSC0";
 static const char gclkgen_src_01[] = "XOSC1";
@@ -1729,7 +1808,7 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegCMCC(opts);
     //FUTURE printFourRegDAC(opts);
     //FUTURE printFourRegDMAC(opts);
-    //FUTURE printFourRegEIC(opts);
+    printFourRegEIC(opts);
     //FUTURE printFourRegEVSYS(opts);
     //FUTURE printFourRegFREQM(opts);
     //FUTURE printFourRegGMAC(opts);
