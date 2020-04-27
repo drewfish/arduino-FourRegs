@@ -122,6 +122,265 @@ void printFourRegEIC(FourRegOptions &opts) {
 }
 
 
+static const char FourRegsEVSYS_EVGEN00[] = "NONE";
+static const char FourRegsEVSYS_EVGEN01[] = "OSCCTRL_XOSC_FAIL0";
+static const char FourRegsEVSYS_EVGEN02[] = "OSCCTRL_XOSC_FAIL1";
+static const char FourRegsEVSYS_EVGEN03[] = "OSC32KCTRL_XOSC_FAIL";
+static const char FourRegsEVSYS_EVGEN04[] = "RTC_PER0";
+static const char FourRegsEVSYS_EVGEN05[] = "RTC_PER1";
+static const char FourRegsEVSYS_EVGEN06[] = "RTC_PER2";
+static const char FourRegsEVSYS_EVGEN07[] = "RTC_PER3";
+static const char FourRegsEVSYS_EVGEN08[] = "RTC_PER4";
+static const char FourRegsEVSYS_EVGEN09[] = "RTC_PER5";
+static const char FourRegsEVSYS_EVGEN0A[] = "RTC_PER6";
+static const char FourRegsEVSYS_EVGEN0B[] = "RTC_PER7";
+static const char FourRegsEVSYS_EVGEN0C[] = "RTC_CMP0";
+static const char FourRegsEVSYS_EVGEN0D[] = "RTC_CMP1";
+static const char FourRegsEVSYS_EVGEN0E[] = "RTC_CMP2";
+static const char FourRegsEVSYS_EVGEN0F[] = "RTC_CMP3";
+static const char FourRegsEVSYS_EVGEN10[] = "RTC_TAMPER";
+static const char FourRegsEVSYS_EVGEN11[] = "RTC_OVF";
+static const char FourRegsEVSYS_EVGEN12[] = "EIC_EXTINT00";
+static const char FourRegsEVSYS_EVGEN13[] = "EIC_EXTINT01";
+static const char FourRegsEVSYS_EVGEN14[] = "EIC_EXTINT02";
+static const char FourRegsEVSYS_EVGEN15[] = "EIC_EXTINT03";
+static const char FourRegsEVSYS_EVGEN16[] = "EIC_EXTINT04";
+static const char FourRegsEVSYS_EVGEN17[] = "EIC_EXTINT05";
+static const char FourRegsEVSYS_EVGEN18[] = "EIC_EXTINT06";
+static const char FourRegsEVSYS_EVGEN19[] = "EIC_EXTINT07";
+static const char FourRegsEVSYS_EVGEN1A[] = "EIC_EXTINT08";
+static const char FourRegsEVSYS_EVGEN1B[] = "EIC_EXTINT09";
+static const char FourRegsEVSYS_EVGEN1C[] = "EIC_EXTINT10";
+static const char FourRegsEVSYS_EVGEN1D[] = "EIC_EXTINT11";
+static const char FourRegsEVSYS_EVGEN1E[] = "EIC_EXTINT12";
+static const char FourRegsEVSYS_EVGEN1F[] = "EIC_EXTINT13";
+static const char FourRegsEVSYS_EVGEN20[] = "EIC_EXTINT14";
+static const char FourRegsEVSYS_EVGEN21[] = "EIC_EXTINT15";
+static const char FourRegsEVSYS_EVGEN22[] = "DMAC_CH0";
+static const char FourRegsEVSYS_EVGEN23[] = "DMAC_CH1";
+static const char FourRegsEVSYS_EVGEN24[] = "DMAC_CH2";
+static const char FourRegsEVSYS_EVGEN25[] = "DMAC_CH3";
+static const char FourRegsEVSYS_EVGEN26[] = "PAC_ACCERR";
+static const char FourRegsEVSYS_EVGEN27[] = "--reserved--";
+static const char FourRegsEVSYS_EVGEN28[] = "--reserved--";
+static const char FourRegsEVSYS_EVGEN29[] = "TCC0_OVF";
+static const char FourRegsEVSYS_EVGEN2A[] = "TCC0_TRG";
+static const char FourRegsEVSYS_EVGEN2B[] = "TCC0_CNT";
+static const char FourRegsEVSYS_EVGEN2C[] = "TCC0_MC0";
+static const char FourRegsEVSYS_EVGEN2D[] = "TCC0_MC1";
+static const char FourRegsEVSYS_EVGEN2E[] = "TCC0_MC2";
+static const char FourRegsEVSYS_EVGEN2F[] = "TCC0_MC3";
+static const char FourRegsEVSYS_EVGEN30[] = "TCC0_MC4";
+static const char FourRegsEVSYS_EVGEN31[] = "TCC0_MC5";
+static const char FourRegsEVSYS_EVGEN32[] = "TCC1_OVF";
+static const char FourRegsEVSYS_EVGEN33[] = "TCC1_TRG";
+static const char FourRegsEVSYS_EVGEN34[] = "TCC1_CNT";
+static const char FourRegsEVSYS_EVGEN35[] = "TCC1_MC0";
+static const char FourRegsEVSYS_EVGEN36[] = "TCC1_MC1";
+static const char FourRegsEVSYS_EVGEN37[] = "TCC1_MC2";
+static const char FourRegsEVSYS_EVGEN38[] = "TCC1_MC3";
+static const char FourRegsEVSYS_EVGEN39[] = "TCC2_OVF";
+static const char FourRegsEVSYS_EVGEN3A[] = "TCC2_TRG";
+static const char FourRegsEVSYS_EVGEN3B[] = "TCC2_CNT";
+static const char FourRegsEVSYS_EVGEN3C[] = "TCC2_MC0";
+static const char FourRegsEVSYS_EVGEN3D[] = "TCC2_MC1";
+static const char FourRegsEVSYS_EVGEN3E[] = "TCC2_MC2";
+static const char FourRegsEVSYS_EVGEN3F[] = "TCC3_OVF";
+static const char FourRegsEVSYS_EVGEN40[] = "TCC3_TRG";
+static const char FourRegsEVSYS_EVGEN41[] = "TCC3_CNT";
+static const char FourRegsEVSYS_EVGEN42[] = "TCC3_MC0";
+static const char FourRegsEVSYS_EVGEN43[] = "TCC3_MC1";
+static const char FourRegsEVSYS_EVGEN44[] = "TCC4_OVF";
+static const char FourRegsEVSYS_EVGEN45[] = "TCC4_TRG";
+static const char FourRegsEVSYS_EVGEN46[] = "TCC4_CNT";
+static const char FourRegsEVSYS_EVGEN47[] = "TCC4_MC0";
+static const char FourRegsEVSYS_EVGEN48[] = "TCC4_MC1";
+static const char FourRegsEVSYS_EVGEN49[] = "TC0_OVF";
+static const char FourRegsEVSYS_EVGEN4A[] = "TC0_MC0";
+static const char FourRegsEVSYS_EVGEN4B[] = "TC0_MC1";
+static const char FourRegsEVSYS_EVGEN4C[] = "TC1_OVF";
+static const char FourRegsEVSYS_EVGEN4D[] = "TC1_MC0";
+static const char FourRegsEVSYS_EVGEN4E[] = "TC1_MC1";
+static const char FourRegsEVSYS_EVGEN4F[] = "TC2_OVF";
+static const char FourRegsEVSYS_EVGEN50[] = "TC2_MC0";
+static const char FourRegsEVSYS_EVGEN51[] = "TC2_MC1";
+static const char FourRegsEVSYS_EVGEN52[] = "TC3_OVF";
+static const char FourRegsEVSYS_EVGEN53[] = "TC3_MC0";
+static const char FourRegsEVSYS_EVGEN54[] = "TC3_MC1";
+static const char FourRegsEVSYS_EVGEN55[] = "TC4_OVF";
+static const char FourRegsEVSYS_EVGEN56[] = "TC4_MC0";
+static const char FourRegsEVSYS_EVGEN57[] = "TC4_MC1";
+static const char FourRegsEVSYS_EVGEN58[] = "TC5_OVF";
+static const char FourRegsEVSYS_EVGEN59[] = "TC5_MC0";
+static const char FourRegsEVSYS_EVGEN5A[] = "TC5_MC1";
+static const char FourRegsEVSYS_EVGEN5B[] = "TC6_OVF";
+static const char FourRegsEVSYS_EVGEN5C[] = "TC6_MC0";
+static const char FourRegsEVSYS_EVGEN5D[] = "TC6_MC1";
+static const char FourRegsEVSYS_EVGEN5E[] = "TC7_OVF";
+static const char FourRegsEVSYS_EVGEN5F[] = "TC7_MC0";
+static const char FourRegsEVSYS_EVGEN60[] = "TC7_MC1";
+static const char FourRegsEVSYS_EVGEN61[] = "PDEC_OVF";
+static const char FourRegsEVSYS_EVGEN62[] = "PDEC_ERR";
+static const char FourRegsEVSYS_EVGEN63[] = "PDEC_DIR";
+static const char FourRegsEVSYS_EVGEN64[] = "PDEC_VLC";
+static const char FourRegsEVSYS_EVGEN65[] = "PDEC_MC0";
+static const char FourRegsEVSYS_EVGEN66[] = "PDEC_MC1";
+static const char FourRegsEVSYS_EVGEN67[] = "ADC0_RESRDY";
+static const char FourRegsEVSYS_EVGEN68[] = "ADC0_WINMON";
+static const char FourRegsEVSYS_EVGEN69[] = "ADC1_RESRDY";
+static const char FourRegsEVSYS_EVGEN6A[] = "ADC1_WINMON";
+static const char FourRegsEVSYS_EVGEN6B[] = "AC_COMP0";
+static const char FourRegsEVSYS_EVGEN6C[] = "AC_COMP1";
+static const char FourRegsEVSYS_EVGEN6D[] = "AC_WIN";
+static const char FourRegsEVSYS_EVGEN6E[] = "DAC_EMPTY0";
+static const char FourRegsEVSYS_EVGEN6F[] = "DAC_EMPTY1";
+static const char FourRegsEVSYS_EVGEN70[] = "DAC_RESRDY0";
+static const char FourRegsEVSYS_EVGEN71[] = "DAC_RESRDY1";
+static const char FourRegsEVSYS_EVGEN72[] = "GMAC_TSU_CMP";
+static const char FourRegsEVSYS_EVGEN73[] = "TRNG_READY";
+static const char FourRegsEVSYS_EVGEN74[] = "CCL_LUTOUT0";
+static const char FourRegsEVSYS_EVGEN75[] = "CCL_LUTOUT1";
+static const char FourRegsEVSYS_EVGEN76[] = "CCL_LUTOUT2";
+static const char FourRegsEVSYS_EVGEN77[] = "CCL_LUTOUT3";
+static const char* FourRegsEVSYS_EVGENs[] = {
+    FourRegsEVSYS_EVGEN00, FourRegsEVSYS_EVGEN01, FourRegsEVSYS_EVGEN02, FourRegsEVSYS_EVGEN03, FourRegsEVSYS_EVGEN04, FourRegsEVSYS_EVGEN05, FourRegsEVSYS_EVGEN06, FourRegsEVSYS_EVGEN07,
+    FourRegsEVSYS_EVGEN08, FourRegsEVSYS_EVGEN09, FourRegsEVSYS_EVGEN0A, FourRegsEVSYS_EVGEN0B, FourRegsEVSYS_EVGEN0C, FourRegsEVSYS_EVGEN0D, FourRegsEVSYS_EVGEN0E, FourRegsEVSYS_EVGEN0F,
+    FourRegsEVSYS_EVGEN10, FourRegsEVSYS_EVGEN11, FourRegsEVSYS_EVGEN12, FourRegsEVSYS_EVGEN13, FourRegsEVSYS_EVGEN14, FourRegsEVSYS_EVGEN15, FourRegsEVSYS_EVGEN16, FourRegsEVSYS_EVGEN17,
+    FourRegsEVSYS_EVGEN18, FourRegsEVSYS_EVGEN19, FourRegsEVSYS_EVGEN1A, FourRegsEVSYS_EVGEN1B, FourRegsEVSYS_EVGEN1C, FourRegsEVSYS_EVGEN1D, FourRegsEVSYS_EVGEN1E, FourRegsEVSYS_EVGEN1F,
+    FourRegsEVSYS_EVGEN20, FourRegsEVSYS_EVGEN21, FourRegsEVSYS_EVGEN22, FourRegsEVSYS_EVGEN23, FourRegsEVSYS_EVGEN24, FourRegsEVSYS_EVGEN25, FourRegsEVSYS_EVGEN26, FourRegsEVSYS_EVGEN27,
+    FourRegsEVSYS_EVGEN28, FourRegsEVSYS_EVGEN29, FourRegsEVSYS_EVGEN2A, FourRegsEVSYS_EVGEN2B, FourRegsEVSYS_EVGEN2C, FourRegsEVSYS_EVGEN2D, FourRegsEVSYS_EVGEN2E, FourRegsEVSYS_EVGEN2F,
+    FourRegsEVSYS_EVGEN30, FourRegsEVSYS_EVGEN31, FourRegsEVSYS_EVGEN32, FourRegsEVSYS_EVGEN33, FourRegsEVSYS_EVGEN34, FourRegsEVSYS_EVGEN35, FourRegsEVSYS_EVGEN36, FourRegsEVSYS_EVGEN37,
+    FourRegsEVSYS_EVGEN38, FourRegsEVSYS_EVGEN39, FourRegsEVSYS_EVGEN3A, FourRegsEVSYS_EVGEN3B, FourRegsEVSYS_EVGEN3C, FourRegsEVSYS_EVGEN3D, FourRegsEVSYS_EVGEN3E, FourRegsEVSYS_EVGEN3F,
+    FourRegsEVSYS_EVGEN40, FourRegsEVSYS_EVGEN41, FourRegsEVSYS_EVGEN42, FourRegsEVSYS_EVGEN43, FourRegsEVSYS_EVGEN44, FourRegsEVSYS_EVGEN45, FourRegsEVSYS_EVGEN46, FourRegsEVSYS_EVGEN47,
+    FourRegsEVSYS_EVGEN48, FourRegsEVSYS_EVGEN49, FourRegsEVSYS_EVGEN4A, FourRegsEVSYS_EVGEN4B, FourRegsEVSYS_EVGEN4C, FourRegsEVSYS_EVGEN4D, FourRegsEVSYS_EVGEN4E, FourRegsEVSYS_EVGEN4F,
+    FourRegsEVSYS_EVGEN50, FourRegsEVSYS_EVGEN51, FourRegsEVSYS_EVGEN52, FourRegsEVSYS_EVGEN53, FourRegsEVSYS_EVGEN54, FourRegsEVSYS_EVGEN55, FourRegsEVSYS_EVGEN56, FourRegsEVSYS_EVGEN57,
+    FourRegsEVSYS_EVGEN58, FourRegsEVSYS_EVGEN59, FourRegsEVSYS_EVGEN5A, FourRegsEVSYS_EVGEN5B, FourRegsEVSYS_EVGEN5C, FourRegsEVSYS_EVGEN5D, FourRegsEVSYS_EVGEN5E, FourRegsEVSYS_EVGEN5F,
+    FourRegsEVSYS_EVGEN60, FourRegsEVSYS_EVGEN61, FourRegsEVSYS_EVGEN62, FourRegsEVSYS_EVGEN63, FourRegsEVSYS_EVGEN64, FourRegsEVSYS_EVGEN65, FourRegsEVSYS_EVGEN66, FourRegsEVSYS_EVGEN67,
+    FourRegsEVSYS_EVGEN68, FourRegsEVSYS_EVGEN69, FourRegsEVSYS_EVGEN6A, FourRegsEVSYS_EVGEN6B, FourRegsEVSYS_EVGEN6C, FourRegsEVSYS_EVGEN6D, FourRegsEVSYS_EVGEN6E, FourRegsEVSYS_EVGEN6F,
+    FourRegsEVSYS_EVGEN70, FourRegsEVSYS_EVGEN71, FourRegsEVSYS_EVGEN72, FourRegsEVSYS_EVGEN73, FourRegsEVSYS_EVGEN74, FourRegsEVSYS_EVGEN75, FourRegsEVSYS_EVGEN76, FourRegsEVSYS_EVGEN77,
+};
+// table 31-2 (datasheet rev E)
+static const char FourRegsEVSYS_USER00[] = "RTC_TAMPER";
+static const char FourRegsEVSYS_USER01[] = "PORT_EV0";
+static const char FourRegsEVSYS_USER02[] = "PORT_EV1";
+static const char FourRegsEVSYS_USER03[] = "PORT_EV2";
+static const char FourRegsEVSYS_USER04[] = "PORT_EV3";
+static const char FourRegsEVSYS_USER05[] = "DMAC_CH0";
+static const char FourRegsEVSYS_USER06[] = "DMAC_CH1";
+static const char FourRegsEVSYS_USER07[] = "DMAC_CH2";
+static const char FourRegsEVSYS_USER08[] = "DMAC_CH3";
+static const char FourRegsEVSYS_USER09[] = "DMAC_CH4";
+static const char FourRegsEVSYS_USER10[] = "DMAC_CH5";
+static const char FourRegsEVSYS_USER11[] = "DMAC_CH6";
+static const char FourRegsEVSYS_USER12[] = "DMAC_CH7";
+static const char FourRegsEVSYS_USER13[] = "--reserved--";
+static const char FourRegsEVSYS_USER14[] = "CM4_TRACE_START";
+static const char FourRegsEVSYS_USER15[] = "CM4_TRACE_STOP";
+static const char FourRegsEVSYS_USER16[] = "CM4_TRACE_TRIG";
+static const char FourRegsEVSYS_USER17[] = "TCC0_EV0";
+static const char FourRegsEVSYS_USER18[] = "TCC0_EV1";
+static const char FourRegsEVSYS_USER19[] = "TCC0_MC0";
+static const char FourRegsEVSYS_USER20[] = "TCC0_MC1";
+static const char FourRegsEVSYS_USER21[] = "TCC0_MC2";
+static const char FourRegsEVSYS_USER22[] = "TCC0_MC3";
+static const char FourRegsEVSYS_USER23[] = "TCC0_MC4";
+static const char FourRegsEVSYS_USER24[] = "TCC0_MC5";
+static const char FourRegsEVSYS_USER25[] = "TCC1_EV0";
+static const char FourRegsEVSYS_USER26[] = "TCC1_EV1";
+static const char FourRegsEVSYS_USER27[] = "TCC1_MC0";
+static const char FourRegsEVSYS_USER28[] = "TCC1_MC1";
+static const char FourRegsEVSYS_USER29[] = "TCC1_MC2";
+static const char FourRegsEVSYS_USER30[] = "TCC1_MC3";
+static const char FourRegsEVSYS_USER31[] = "TCC2_EV0";
+static const char FourRegsEVSYS_USER32[] = "TCC2_EV1";
+static const char FourRegsEVSYS_USER33[] = "TCC2_MC0";
+static const char FourRegsEVSYS_USER34[] = "TCC2_MC1";
+static const char FourRegsEVSYS_USER35[] = "TCC2_MC2";
+static const char FourRegsEVSYS_USER36[] = "TCC3_EV0";
+static const char FourRegsEVSYS_USER37[] = "TCC3_EV1";
+static const char FourRegsEVSYS_USER38[] = "TCC3_MC0";
+static const char FourRegsEVSYS_USER39[] = "TCC3_MC1";
+static const char FourRegsEVSYS_USER40[] = "TCC4_EV0";
+static const char FourRegsEVSYS_USER41[] = "TCC4_EV1";
+static const char FourRegsEVSYS_USER42[] = "TCC4_MC0";
+static const char FourRegsEVSYS_USER43[] = "TCC4_MC1";
+static const char FourRegsEVSYS_USER44[] = "TC0_EVU";
+static const char FourRegsEVSYS_USER45[] = "TC1_EVU";
+static const char FourRegsEVSYS_USER46[] = "TC2_EVU";
+static const char FourRegsEVSYS_USER47[] = "TC3_EVU";
+static const char FourRegsEVSYS_USER48[] = "TC4_EVU";
+static const char FourRegsEVSYS_USER49[] = "TC5_EVU";
+static const char FourRegsEVSYS_USER50[] = "TC6_EVU";
+static const char FourRegsEVSYS_USER51[] = "TC7_EVU";
+static const char FourRegsEVSYS_USER52[] = "PDEC_EVU0";
+static const char FourRegsEVSYS_USER53[] = "PDEC_EVU1";
+static const char FourRegsEVSYS_USER54[] = "PDEC_EVU2";
+static const char FourRegsEVSYS_USER55[] = "ADC0_START";
+static const char FourRegsEVSYS_USER56[] = "ADC0_SYNC";
+static const char FourRegsEVSYS_USER57[] = "ADC1_START";
+static const char FourRegsEVSYS_USER58[] = "ADC1_SYNC";
+static const char FourRegsEVSYS_USER59[] = "AC_SOC0";
+static const char FourRegsEVSYS_USER60[] = "AC_SOC1";
+static const char FourRegsEVSYS_USER61[] = "DAC_START0";
+static const char FourRegsEVSYS_USER62[] = "DAC_START1";
+static const char FourRegsEVSYS_USER63[] = "CCL_LUTIN0";
+static const char FourRegsEVSYS_USER64[] = "CCL_LUTIN1";
+static const char FourRegsEVSYS_USER65[] = "CCL_LUTIN2";
+static const char FourRegsEVSYS_USER66[] = "CCL_LUTIN3";
+static const char* const FourRegsEVSYS_USERs[] = {
+    FourRegsEVSYS_USER00, FourRegsEVSYS_USER01, FourRegsEVSYS_USER02, FourRegsEVSYS_USER03, FourRegsEVSYS_USER04, FourRegsEVSYS_USER05, FourRegsEVSYS_USER06, FourRegsEVSYS_USER07,
+    FourRegsEVSYS_USER08, FourRegsEVSYS_USER09, FourRegsEVSYS_USER10, FourRegsEVSYS_USER11, FourRegsEVSYS_USER12, FourRegsEVSYS_USER13, FourRegsEVSYS_USER14, FourRegsEVSYS_USER15,
+    FourRegsEVSYS_USER16, FourRegsEVSYS_USER17, FourRegsEVSYS_USER18, FourRegsEVSYS_USER19, FourRegsEVSYS_USER20, FourRegsEVSYS_USER21, FourRegsEVSYS_USER22, FourRegsEVSYS_USER23,
+    FourRegsEVSYS_USER24, FourRegsEVSYS_USER25, FourRegsEVSYS_USER26, FourRegsEVSYS_USER27, FourRegsEVSYS_USER28, FourRegsEVSYS_USER29, FourRegsEVSYS_USER30, FourRegsEVSYS_USER31,
+    FourRegsEVSYS_USER32, FourRegsEVSYS_USER33, FourRegsEVSYS_USER34, FourRegsEVSYS_USER35, FourRegsEVSYS_USER36, FourRegsEVSYS_USER37, FourRegsEVSYS_USER38, FourRegsEVSYS_USER39,
+    FourRegsEVSYS_USER40, FourRegsEVSYS_USER41, FourRegsEVSYS_USER42, FourRegsEVSYS_USER43, FourRegsEVSYS_USER44, FourRegsEVSYS_USER45, FourRegsEVSYS_USER46, FourRegsEVSYS_USER47,
+    FourRegsEVSYS_USER48, FourRegsEVSYS_USER49, FourRegsEVSYS_USER50, FourRegsEVSYS_USER51, FourRegsEVSYS_USER52, FourRegsEVSYS_USER53, FourRegsEVSYS_USER54, FourRegsEVSYS_USER55,
+    FourRegsEVSYS_USER56, FourRegsEVSYS_USER57, FourRegsEVSYS_USER58, FourRegsEVSYS_USER59, FourRegsEVSYS_USER60, FourRegsEVSYS_USER61, FourRegsEVSYS_USER62, FourRegsEVSYS_USER63,
+    FourRegsEVSYS_USER64, FourRegsEVSYS_USER65, FourRegsEVSYS_USER66,
+};
+void printFourRegEVSYS(FourRegOptions &opts) {
+    uint8_t id;
+    opts.print.println("--------------------------- EVSYS");
+
+    opts.print.print("PRICTRL: ");
+    PRINTFLAG(EVSYS->PRICTRL, RREN);
+    opts.print.println("");
+
+    for (id = 0; id < 12; id++) {
+        if ((EVSYS->Channel[id].CHANNEL.bit.EVGEN == 0) && !opts.showDisabled) {
+            continue;
+        }
+        opts.print.print("CHANNEL");
+        PRINTPAD2(id);
+        opts.print.print(": ");
+        opts.print.print(FourRegsEVSYS_EVGENs[EVSYS->Channel[id].CHANNEL.bit.EVGEN]);
+        opts.print.print(" path=");
+        switch (EVSYS->Channel[id].CHANNEL.bit.PATH) {
+            case 0x0: opts.print.print("SYNC"); break;
+            case 0x1: opts.print.print("RESYNC"); break;
+            case 0x2: opts.print.print("ASYNC"); break;
+        }
+        PRINTFLAG(EVSYS->Channel[id].CHANNEL, RUNSTDBY);
+        PRINTFLAG(EVSYS->Channel[id].CHANNEL, ONDEMAND);
+        opts.print.println("");
+    }
+
+    for (id = 0; id < 67; id++) {
+        uint8_t chid = EVSYS->USER[id].bit.CHANNEL;
+        if ((EVSYS->Channel[chid].CHANNEL.bit.EVGEN == 0) && !opts.showDisabled) {
+            continue;
+        }
+        opts.print.print("USER");
+        PRINTPAD2(id);
+        opts.print.print(":  ");
+        opts.print.print(FourRegsEVSYS_USERs[id]);
+        opts.print.print(" CHANNEL=");
+        opts.print.print(chid);
+        opts.print.println("");
+    }
+}
+
+
 // table 14-4 (datasheet rev E)
 static const char gclkgen_src_00[] = "XOSC0";
 static const char gclkgen_src_01[] = "XOSC1";
@@ -1809,7 +2068,7 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegDAC(opts);
     //FUTURE printFourRegDMAC(opts);
     printFourRegEIC(opts);
-    //FUTURE printFourRegEVSYS(opts);
+    printFourRegEVSYS(opts);
     //FUTURE printFourRegFREQM(opts);
     //FUTURE printFourRegGMAC(opts);
     //FUTURE printFourRegI2S(opts);

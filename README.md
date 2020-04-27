@@ -72,6 +72,10 @@ DPRESCALER:  PRESCALER0=0x0 STATES0=0x0 PRESCALER1=0x0 STATES1=0x0
 ```
 
 
+### void printFourRegEVSYS(FourRegOptions &opts)
+Prints out configuration for the event system.
+
+
 ### void printFourRegGCLK(FourRegOptions &opts)
 Prints out configuration for the general clocks.
 
