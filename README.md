@@ -114,6 +114,10 @@ APBDMASK:  SERCOM4 SERCOM5 TCC4 ADC0 ADC1 DAC
 ```
 
 
+### void printFourRegNVMCTRL(FourRegOptions &opts)
+Prints out configuration for the nonvolatile memory controller.
+
+
 ### void printFourRegOSC32KCTRL(FourRegOptions &opts)
 Prints out configuration for 32k oscillators.
 

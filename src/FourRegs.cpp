@@ -624,6 +624,81 @@ void printFourRegMCLK(FourRegOptions &opts) {
 }
 
 
+void printFourRegNVMCTRL(FourRegOptions &opts) {
+    opts.print.println("--------------------------- NVMCTRL");
+
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(NVMCTRL->CTRLA, AUTOWS);
+    PRINTFLAG(NVMCTRL->CTRLA, SUSPEN);
+    opts.print.print(" wmode=");
+    switch (NVMCTRL->CTRLA.bit.WMODE) {
+        case 0x0: opts.print.print("MAN"); break;
+        case 0x1: opts.print.print("ADW"); break;
+        case 0x2: opts.print.print("AQW"); break;
+        case 0x3: opts.print.print("PW"); break;
+    }
+    opts.print.print(" prm=");
+    switch (NVMCTRL->CTRLA.bit.PRM) {
+        case 0x0: opts.print.print("SEMIAUTO"); break;
+        case 0x1: opts.print.print("FULLAUTO"); break;
+        case 0x2: opts.print.print(FourRegs__RESERVED); break;
+        case 0x3: opts.print.print("MANUAL"); break;
+    }
+    opts.print.print(" RWS=");
+    opts.print.print(NVMCTRL->CTRLA.bit.RWS);
+    PRINTFLAG(NVMCTRL->CTRLA, AHBNS0);
+    PRINTFLAG(NVMCTRL->CTRLA, AHBNS1);
+    PRINTFLAG(NVMCTRL->CTRLA, CACHEDIS0);
+    PRINTFLAG(NVMCTRL->CTRLA, CACHEDIS1);
+    PRINTNL();
+
+    opts.print.print("PARAM:  NVMP=");
+    opts.print.print(NVMCTRL->PARAM.bit.NVMP);
+    opts.print.print(" psz=");
+    opts.print.print(8 * (2 << NVMCTRL->PARAM.bit.PSZ));
+    opts.print.print("bytes");
+    PRINTFLAG(NVMCTRL->PARAM, SEE);
+    PRINTNL();
+
+    opts.print.print("STATUS: ");
+    PRINTFLAG(NVMCTRL->STATUS, AFIRST);
+    PRINTFLAG(NVMCTRL->STATUS, BPDIS);
+    opts.print.print(" bootprot=");
+    opts.print.print(8 * (15 - NVMCTRL->STATUS.bit.BOOTPROT));
+    opts.print.print("kb");
+    PRINTNL();
+
+    opts.print.print("RUNLOCK:  ");
+    for (uint8_t i = 0; i < 32; i++) {
+        opts.print.print(
+                (NVMCTRL->RUNLOCK.bit.RUNLOCK & (1 << i)) ?
+                "-" :
+                "X"
+                );
+    }
+    PRINTNL();
+
+    opts.print.print("SEECFG:  wmode=");
+    opts.print.print(
+            NVMCTRL->SEECFG.bit.WMODE ?
+            "BUFFERED" :
+            "UNBUFFERED"
+            );
+    PRINTFLAG(NVMCTRL->SEECFG, APRDIS);
+    PRINTNL();
+
+    opts.print.print("SEESTAT:  ASEES=");
+    opts.print.print(NVMCTRL->SEESTAT.bit.ASEES);
+    PRINTFLAG(NVMCTRL->SEESTAT, LOCK);
+    PRINTFLAG(NVMCTRL->SEESTAT, RLOCK);
+    opts.print.print(" SBLK=");
+    opts.print.print(NVMCTRL->SEESTAT.bit.SBLK);
+    opts.print.print(" PSZ=");
+    opts.print.print(NVMCTRL->SEESTAT.bit.PSZ);
+    PRINTNL();
+}
+
+
 void printFourRegOSC32KCTRL(FourRegOptions &opts) {
     opts.print.println("--------------------------- OSC32KCTRL");
 
@@ -2092,7 +2167,7 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegGMAC(opts);
     //FUTURE printFourRegI2S(opts);
     //FUTURE printFourRegICM(opts);
-    //FUTURE printFourRegNVMCTRL(opts);
+    printFourRegNVMCTRL(opts);
     //FUTURE printFourRegPCC(opts);
     //FUTURE printFourRegPDEC(opts);
     printFourRegPORT(opts);

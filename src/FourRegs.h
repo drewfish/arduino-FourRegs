@@ -56,7 +56,7 @@ void printFourRegGCLK(FourRegOptions &opts);
 //FUTURE void printFourRegI2S(FourRegOptions &opts);
 //FUTURE void printFourRegICM(FourRegOptions &opts);
 void printFourRegMCLK(FourRegOptions &opts);
-//FUTURE void printFourRegNVMCTRL(FourRegOptions &opts);
+void printFourRegNVMCTRL(FourRegOptions &opts);
 void printFourRegOSC32KCTRL(FourRegOptions &opts);
 void printFourRegOSCCTRL(FourRegOptions &opts);
 void printFourRegPAC(FourRegOptions &opts);
