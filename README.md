@@ -117,6 +117,18 @@ APBDMASK:  SERCOM4 SERCOM5 TCC4 ADC0 ADC1 DAC
 ### void printFourRegNVMCTRL(FourRegOptions &opts)
 Prints out configuration for the nonvolatile memory controller.
 
+example output:
+```text
+--------------------------- NVMCTRL
+CTRLA:  AUTOWS wmode=MAN prm=SEMIAUTO RWS=0
+PARAM:  NVMP=2048 psz=1024bytes SEE
+STATUS:  AFIRST bootprot=16kb
+RUNLOCK:  --------------------------------
+SEECFG:  wmode=UNBUFFERED
+SEESTAT:  ASEES=1 RLOCK SBLK=0 PSZ=0
+
+```
+
 
 ### void printFourRegOSC32KCTRL(FourRegOptions &opts)
 Prints out configuration for 32k oscillators.
@@ -149,6 +161,16 @@ DPLL1:  ENABLE FILTER=0x0 REFCLK=0x0 LTIME=0x0 LBYPASS DIV=0 ldr=99.0
 
 ### void printFourRegPAC(FourRegOptions &opts)
 Prints out configuration for the peripheral access controller.
+
+example output:
+```text
+--------------------------- PAC
+EVCTRL:
+STATUSA:
+STATUSB:  DSU
+STATUSC:
+STATUSD:
+```
 
 
 ### void printFourRegPM(FourRegOptions &opts)
