@@ -204,6 +204,19 @@ EVCTRL:
 Prints out configuration for the realtime clock.
 
 
+### void printFourRegSERCOM(FourRegOptions &opts, Sercom* sercom, uint8_t idx)
+Prints out configuration for a SERCOM peripheral.
+
+example otuput:
+```text
+--------------------------- SERCOM2 USART (internal clock)
+CTRLA:  ENABLE sampr=16x tx=PAD0 xck=PAD1 rx=PAD1 SAMPA=0x0 FORM=0x0 cmode=ASYNC CPOL=0 dord=MSB
+CTRLB:  chsize=8bit TXEN RXEN LINCMD=0x0
+CTRLC:  GTIME=0x0 DATA32B=0x0
+BAUD:  312.4
+```
+
+
 ### void printFourRegSUPC(FourRegOptions &opts)
 Prints out configuration for the supply controller.
 

@@ -59,6 +59,7 @@ void printFourRegEIC_SENSE(FourRegOptions &opts, uint8_t sense) {
     }
 }
 void printFourRegEIC(FourRegOptions &opts) {
+    //FUTURE -- NMI is enabled if NMICTRL.NMISENSE is set, regardless of CTRLA.ENABLE
     while (EIC->SYNCBUSY.bit.ENABLE) {}
     if (!EIC->CTRLA.bit.ENABLE && !opts.showDisabled) {
         return;
@@ -1592,6 +1593,308 @@ void printFourRegPORT(FourRegOptions &opts) {
 }
 
 
+void printFourRegSERCOM_I2CM(FourRegOptions &opts, SercomI2cm &i2cm) {
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(i2cm.CTRLA, ENABLE);
+    PRINTFLAG(i2cm.CTRLA, RUNSTDBY);
+    PRINTFLAG(i2cm.CTRLA, PINOUT);
+    opts.print.print(" SDAHOLD=");
+    PRINTHEX(i2cm.CTRLA.bit.SDAHOLD);
+    PRINTFLAG(i2cm.CTRLA, MEXTTOEN);
+    PRINTFLAG(i2cm.CTRLA, SEXTTOEN);
+    opts.print.print(" SPEED=");
+    PRINTHEX(i2cm.CTRLA.bit.SPEED);
+    PRINTFLAG(i2cm.CTRLA, SCLSM);
+    opts.print.print(" INACTOUT=");
+    PRINTHEX(i2cm.CTRLA.bit.INACTOUT);
+    PRINTFLAG(i2cm.CTRLA, LOWTOUTEN);
+    PRINTNL();
+
+    opts.print.print("CTRLB: ");
+    PRINTFLAG(i2cm.CTRLB, SMEN);
+    PRINTFLAG(i2cm.CTRLB, QCEN);
+    opts.print.print(" ackact=");
+    opts.print.print(i2cm.CTRLB.bit.ACKACT ? "NACK" : "ACK");
+    PRINTNL();
+
+    opts.print.print("CTRLC: ");
+    PRINTFLAG(i2cm.CTRLC, DATA32B);
+    PRINTNL();
+
+    opts.print.print("BAUD: ");
+    opts.print.print(" BAUD=");
+    PRINTHEX(i2cm.BAUD.bit.BAUD);
+    opts.print.print(" BAUDLOW=");
+    PRINTHEX(i2cm.BAUD.bit.BAUDLOW);
+    opts.print.print(" HSBAUD=");
+    PRINTHEX(i2cm.BAUD.bit.HSBAUD);
+    opts.print.print(" HSBAUDLOW=");
+    PRINTHEX(i2cm.BAUD.bit.HSBAUDLOW);
+    PRINTNL();
+}
+
+void printFourRegSERCOM_I2CS(FourRegOptions &opts, SercomI2cs &i2cs) {
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(i2cs.CTRLA, ENABLE);
+    PRINTFLAG(i2cs.CTRLA, RUNSTDBY);
+    PRINTFLAG(i2cs.CTRLA, PINOUT);
+    opts.print.print(" SDAHOLD=");
+    PRINTHEX(i2cs.CTRLA.bit.SDAHOLD);
+    PRINTFLAG(i2cs.CTRLA, SEXTTOEN);
+    opts.print.print(" SPEED=");
+    PRINTHEX(i2cs.CTRLA.bit.SPEED);
+    PRINTFLAG(i2cs.CTRLA, SCLSM);
+    PRINTFLAG(i2cs.CTRLA, LOWTOUTEN);
+    PRINTNL();
+
+    opts.print.print("CTRLB: ");
+    PRINTFLAG(i2cs.CTRLB, SMEN);
+    PRINTFLAG(i2cs.CTRLB, GCMD);
+    PRINTFLAG(i2cs.CTRLB, AACKEN);
+    opts.print.print(" AMODE=");
+    PRINTHEX(i2cs.CTRLB.bit.AMODE);
+    opts.print.print(" ackact=");
+    opts.print.print(i2cs.CTRLB.bit.ACKACT ? "NACK" : "ACK");
+    PRINTNL();
+
+    opts.print.print("CTRLC: ");
+    opts.print.print(" SDASETUP=");
+    PRINTHEX(i2cs.CTRLC.bit.SDASETUP);
+    PRINTFLAG(i2cs.CTRLC, DATA32B);
+    PRINTNL();
+}
+
+void printFourRegSERCOM_SPI(FourRegOptions &opts, SercomSpi &spi, bool master) {
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(spi.CTRLA, ENABLE);
+    PRINTFLAG(spi.CTRLA, RUNSTDBY);
+    PRINTFLAG(spi.CTRLA, IBON);
+    switch (spi.CTRLA.bit.DOPO) {
+        case 0x0:
+            opts.print.print(master ? " mosi=" : " miso=");
+            opts.print.print("PAD0 sck=PAD1");
+            if (!master || spi.CTRLB.bit.MSSEN) {
+                opts.print.print(" ss=PAD2");
+            }
+            break;
+        case 0x2:
+            opts.print.print(master ? " mosi=" : " miso=");
+            opts.print.print("PAD3 sck=PAD1");
+            if (!master || spi.CTRLB.bit.MSSEN) {
+                opts.print.print(" ss=PAD2");
+            }
+            break;
+        default:
+            opts.print.print(" DOPO=");
+            opts.print.print(FourRegs__RESERVED);
+            break;
+    }
+    opts.print.print(master ? " miso=" : " mosi=");
+    switch (spi.CTRLA.bit.DIPO) {
+        case 0x0: opts.print.print("PAD0"); break;
+        case 0x1: opts.print.print("PAD1"); break;
+        case 0x2: opts.print.print("PAD2"); break;
+        case 0x3: opts.print.print("PAD3"); break;
+    }
+    opts.print.print(" form=");
+    switch (spi.CTRLA.bit.FORM) {
+        case 0x0: opts.print.print("SPI"); break;
+        case 0x2: opts.print.print("SPI_ADDR"); break;
+        default:  opts.print.print(FourRegs__RESERVED); break;
+    }
+    opts.print.print(" cpha=");
+    opts.print.print(spi.CTRLA.bit.CPHA ? "TRAILING" : "LEADING");
+    opts.print.print(" cpol=");
+    opts.print.print(spi.CTRLA.bit.CPOL ? "HIGH" : "LOW");
+    opts.print.print(" dord=");
+    opts.print.print(spi.CTRLA.bit.DORD ? "LSB" : "MSB");
+    PRINTNL();
+
+    opts.print.print("CTRLB: ");
+    opts.print.print(" chsize=");
+    switch (spi.CTRLB.bit.CHSIZE) {
+        case 0x0: opts.print.print("8bit"); break;
+        case 0x1: opts.print.print("9bit"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    PRINTFLAG(spi.CTRLB, PLOADEN);
+    PRINTFLAG(spi.CTRLB, SSDE);
+    PRINTFLAG(spi.CTRLB, MSSEN);
+    opts.print.print(" amode=");
+    switch (spi.CTRLB.bit.AMODE) {
+        case 0x0: opts.print.print("MASK"); break;
+        case 0x1: opts.print.print("2ADDRS"); break;
+        case 0x2: opts.print.print("RANGE"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    PRINTFLAG(spi.CTRLB, RXEN);
+    PRINTNL();
+
+    opts.print.print("CTRLC: ");
+    opts.print.print(" ICSPACE=");
+    opts.print.print(spi.CTRLC.bit.ICSPACE);
+    PRINTFLAG(spi.CTRLC, DATA32B);
+    PRINTNL();
+
+    opts.print.print("BAUD:  ");
+    PRINTHEX(spi.BAUD.bit.BAUD);
+    PRINTNL();
+}
+
+void printFourRegSERCOM_USART(FourRegOptions &opts, SercomUsart &usart) {
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(usart.CTRLA, ENABLE);
+    PRINTFLAG(usart.CTRLA, RUNSTDBY);
+    PRINTFLAG(usart.CTRLA, IBON);
+    PRINTFLAG(usart.CTRLA, TXINV);
+    PRINTFLAG(usart.CTRLA, RXINV);
+    opts.print.print(" sampr=");
+    bool arithbaud = true;
+    switch (usart.CTRLA.bit.SAMPR) {
+        case 0x0: arithbaud = true; opts.print.print("16x"); break;
+        case 0x1: arithbaud = false; opts.print.print("16x"); break;
+        case 0x2: arithbaud = true; opts.print.print("8x"); break;
+        case 0x3: arithbaud = false; opts.print.print("8x"); break;
+        case 0x4: arithbaud = true; opts.print.print("3x"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    switch (usart.CTRLA.bit.TXPO) {
+        case 0x0: opts.print.print(" tx=PAD0 xck=PAD1"); break;
+        case 0x1: opts.print.print(FourRegs__RESERVED); break;
+        case 0x2: opts.print.print(" tx=PAD0 rts=PAD2 cts=PAD3"); break;
+        case 0x3: opts.print.print(" tx=PAD0 xck=PAD1 rts=PAD2"); break;
+    }
+    switch (usart.CTRLA.bit.RXPO) {
+        case 0x0: opts.print.print(" rx=PAD0"); break;
+        case 0x1: opts.print.print(" rx=PAD1"); break;
+        case 0x2: opts.print.print(" rx=PAD2"); break;
+        case 0x3: opts.print.print(" rx=PAD3"); break;
+    }
+    opts.print.print(" SAMPA=");
+    PRINTHEX(usart.CTRLA.bit.SAMPA);
+    opts.print.print(" FORM=");
+    PRINTHEX(usart.CTRLA.bit.FORM);
+    opts.print.print(" cmode=");
+    opts.print.print(usart.CTRLA.bit.CMODE ? "SYNC" : "ASYNC");
+    opts.print.print(" CPOL=");
+    opts.print.print(usart.CTRLA.bit.CPOL);
+    opts.print.print(" dord=");
+    opts.print.print(usart.CTRLA.bit.CPOL ? "LSB" : "MSB");
+    PRINTNL();
+
+    while (usart.SYNCBUSY.bit.CTRLB) {}
+    opts.print.print("CTRLB:  chsize=");
+    switch (usart.CTRLB.bit.CHSIZE) {
+        case 0x0: opts.print.print("8bit"); break;
+        case 0x1: opts.print.print("9bit"); break;
+        case 0x2: opts.print.print(FourRegs__RESERVED); break;
+        case 0x3: opts.print.print(FourRegs__RESERVED); break;
+        case 0x4: opts.print.print(FourRegs__RESERVED); break;
+        case 0x5: opts.print.print("5bit"); break;
+        case 0x6: opts.print.print("6bit"); break;
+        case 0x7: opts.print.print("7bit"); break;
+    }
+    PRINTFLAG(usart.CTRLB, SBMODE);
+    PRINTFLAG(usart.CTRLB, COLDEN);
+    PRINTFLAG(usart.CTRLB, SFDE);
+    PRINTFLAG(usart.CTRLB, ENC);
+    PRINTFLAG(usart.CTRLB, PMODE);
+    PRINTFLAG(usart.CTRLB, TXEN);
+    PRINTFLAG(usart.CTRLB, RXEN);
+    opts.print.print(" LINCMD=");
+    PRINTHEX(usart.CTRLB.bit.LINCMD);
+    PRINTNL();
+
+    opts.print.print("CTRLC: ");
+    switch (usart.CTRLA.bit.FORM) {
+        case 0x0:
+        case 0x1:
+        case 0x7:
+            opts.print.print(" GTIME=");
+            PRINTHEX(usart.CTRLC.bit.GTIME);
+            break;
+        case 0x2:
+            opts.print.print(" BRKLEN=");
+            PRINTHEX(usart.CTRLC.bit.BRKLEN);
+            opts.print.print(" HDRDLY=");
+            PRINTHEX(usart.CTRLC.bit.HDRDLY);
+            PRINTFLAG(usart.CTRLC, INACK);
+            if (usart.CTRLC.bit.INACK == 0) {
+                PRINTFLAG(usart.CTRLC, DSNACK);
+            }
+            if (usart.CTRLA.bit.CMODE == 0) {
+                opts.print.print(" MAXITER=");
+                PRINTHEX(usart.CTRLC.bit.MAXITER);
+            }
+            break;
+    }
+    opts.print.print(" DATA32B=");
+    PRINTHEX(usart.CTRLC.bit.DATA32B);
+    PRINTNL();
+
+    opts.print.print("BAUD:  ");
+    if (arithbaud) {
+        opts.print.print(usart.BAUD.bit.BAUD);
+    } else {
+        opts.print.print(usart.BAUD.FRAC.BAUD);
+        opts.print.print(".");
+        opts.print.print(usart.BAUD.FRAC.FP);
+    }
+    PRINTNL();
+
+    if (usart.CTRLB.bit.ENC) {
+        opts.print.print("RXPL:  ");
+        PRINTHEX(usart.RXPL.bit.RXPL);
+        PRINTNL();
+    }
+}
+
+void printFourRegSERCOM(FourRegOptions &opts, Sercom* sercom, uint8_t idx) {
+    while (sercom->I2CM.SYNCBUSY.bit.ENABLE) {}
+    if (! sercom->I2CM.CTRLA.bit.ENABLE) {
+        if (opts.showDisabled) {
+            opts.print.print("--------------------------- SERCOM");
+            opts.print.print(idx);
+            PRINTNL();
+            opts.print.println(FourRegs__DISABLED);
+        }
+        return;
+    }
+    opts.print.print("--------------------------- SERCOM");
+    opts.print.print(idx);
+    switch (sercom->I2CM.CTRLA.bit.MODE) {
+        case 0x0:
+            opts.print.println(" USART (external clock)");
+            printFourRegSERCOM_USART(opts, sercom->USART);
+            break;
+        case 0x1:
+            opts.print.println(" USART (internal clock)");
+            printFourRegSERCOM_USART(opts, sercom->USART);
+            break;
+        case 0x2:
+            opts.print.println(" SPI slave");
+            printFourRegSERCOM_SPI(opts, sercom->SPI, false);
+            break;
+        case 0x3:
+            opts.print.println(" SPI master");
+            printFourRegSERCOM_SPI(opts, sercom->SPI, true);
+            break;
+        case 0x4:
+            opts.print.println(" I2C slave");
+            printFourRegSERCOM_I2CS(opts, sercom->I2CS);
+            break;
+        case 0x5:
+            opts.print.println(" I2C master");
+            printFourRegSERCOM_I2CM(opts, sercom->I2CM);
+            break;
+        default:
+            opts.print.print(" ");
+            opts.print.println(FourRegs__RESERVED);
+            break;
+    }
+}
+
+
 void printFourRegSUPC(FourRegOptions &opts) {
     opts.print.println("--------------------------- SUPC");
 
@@ -1841,6 +2144,7 @@ void printFourRegTC(FourRegOptions &opts, Tc* tc, uint8_t idx) {
         return;
     }
     switch (tc->COUNT8.CTRLA.bit.MODE) {
+        // TODO -- do same header printing here as is done for SERCOM
         case 0x0: printFourRegTC_16(opts, tc->COUNT16, idx); break;
         case 0x1: printFourRegTC_8(opts, tc->COUNT8, idx); break;
         case 0x2: printFourRegTC_32(opts, tc->COUNT32, idx); break;
@@ -2173,14 +2477,14 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegPORT(opts);
     //FUTURE printFourRegQSPI(opts);
     //FUTURE printFourRegSDHC(opts);
-    //FUTURE printFourRegSERCOM(opts, SERCOM0, 0);
-    //FUTURE printFourRegSERCOM(opts, SERCOM1, 1);
-    //FUTURE printFourRegSERCOM(opts, SERCOM2, 2);
-    //FUTURE printFourRegSERCOM(opts, SERCOM3, 3);
-    //FUTURE printFourRegSERCOM(opts, SERCOM4, 4);
-    //FUTURE printFourRegSERCOM(opts, SERCOM5, 5);
-    //FUTURE printFourRegSERCOM(opts, SERCOM5, 6);
-    //FUTURE printFourRegSERCOM(opts, SERCOM5, 7);
+    printFourRegSERCOM(opts, SERCOM0, 0);
+    printFourRegSERCOM(opts, SERCOM1, 1);
+    printFourRegSERCOM(opts, SERCOM2, 2);
+    printFourRegSERCOM(opts, SERCOM3, 3);
+    printFourRegSERCOM(opts, SERCOM4, 4);
+    printFourRegSERCOM(opts, SERCOM5, 5);
+    printFourRegSERCOM(opts, SERCOM5, 6);
+    printFourRegSERCOM(opts, SERCOM5, 7);
     printFourRegTCC(opts, TCC0, 0);
     printFourRegTCC(opts, TCC1, 1);
     printFourRegTCC(opts, TCC2, 2);
