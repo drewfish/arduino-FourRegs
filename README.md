@@ -144,7 +144,7 @@ OSCULP32K:  EN32K EN1K CALIB=0x27
 
 
 ### void printFourRegOSCCTRL(FourRegOptions &opts)
-Prints out configuration for other oscillators
+Prints out configuration for other oscillators.
 
 example output:
 ```text

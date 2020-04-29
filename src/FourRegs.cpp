@@ -2483,8 +2483,12 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegSERCOM(opts, SERCOM3, 3);
     printFourRegSERCOM(opts, SERCOM4, 4);
     printFourRegSERCOM(opts, SERCOM5, 5);
-    printFourRegSERCOM(opts, SERCOM5, 6);
-    printFourRegSERCOM(opts, SERCOM5, 7);
+#ifdef SERCOM6
+    printFourRegSERCOM(opts, SERCOM6, 6);
+#endif
+#ifdef SERCOM7
+    printFourRegSERCOM(opts, SERCOM7, 7);
+#endif
     printFourRegTCC(opts, TCC0, 0);
     printFourRegTCC(opts, TCC1, 1);
     printFourRegTCC(opts, TCC2, 2);
