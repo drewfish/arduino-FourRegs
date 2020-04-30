@@ -2476,7 +2476,6 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegPDEC(opts);
     printFourRegPORT(opts);
     //FUTURE printFourRegQSPI(opts);
-    //FUTURE printFourRegSDHC(opts);
     printFourRegSERCOM(opts, SERCOM0, 0);
     printFourRegSERCOM(opts, SERCOM1, 1);
     printFourRegSERCOM(opts, SERCOM2, 2);
