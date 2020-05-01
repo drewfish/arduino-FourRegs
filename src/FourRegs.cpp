@@ -47,6 +47,107 @@ static const char* FourRegs__empty = "";
 // ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/
 
 
+void printFourRegAC(FourRegOptions &opts) {
+    while (AC->SYNCBUSY.bit.ENABLE) {}
+    if (!AC->CTRLA.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- EIC");
+
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(AC->CTRLA, ENABLE);
+    PRINTNL();
+
+    opts.print.print("EVCTRL: ");
+    PRINTFLAG(AC->EVCTRL, COMPEO0);
+    PRINTFLAG(AC->EVCTRL, COMPEO1);
+    PRINTFLAG(AC->EVCTRL, WINEO0);
+    PRINTFLAG(AC->EVCTRL, COMPEI0);
+    PRINTFLAG(AC->EVCTRL, COMPEI1);
+    PRINTFLAG(AC->EVCTRL, INVEI0);
+    PRINTFLAG(AC->EVCTRL, INVEI1);
+    PRINTNL();
+
+    while (AC->SYNCBUSY.bit.WINCTRL) {}
+    opts.print.print("WINCTRL: ");
+    PRINTFLAG(AC->WINCTRL, WEN0);
+    opts.print.print(" WINTSEL0=");
+    PRINTHEX(AC->WINCTRL.bit.WINTSEL0);
+    PRINTNL();
+
+    opts.print.print("SCALER0:  ");
+    opts.print.print(AC->SCALER[0].bit.VALUE);
+    PRINTNL();
+    opts.print.print("SCALER1:  ");
+    opts.print.print(AC->SCALER[1].bit.VALUE);
+    PRINTNL();
+
+    for (uint8_t id = 0; id < 2; id++) {
+        while (AC->SYNCBUSY.vec.COMPCTRL & (1<<id)) {}
+        opts.print.print("COMPCTRL");
+        opts.print.print(id);
+        opts.print.print(": ");
+        PRINTFLAG(AC->COMPCTRL[id], ENABLE);
+        PRINTFLAG(AC->COMPCTRL[id], SINGLE);
+        opts.print.print("intsel=");
+        switch (AC->COMPCTRL[id].bit.INTSEL) {
+            case 0x0: opts.print.print("TOGGLE"); break;
+            case 0x1: opts.print.print("RISING"); break;
+            case 0x2: opts.print.print("FALLING"); break;
+            case 0x3: opts.print.print("EOC"); break;
+        }
+        PRINTFLAG(AC->COMPCTRL[id], RUNSTDBY);
+        opts.print.print("muxneg=");
+        switch (AC->COMPCTRL[id].bit.MUXNEG) {
+            case 0x0: opts.print.print("PIN0"); break;
+            case 0x1: opts.print.print("PIN1"); break;
+            case 0x2: opts.print.print("PIN2"); break;
+            case 0x3: opts.print.print("PIN3"); break;
+            case 0x4: opts.print.print("GND"); break;
+            case 0x5: opts.print.print("VSCALE"); break;
+            case 0x6: opts.print.print("BANDGAP"); break;
+            case 0x7: opts.print.print("DAC"); break;
+        }
+        opts.print.print("muxpos=");
+        switch (AC->COMPCTRL[id].bit.MUXPOS) {
+            case 0x0: opts.print.print("PIN0"); break;
+            case 0x1: opts.print.print("PIN1"); break;
+            case 0x2: opts.print.print("PIN2"); break;
+            case 0x3: opts.print.print("PIN3"); break;
+            case 0x4: opts.print.print("GND"); break;
+            case 0x5: opts.print.print("VSCALE"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        PRINTFLAG(AC->COMPCTRL[id], SWAP);
+        opts.print.print(" SPEED=");
+        opts.print.print(AC->COMPCTRL[id].bit.SPEED);
+        if (AC->COMPCTRL[id].bit.HYSTEN) {
+            opts.print.print(" HYSTEN HYST=");
+            opts.print.print(AC->COMPCTRL[id].bit.HYST);
+        }
+        opts.print.print(" flen=");
+        switch (AC->COMPCTRL[id].bit.FLEN) {
+            case 0x0: opts.print.print("OFF"); break;
+            case 0x1: opts.print.print("MAJ3"); break;
+            case 0x2: opts.print.print("MAJ5"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        opts.print.print(" out=");
+        switch (AC->COMPCTRL[id].bit.OUT) {
+            case 0x0: opts.print.print("OFF"); break;
+            case 0x1: opts.print.print("ASYNC"); break;
+            case 0x2: opts.print.print("SYNC"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        PRINTNL();
+    }
+
+    opts.print.print("CALIB:  ");
+    PRINTHEX(AC->CALIB.bit.BIAS0);
+    PRINTNL();
+}
+
+
 void printFourRegEIC_SENSE(FourRegOptions &opts, uint8_t sense) {
     switch (sense) {
         case 0x0: opts.print.print("none"); break;
@@ -2457,7 +2558,7 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegWDT(opts);
 
     // show other peripherals
-    //FUTURE printFourRegAC(opts);
+    printFourRegAC(opts);
     //FUTURE printFourRegADC(opts);
     //FUTURE printFourRegAES(opts);
     //FUTURE printFourRegCAN(opts);

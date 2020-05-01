@@ -60,6 +60,10 @@ Function Reference
 Prints out configuration registers, as many as this library knows how.
 
 
+### void printFourRegAC(FourRegOptions &opts)
+Prints out configuration for the AC peripheral.
+
+
 ### void printFourRegEIC(FourRegOptions &opts)
 Prints out configuration for the external interrupt controller.
 

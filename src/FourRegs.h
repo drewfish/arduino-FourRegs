@@ -39,7 +39,7 @@ struct FourRegOptions {
 };
 
 
-//FUTURE void printFourRegAC(FourRegOptions &opts);
+void printFourRegAC(FourRegOptions &opts);
 //FUTURE void printFourRegADC(FourRegOptions &opts);
 //FUTURE void printFourRegAES(FourRegOptions &opts);
 //FUTURE void printFourRegCAN(FourRegOptions &opts);
