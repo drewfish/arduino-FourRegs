@@ -80,6 +80,10 @@ Prints out configuration for the CCL peripheral.
 Prints out configuration for the cache controller.
 
 
+### void printFourRegDAC(FourRegOptions &opts)
+Prints out configuration for the DAC peripheral.
+
+
 ### void printFourRegEIC(FourRegOptions &opts)
 Prints out configuration for the external interrupt controller.
 

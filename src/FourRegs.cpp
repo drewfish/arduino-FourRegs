@@ -510,6 +510,63 @@ void printFourRegCMCC(FourRegOptions &opts) {
 }
 
 
+void printFourRegDAC(FourRegOptions &opts) {
+    if (!DAC->SYNCBUSY.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- DAC");
+
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(DAC->CTRLA, ENABLE);
+    PRINTNL();
+
+    opts.print.print("CTRLB:  diff=");
+    opts.print.print(DAC->CTRLB.bit.DIFF ? "differential" : "single");
+    opts.print.print(" refsel=");
+    switch (DAC->CTRLB.bit.REFSEL) {
+        case 0x0: opts.print.print("VREFAU"); break;
+        case 0x1: opts.print.print("VDDANA"); break;
+        case 0x2: opts.print.print("VREFAB"); break;
+        case 0x3: opts.print.print("INTREF"); break;
+    }
+    PRINTNL();
+
+    opts.print.print("EVCTRL: ");
+    PRINTFLAG(DAC->EVCTRL, STARTEI0);
+    PRINTFLAG(DAC->EVCTRL, STARTEI1);
+    PRINTFLAG(DAC->EVCTRL, EMPTYEO0);
+    PRINTFLAG(DAC->EVCTRL, EMPTYEO1);
+    PRINTFLAG(DAC->EVCTRL, INVEI0);
+    PRINTFLAG(DAC->EVCTRL, INVEI1);
+    PRINTFLAG(DAC->EVCTRL, RESRDYEO0);
+    PRINTFLAG(DAC->EVCTRL, RESRDYEO1);
+    PRINTNL();
+
+    for (uint8_t i = 0; i < 2; i++) {
+        opts.print.print("DACCTRL");
+        opts.print.print(i);
+        opts.print.print(": ");
+        PRINTFLAG(DAC->DACCTRL[i], LEFTADJ);
+        PRINTFLAG(DAC->DACCTRL[i], ENABLE);
+        opts.print.print(" cctrl=");
+        switch(DAC->DACCTRL[i].bit.CCTRL) {
+            case 0x0: opts.print.print("CC100K"); break;
+            case 0x1: opts.print.print("CC1M"); break;
+            case 0x2: opts.print.print("CC12M"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        PRINTFLAG(DAC->DACCTRL[i], FEXT);
+        PRINTFLAG(DAC->DACCTRL[i], RUNSTDBY);
+        PRINTFLAG(DAC->DACCTRL[i], DITHER);
+        opts.print.print(" REFRESH=");
+        opts.print.print(DAC->DACCTRL[i].bit.REFRESH);
+        opts.print.print(" OSR=");
+        opts.print.print(DAC->DACCTRL[i].bit.OSR);
+        PRINTNL();
+    }
+}
+
+
 void printFourRegEIC_SENSE(FourRegOptions &opts, uint8_t sense) {
     switch (sense) {
         case 0x0: opts.print.print("none"); break;
@@ -2927,7 +2984,7 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegAES(opts);
     //FUTURE printFourRegCAN(opts);
     printFourRegCCL(opts);
-    //FUTURE printFourRegDAC(opts);
+    printFourRegDAC(opts);
     //FUTURE printFourRegDMAC(opts);
     printFourRegEIC(opts);
     printFourRegEVSYS(opts);
