@@ -50,7 +50,7 @@ void printFourRegDMAC(FourRegOptions &opts);
 //FUTURE void printFourRegDSU(FourRegOptions &opts);
 void printFourRegEIC(FourRegOptions &opts);
 void printFourRegEVSYS(FourRegOptions &opts);
-//FUTURE void printFourRegFREQM(FourRegOptions &opts);
+void printFourRegFREQM(FourRegOptions &opts);
 void printFourRegGCLK(FourRegOptions &opts);
 //FUTURE void printFourRegGMAC(FourRegOptions &opts);
 //FUTURE void printFourRegI2S(FourRegOptions &opts);

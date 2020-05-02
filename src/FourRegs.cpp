@@ -1105,6 +1105,23 @@ void printFourRegEVSYS(FourRegOptions &opts) {
 }
 
 
+void printFourRegFREQM(FourRegOptions &opts) {
+    while (FREQM->SYNCBUSY.bit.ENABLE) {}
+    if (!FREQM->CTRLA.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- EVSYS");
+
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(FREQM->CTRLA, ENABLE);
+    PRINTNL();
+
+    opts.print.print("CFGA:  REFNUM=");
+    PRINTHEX(FREQM->CFGA.bit.REFNUM);
+    PRINTNL();
+}
+
+
 // table 14-4 (datasheet rev E)
 static const char* FourRegsGCLK_SRC00 = "XOSC0";
 static const char* FourRegsGCLK_SRC01 = "XOSC1";
@@ -3178,7 +3195,7 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegCCL(opts);
     printFourRegDAC(opts);
     printFourRegEIC(opts);
-    //FUTURE printFourRegFREQM(opts);
+    printFourRegFREQM(opts);
     //FUTURE printFourRegGMAC(opts);
     //FUTURE printFourRegI2S(opts);
     //FUTURE printFourRegICM(opts);

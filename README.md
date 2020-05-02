@@ -104,6 +104,10 @@ DPRESCALER:  PRESCALER0=0x0 STATES0=0x0 PRESCALER1=0x0 STATES1=0x0
 Prints out configuration for the event system.
 
 
+### void printFourRegFREQM(FourRegOptions &opts)
+Prints out configuration for an FREQM peripheral.
+
+
 ### void printFourRegGCLK(FourRegOptions &opts)
 Prints out configuration for the general clocks.
 
