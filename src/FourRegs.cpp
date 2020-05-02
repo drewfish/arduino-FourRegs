@@ -511,7 +511,8 @@ void printFourRegCMCC(FourRegOptions &opts) {
 
 
 void printFourRegDAC(FourRegOptions &opts) {
-    if (!DAC->SYNCBUSY.bit.ENABLE && !opts.showDisabled) {
+    while (DAC->SYNCBUSY.bit.ENABLE) {}
+    if (!DAC->CTRLA.bit.ENABLE && !opts.showDisabled) {
         return;
     }
     opts.print.println("--------------------------- DAC");
@@ -562,6 +563,195 @@ void printFourRegDAC(FourRegOptions &opts) {
         opts.print.print(DAC->DACCTRL[i].bit.REFRESH);
         opts.print.print(" OSR=");
         opts.print.print(DAC->DACCTRL[i].bit.OSR);
+        PRINTNL();
+    }
+}
+
+
+typedef union {
+    struct {
+        uint8_t PRI:5;
+        uint8_t QOS:2;
+        uint8_t RREN:1;
+    } bit;
+    uint8_t reg;
+} FourRegsDMAC_PRILVL;
+void printFourRegDMAC(FourRegOptions &opts) {
+    if (!DMAC->CTRL.bit.DMAENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- DMAC");
+
+    opts.print.print("CTRL: ");
+    PRINTFLAG(DMAC->CTRL, DMAENABLE);
+    PRINTFLAG(DMAC->CTRL, LVLEN0);
+    PRINTFLAG(DMAC->CTRL, LVLEN1);
+    PRINTFLAG(DMAC->CTRL, LVLEN2);
+    PRINTFLAG(DMAC->CTRL, LVLEN3);
+    PRINTNL();
+
+    opts.print.print("CRCCTRL:  CRCBEATSIZE=");
+    PRINTHEX(DMAC->CRCCTRL.bit.CRCBEATSIZE);
+    opts.print.print(" CRCPOLY=");
+    PRINTHEX(DMAC->CRCCTRL.bit.CRCPOLY);
+    opts.print.print(" CRCSRC=");
+    PRINTHEX(DMAC->CRCCTRL.bit.CRCSRC);
+    opts.print.print(" CRCMODE=");
+    PRINTHEX(DMAC->CRCCTRL.bit.CRCMODE);
+    PRINTNL();
+
+    opts.print.print("PRICTRL0: ");
+    for (uint8_t lvl = 0; lvl < 4; lvl++) {
+        FourRegsDMAC_PRILVL pri;
+        pri.reg = (DMAC->PRICTRL0.reg >> (8 * lvl)) & 0xFF;
+        opts.print.print(" lvl");
+        opts.print.print(lvl);
+        opts.print.print(":qos=");
+        opts.print.print(pri.bit.QOS);
+        if (pri.bit.RREN) {
+            opts.print.print(",rren");
+        }
+    }
+    PRINTNL();
+
+    for (uint8_t id = 0; id < 32; id++) {
+        DmacChannel ch;
+        COPYVOL(ch, DMAC->Channel[id]);
+        if (!ch.CHCTRLA.bit.ENABLE && !opts.showDisabled) {
+            continue;
+        }
+
+        opts.print.print("CHANNEL");
+        PRINTPAD2(id);
+        opts.print.print(": ");
+        PRINTFLAG(ch.CHCTRLA, ENABLE);
+        PRINTFLAG(ch.CHCTRLA, RUNSTDBY);
+        opts.print.print(" trigsrc=");
+        switch (ch.CHCTRLA.bit.TRIGSRC) {
+            case 0x00: opts.print.print("DISABLE"); break;
+            case 0x01: opts.print.print("RTC:TIMESTAMP"); break;
+            case 0x02: opts.print.print("DSU:DCC0"); break;
+            case 0x03: opts.print.print("DSU:DCC1"); break;
+            case 0x04: opts.print.print("SERCOM0:RX"); break;
+            case 0x05: opts.print.print("SERCOM0:TX"); break;
+            case 0x06: opts.print.print("SERCOM1:RX"); break;
+            case 0x07: opts.print.print("SERCOM1:TX"); break;
+            case 0x08: opts.print.print("SERCOM2:RX"); break;
+            case 0x09: opts.print.print("SERCOM2:TX"); break;
+            case 0x0A: opts.print.print("SERCOM3:RX"); break;
+            case 0x0B: opts.print.print("SERCOM3:TX"); break;
+            case 0x0C: opts.print.print("SERCOM4:RX"); break;
+            case 0x0D: opts.print.print("SERCOM4:TX"); break;
+            case 0x0E: opts.print.print("SERCOM5:RX"); break;
+            case 0x0F: opts.print.print("SERCOM5:TX"); break;
+            case 0x10: opts.print.print("SERCOM6:RX"); break;
+            case 0x11: opts.print.print("SERCOM6:TX"); break;
+            case 0x12: opts.print.print("SERCOM7:RX"); break;
+            case 0x13: opts.print.print("SERCOM7:TX"); break;
+            case 0x14: opts.print.print("CAN0:DEBUG"); break;
+            case 0x15: opts.print.print("CAN1:DEBUG"); break;
+            case 0x16: opts.print.print("TCC0:OVF"); break;
+            case 0x17: opts.print.print("TCC0:MC0"); break;
+            case 0x18: opts.print.print("TCC0:MC1"); break;
+            case 0x19: opts.print.print("TCC0:MC2"); break;
+            case 0x1A: opts.print.print("TCC0:MC3"); break;
+            case 0x1B: opts.print.print("TCC0:MC4"); break;
+            case 0x1C: opts.print.print("TCC0:MC5"); break;
+            case 0x1D: opts.print.print("TCC1:OVF"); break;
+            case 0x1E: opts.print.print("TCC1:MC0"); break;
+            case 0x1F: opts.print.print("TCC1:MC1"); break;
+            case 0x20: opts.print.print("TCC1:MC2"); break;
+            case 0x21: opts.print.print("TCC1:MC3"); break;
+            case 0x22: opts.print.print("TCC2:OVF"); break;
+            case 0x23: opts.print.print("TCC2:MC0"); break;
+            case 0x24: opts.print.print("TCC2:MC1"); break;
+            case 0x25: opts.print.print("TCC2:MC2"); break;
+            case 0x26: opts.print.print("TCC3:OVF"); break;
+            case 0x27: opts.print.print("TCC3:MC0"); break;
+            case 0x28: opts.print.print("TCC3:MC1"); break;
+            case 0x29: opts.print.print("TCC4:OVF"); break;
+            case 0x2A: opts.print.print("TCC4:MC0"); break;
+            case 0x2B: opts.print.print("TCC4:MC1"); break;
+            case 0x2C: opts.print.print("TC0:OVF"); break;
+            case 0x2D: opts.print.print("TC0:MC0"); break;
+            case 0x2E: opts.print.print("TC0:MC1"); break;
+            case 0x2F: opts.print.print("TC1:OVF"); break;
+            case 0x30: opts.print.print("TC1:MC0"); break;
+            case 0x31: opts.print.print("TC1:MC1"); break;
+            case 0x32: opts.print.print("TC2:OVF"); break;
+            case 0x33: opts.print.print("TC2:MC0"); break;
+            case 0x34: opts.print.print("TC2:MC1"); break;
+            case 0x35: opts.print.print("TC3:OVF"); break;
+            case 0x36: opts.print.print("TC3:MC0"); break;
+            case 0x37: opts.print.print("TC3:MC1"); break;
+            case 0x38: opts.print.print("TC4:OVF"); break;
+            case 0x39: opts.print.print("TC4:MC0"); break;
+            case 0x3A: opts.print.print("TC4:MC1"); break;
+            case 0x3B: opts.print.print("TC5:OVF"); break;
+            case 0x3C: opts.print.print("TC5:MC0"); break;
+            case 0x3D: opts.print.print("TC5:MC1"); break;
+            case 0x3E: opts.print.print("TC6:OVF"); break;
+            case 0x3F: opts.print.print("TC6:MC0"); break;
+            case 0x40: opts.print.print("TC6:MC1"); break;
+            case 0x41: opts.print.print("TC7:OVF"); break;
+            case 0x42: opts.print.print("TC7:MC0"); break;
+            case 0x43: opts.print.print("TC7:MC1"); break;
+            case 0x44: opts.print.print("ADC0:RESRDY"); break;
+            case 0x45: opts.print.print("ADC0:SEQ"); break;
+            case 0x46: opts.print.print("ADC1:RESRDY"); break;
+            case 0x47: opts.print.print("ADC1:SEQ"); break;
+            case 0x48: opts.print.print("DAC0:EMPTY"); break;
+            case 0x49: opts.print.print("DAC1:EMPTY"); break;
+            case 0x4A: opts.print.print("DAC0:RESRDY"); break;
+            case 0x4B: opts.print.print("DAC1:RESRDY"); break;
+            case 0x4C: opts.print.print("I2S0:RX"); break;
+            case 0x4D: opts.print.print("I2S1:RX"); break;
+            case 0x4E: opts.print.print("I2S0:TX"); break;
+            case 0x4F: opts.print.print("I2S1:TX"); break;
+            case 0x50: opts.print.print("PCC:RX"); break;
+            case 0x51: opts.print.print("AES:WR"); break;
+            case 0x52: opts.print.print("AES:RD"); break;
+            case 0x53: opts.print.print("QSPI:RX"); break;
+            case 0x54: opts.print.print("QSPI:TX"); break;
+            default: opts.print.print(FourRegs__UNKNOWN); break;
+        }
+        opts.print.print(" trigact=");
+        switch (ch.CHCTRLA.bit.TRIGACT) {
+            case 0x0: opts.print.print("BLOCK"); break;
+            /*case 0x1*/
+            case 0x2: opts.print.print("BURST"); break;
+            case 0x3: opts.print.print("TRANSACTION"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        opts.print.print(" burstlen=");
+        opts.print.print(ch.CHCTRLA.bit.BURSTLEN);
+        opts.print.print("BEAT");
+        opts.print.print(" threshold=");
+        PRINTSCALE(ch.CHCTRLA.bit.THRESHOLD);
+        opts.print.print("BEATS");
+        opts.print.print(" prilvl=LVL");
+        opts.print.print(ch.CHPRILVL.bit.PRILVL);
+        if (ch.CHEVCTRL.bit.EVIE) {
+            opts.print.print(" EVIE evact=");
+            switch (ch.CHEVCTRL.bit.EVACT) {
+                case 0x0: opts.print.print("NOACT"); break;
+                case 0x1: opts.print.print("TRIG"); break;
+                case 0x2: opts.print.print("CTRIG"); break;
+                case 0x3: opts.print.print("CBLOCK"); break;
+                case 0x4: opts.print.print("SUSPEND"); break;
+                case 0x5: opts.print.print("RESUME"); break;
+                case 0x6: opts.print.print("SSKIP"); break;
+                case 0x7: opts.print.print("INCPRI"); break;
+            }
+        }
+        if (ch.CHEVCTRL.bit.EVOE) {
+            opts.print.print(" EVOE evomode=");
+            switch (ch.CHEVCTRL.bit.EVOMODE) {
+                case 0x0: opts.print.print("DEFAULT"); break;
+                case 0x1: opts.print.print("TRIGACT"); break;
+                defaut: opts.print.print(FourRegs__RESERVED); break;
+            }
+        }
         PRINTNL();
     }
 }
@@ -2972,6 +3162,8 @@ void printFourRegs(FourRegOptions &opts) {
     // show core peripherals
     printFourRegCMCC(opts);
     //FUTURE printFourRegDSU(opts);
+    printFourRegDMAC(opts);
+    printFourRegEVSYS(opts);
     printFourRegPAC(opts);
     printFourRegPM(opts);
     printFourRegSUPC(opts);
@@ -2985,9 +3177,7 @@ void printFourRegs(FourRegOptions &opts) {
     //FUTURE printFourRegCAN(opts);
     printFourRegCCL(opts);
     printFourRegDAC(opts);
-    //FUTURE printFourRegDMAC(opts);
     printFourRegEIC(opts);
-    printFourRegEVSYS(opts);
     //FUTURE printFourRegFREQM(opts);
     //FUTURE printFourRegGMAC(opts);
     //FUTURE printFourRegI2S(opts);

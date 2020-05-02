@@ -84,6 +84,10 @@ Prints out configuration for the cache controller.
 Prints out configuration for the DAC peripheral.
 
 
+### void printFourRegDMAC(FourRegOptions &opts)
+Prints out configuration for the DMAC peripheral.
+
+
 ### void printFourRegEIC(FourRegOptions &opts)
 Prints out configuration for the external interrupt controller.
 

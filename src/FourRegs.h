@@ -46,7 +46,7 @@ void printFourRegAES(FourRegOptions &opts);
 void printFourRegCCL(FourRegOptions &opts);
 void printFourRegCMCC(FourRegOptions &opts);
 void printFourRegDAC(FourRegOptions &opts);
-//FUTURE void printFourRegDMAC(FourRegOptions &opts);
+void printFourRegDMAC(FourRegOptions &opts);
 //FUTURE void printFourRegDSU(FourRegOptions &opts);
 void printFourRegEIC(FourRegOptions &opts);
 void printFourRegEVSYS(FourRegOptions &opts);
