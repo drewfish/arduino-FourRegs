@@ -148,6 +148,170 @@ void printFourRegAC(FourRegOptions &opts) {
 }
 
 
+void printFourRegADC(FourRegOptions &opts, Adc* adc, uint8_t idx) {
+    while (adc->SYNCBUSY.bit.ENABLE) {}
+    if (!adc->CTRLA.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.print("--------------------------- ADC");
+    opts.print.print(idx);
+    if (adc->CTRLA.bit.SLAVEEN) {
+        opts.print.println(" --slave--");
+        return;
+    }
+    PRINTNL();
+
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(adc->CTRLA, ENABLE);
+    if (ADC1->CTRLA.bit.SLAVEEN == 1) {
+        opts.print.print(" dualsel=");
+        switch (adc->CTRLA.bit.DUALSEL) {
+            case 0x0: opts.print.print("BOTH"); break;
+            case 0x1: opts.print.print("INTERLEAVE"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+    }
+    PRINTFLAG(adc->CTRLA, RUNSTDBY);
+    PRINTFLAG(adc->CTRLA, ONDEMAND);
+    opts.print.print(" PRESCALER=");
+    PRINTHEX(adc->CTRLA.bit.PRESCALER);
+    PRINTFLAG(adc->CTRLA, R2R);
+    PRINTNL();
+
+    opts.print.print("EVCTRL: ");
+    PRINTFLAG(adc->EVCTRL, FLUSHEI);
+    PRINTFLAG(adc->EVCTRL, STARTEI);
+    PRINTFLAG(adc->EVCTRL, FLUSHINV);
+    PRINTFLAG(adc->EVCTRL, STARTINV);
+    PRINTFLAG(adc->EVCTRL, RESRDYEO);
+    PRINTFLAG(adc->EVCTRL, WINMONEO);
+    PRINTNL();
+
+    while (adc->SYNCBUSY.bit.INPUTCTRL) {}
+    opts.print.print("INPUTCTRL: ");
+    opts.print.print(" muxpos=");
+    if (adc->INPUTCTRL.bit.MUXPOS <= 23) {
+        opts.print.print("AIN");
+        opts.print.print(adc->INPUTCTRL.bit.MUXPOS);
+    } else {
+        switch (adc->INPUTCTRL.bit.MUXPOS) {
+            case 0x18: opts.print.print("SCALEDCOREVCC"); break;
+            case 0x19: opts.print.print("SCALEDVBAT"); break;
+            case 0x1A: opts.print.print("SCALEDIOVCC"); break;
+            case 0x1B: opts.print.print("BANDGAP"); break;
+            case 0x1C: opts.print.print("PTAT"); break;
+            case 0x1D: opts.print.print("CTAT"); break;
+            case 0x1E: opts.print.print("DAC"); break;
+            case 0x1F: opts.print.print(FourRegs__UNKNOWN); break;
+        }
+    }
+    PRINTFLAG(adc->INPUTCTRL, DIFFMODE);
+    opts.print.print(" muxneg=");
+    switch (adc->INPUTCTRL.bit.MUXNEG) {
+        case 0x0: opts.print.print("AIN0"); break;
+        case 0x1: opts.print.print("AIN1"); break;
+        case 0x2: opts.print.print("AIN2"); break;
+        case 0x3: opts.print.print("AIN3"); break;
+        case 0x4: opts.print.print("AIN4"); break;
+        case 0x5: opts.print.print("AIN5"); break;
+        case 0x6: opts.print.print("AIN6"); break;
+        case 0x7: opts.print.print("AIN7"); break;
+        case 0x18: opts.print.print("GND"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    PRINTFLAG(adc->INPUTCTRL, DSEQSTOP);
+    PRINTNL();
+
+    while (adc->SYNCBUSY.bit.CTRLB) {}
+    opts.print.print("CTRLB: ");
+    PRINTFLAG(adc->CTRLB, LEFTADJ);
+    PRINTFLAG(adc->CTRLB, FREERUN);
+    PRINTFLAG(adc->CTRLB, CORREN);
+    opts.print.print(" ressel=");
+    switch (adc->CTRLB.bit.RESSEL) {
+        case 0x0: opts.print.print("12BIT"); break;
+        case 0x1: opts.print.print("16BIT"); break;
+        case 0x2: opts.print.print("10BIT"); break;
+        case 0x3: opts.print.print("8BIT"); break;
+    }
+    opts.print.print(" WINMODE=");
+    PRINTHEX(adc->CTRLB.bit.WINMODE);
+    PRINTFLAG(adc->CTRLB, WINSS);
+    PRINTNL();
+
+    while (adc->SYNCBUSY.bit.REFCTRL) {}
+    opts.print.print("REFCTRL:  refsel=");
+    switch (adc->REFCTRL.bit.REFSEL) {
+        case 0x0: opts.print.print("INTREF"); break;
+        case 0x1: opts.print.print("INTVCC0"); break;
+        case 0x2: opts.print.print("INTVCC1"); break;
+        case 0x3: opts.print.print("AREFA"); break;
+        case 0x4: opts.print.print("AREFB"); break;
+        case 0x5: opts.print.print("AREFC"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    PRINTFLAG(adc->REFCTRL, REFCOMP);
+    PRINTNL();
+
+    while (adc->SYNCBUSY.bit.AVGCTRL) {}
+    opts.print.print("AVGCTRL:  SAMPLENUM=");
+    PRINTHEX(adc->AVGCTRL.bit.SAMPLENUM);
+    opts.print.print(" ADJRES=");
+    PRINTHEX(adc->AVGCTRL.bit.ADJRES);
+    PRINTNL();
+
+    while (adc->SYNCBUSY.bit.SAMPCTRL) {}
+    opts.print.print("SAMPCTRL:  SAMPLEN=");
+    PRINTHEX(adc->SAMPCTRL.bit.SAMPLEN);
+    PRINTFLAG(adc->SAMPCTRL, OFFCOMP);
+    PRINTNL();
+
+    while (adc->SYNCBUSY.bit.WINLT) {}
+    opts.print.print("WINLT:  ");
+    opts.print.print(adc->WINLT.bit.WINLT);
+    PRINTNL();
+
+    while (adc->SYNCBUSY.bit.WINUT) {}
+    opts.print.print("WINUT:  ");
+    opts.print.print(adc->WINUT.bit.WINUT);
+    PRINTNL();
+
+    while (adc->SYNCBUSY.bit.CTRLB) {}
+    if (adc->CTRLB.bit.CORREN) {
+        while (adc->SYNCBUSY.bit.GAINCORR) {}
+        opts.print.print("GAINCORR:  ");
+        opts.print.print(adc->GAINCORR.bit.GAINCORR);
+        PRINTNL();
+
+        while (adc->SYNCBUSY.bit.OFFSETCORR) {}
+        opts.print.print("OFFSETCORR:  ");
+        opts.print.print(adc->OFFSETCORR.bit.OFFSETCORR);
+        PRINTNL();
+    }
+
+    opts.print.print("DSEQCTRL: ");
+    PRINTFLAG(adc->DSEQCTRL, INPUTCTRL);
+    PRINTFLAG(adc->DSEQCTRL, CTRLB);
+    PRINTFLAG(adc->DSEQCTRL, REFCTRL);
+    PRINTFLAG(adc->DSEQCTRL, AVGCTRL);
+    PRINTFLAG(adc->DSEQCTRL, SAMPCTRL);
+    PRINTFLAG(adc->DSEQCTRL, WINLT);
+    PRINTFLAG(adc->DSEQCTRL, WINUT);
+    PRINTFLAG(adc->DSEQCTRL, GAINCORR);
+    PRINTFLAG(adc->DSEQCTRL, OFFSETCORR);
+    PRINTFLAG(adc->DSEQCTRL, AUTOSTART);
+    PRINTNL();
+
+    opts.print.print("CALIB:  BIASCOMP=");
+    PRINTHEX(adc->CALIB.bit.BIASCOMP);
+    opts.print.print(" BIASR2R=");
+    PRINTHEX(adc->CALIB.bit.BIASR2R);
+    opts.print.print(" BIASREFBUF=");
+    PRINTHEX(adc->CALIB.bit.BIASREFBUF);
+    PRINTNL();
+}
+
+
 void printFourRegEIC_SENSE(FourRegOptions &opts, uint8_t sense) {
     switch (sense) {
         case 0x0: opts.print.print("none"); break;
@@ -2559,7 +2723,8 @@ void printFourRegs(FourRegOptions &opts) {
 
     // show other peripherals
     printFourRegAC(opts);
-    //FUTURE printFourRegADC(opts);
+    printFourRegADC(opts, ADC0, 0);
+    printFourRegADC(opts, ADC1, 1);
     //FUTURE printFourRegAES(opts);
     //FUTURE printFourRegCAN(opts);
     //FUTURE printFourRegCCL(opts);

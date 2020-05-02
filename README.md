@@ -64,6 +64,10 @@ Prints out configuration registers, as many as this library knows how.
 Prints out configuration for the AC peripheral.
 
 
+### void printFourRegADC(FourRegOptions &opts, Adc* adc, uint8_t idx)
+Prints out configuration for the ADC peripheral.
+
+
 ### void printFourRegEIC(FourRegOptions &opts)
 Prints out configuration for the external interrupt controller.
 
