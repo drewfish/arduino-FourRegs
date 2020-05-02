@@ -43,7 +43,7 @@ void printFourRegAC(FourRegOptions &opts);
 void printFourRegADC(FourRegOptions &opts, Adc* adc, uint8_t idx);
 void printFourRegAES(FourRegOptions &opts);
 //FUTURE void printFourRegCAN(FourRegOptions &opts);
-//FUTURE void printFourRegCCL(FourRegOptions &opts);
+void printFourRegCCL(FourRegOptions &opts);
 //FUTURE void printFourRegCMCC(FourRegOptions &opts);
 //FUTURE void printFourRegDAC(FourRegOptions &opts);
 //FUTURE void printFourRegDMAC(FourRegOptions &opts);

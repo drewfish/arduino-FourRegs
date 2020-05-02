@@ -72,6 +72,10 @@ Prints out configuration for an ADC peripheral.
 Prints out configuration for the AES peripheral.
 
 
+### void printFourRegCCL(FourRegOptions &opts)
+Prints out configuration for the CCL peripheral.
+
+
 ### void printFourRegEIC(FourRegOptions &opts)
 Prints out configuration for the external interrupt controller.
 

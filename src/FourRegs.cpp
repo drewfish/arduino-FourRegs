@@ -358,6 +358,81 @@ void printFourRegAES(FourRegOptions &opts) {
 }
 
 
+void printFourRegCCL(FourRegOptions &opts) {
+    uint8_t i;
+    if (!CCL->CTRL.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- CCL");
+
+    opts.print.print("CTRL: ");
+    PRINTFLAG(CCL->CTRL, ENABLE);
+    PRINTFLAG(CCL->CTRL, RUNSTDBY);
+    PRINTNL();
+
+    for (i = 0; i < 2; i++) {
+        opts.print.print("SEQCTRL");
+        opts.print.print(i);
+        opts.print.print(":  seqsel=");
+        switch (CCL->SEQCTRL[i].bit.SEQSEL) {
+            case 0x0: opts.print.print("DISABLE"); break;
+            case 0x1: opts.print.print("DFF"); break;
+            case 0x2: opts.print.print("JK"); break;
+            case 0x3: opts.print.print("LATCH"); break;
+            case 0x4: opts.print.print("RS"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        PRINTNL();
+    }
+
+    for (i = 0; i < 4; i++) {
+        if (!CCL->LUTCTRL[i].bit.ENABLE && !opts.showDisabled) {
+            continue;
+        }
+        opts.print.print("LUTCTRL");
+        opts.print.print(i);
+        opts.print.print(": ");
+        PRINTFLAG(CCL->LUTCTRL[i], ENABLE);
+        opts.print.print(" filtersel=");
+        switch (CCL->LUTCTRL[i].bit.FILTSEL) {
+            case 0x0: opts.print.print("DISABLE"); break;
+            case 0x1: opts.print.print("SYNCH"); break;
+            case 0x2: opts.print.print("FILTER"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        PRINTFLAG(CCL->LUTCTRL[i], EDGESEL);
+        for (uint8_t j=0; j < 3; j++) {
+            uint8_t insel;
+            if (j == 0) { insel = CCL->LUTCTRL[i].bit.INSEL0; }
+            if (j == 1) { insel = CCL->LUTCTRL[i].bit.INSEL1; }
+            if (j == 2) { insel = CCL->LUTCTRL[i].bit.INSEL2; }
+            opts.print.print(" insel");
+            opts.print.print(j);
+            opts.print.print("=");
+            switch (insel) {
+                case 0x0: opts.print.print("MASK"); break;
+                case 0x1: opts.print.print("FEEDBACK"); break;
+                case 0x2: opts.print.print("LINK"); break;
+                case 0x3: opts.print.print("EVENT"); break;
+                case 0x4: opts.print.print("IO"); break;
+                case 0x5: opts.print.print("AC"); break;
+                case 0x6: opts.print.print("TC"); break;
+                case 0x7: opts.print.print("ALTTC"); break;
+                case 0x8: opts.print.print("TCC"); break;
+                case 0x9: opts.print.print("SERCOM"); break;
+                default: opts.print.print(FourRegs__UNKNOWN); break;
+            }
+        }
+        PRINTFLAG(CCL->LUTCTRL[i], INVEI);
+        PRINTFLAG(CCL->LUTCTRL[i], LUTEI);
+        PRINTFLAG(CCL->LUTCTRL[i], LUTEO);
+        opts.print.print(" TRUTH=");
+        PRINTHEX(CCL->LUTCTRL[i].bit.TRUTH);
+        PRINTNL();
+    }
+}
+
+
 void printFourRegEIC_SENSE(FourRegOptions &opts, uint8_t sense) {
     switch (sense) {
         case 0x0: opts.print.print("none"); break;
@@ -2773,7 +2848,7 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegADC(opts, ADC1, 1);
     printFourRegAES(opts);
     //FUTURE printFourRegCAN(opts);
-    //FUTURE printFourRegCCL(opts);
+    printFourRegCCL(opts);
     //FUTURE printFourRegCMCC(opts);
     //FUTURE printFourRegDAC(opts);
     //FUTURE printFourRegDMAC(opts);
