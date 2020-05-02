@@ -65,7 +65,11 @@ Prints out configuration for the AC peripheral.
 
 
 ### void printFourRegADC(FourRegOptions &opts, Adc* adc, uint8_t idx)
-Prints out configuration for the ADC peripheral.
+Prints out configuration for an ADC peripheral.
+
+
+### void printFourRegAES(FourRegOptions &opts)
+Prints out configuration for the AES peripheral.
 
 
 ### void printFourRegEIC(FourRegOptions &opts)

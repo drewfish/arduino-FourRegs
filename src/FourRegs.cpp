@@ -52,7 +52,7 @@ void printFourRegAC(FourRegOptions &opts) {
     if (!AC->CTRLA.bit.ENABLE && !opts.showDisabled) {
         return;
     }
-    opts.print.println("--------------------------- EIC");
+    opts.print.println("--------------------------- AC");
 
     opts.print.print("CTRLA: ");
     PRINTFLAG(AC->CTRLA, ENABLE);
@@ -308,6 +308,52 @@ void printFourRegADC(FourRegOptions &opts, Adc* adc, uint8_t idx) {
     PRINTHEX(adc->CALIB.bit.BIASR2R);
     opts.print.print(" BIASREFBUF=");
     PRINTHEX(adc->CALIB.bit.BIASREFBUF);
+    PRINTNL();
+}
+
+
+void printFourRegAES(FourRegOptions &opts) {
+    if (!AES->CTRLA.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- AES");
+
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(AES->CTRLA, ENABLE);
+    opts.print.print(" aesmode=");
+    switch (AES->CTRLA.bit.AESMODE) {
+        case 0: opts.print.print("ECB"); break;
+        case 1: opts.print.print("CBC"); break;
+        case 2: opts.print.print("OFB"); break;
+        case 3: opts.print.print("CFG"); break;
+        case 4: opts.print.print("Counter"); break;
+        case 5: opts.print.print("CCM"); break;
+        case 6: opts.print.print("GCM"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    opts.print.print(" CFBS=");
+    PRINTHEX(AES->CTRLA.bit.CFBS);
+    opts.print.print(" keysize=");
+    switch (AES->CTRLA.bit.KEYSIZE) {
+        case 0: opts.print.print("128bit"); break;
+        case 1: opts.print.print("192bit"); break;
+        case 2: opts.print.print("256bit"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    opts.print.print(" cipher=");
+    opts.print.print(AES->CTRLA.bit.CIPHER ? "Encryption" : "Decryption");
+    opts.print.print(" startmode=");
+    opts.print.print(AES->CTRLA.bit.STARTMODE ? "auto" : "manual");
+    PRINTFLAG(AES->CTRLA, LOD);
+    PRINTFLAG(AES->CTRLA, KEYGEN);
+    PRINTFLAG(AES->CTRLA, XORKEY);
+    opts.print.print(" CTYPE=");
+    PRINTHEX(AES->CTRLA.bit.CTYPE);
+    PRINTNL();
+
+    opts.print.print("CTRLB: ");
+    PRINTFLAG(AES->CTRLB, EOM);
+    PRINTFLAG(AES->CTRLB, GFMUL);
     PRINTNL();
 }
 
@@ -2725,7 +2771,7 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegAC(opts);
     printFourRegADC(opts, ADC0, 0);
     printFourRegADC(opts, ADC1, 1);
-    //FUTURE printFourRegAES(opts);
+    printFourRegAES(opts);
     //FUTURE printFourRegCAN(opts);
     //FUTURE printFourRegCCL(opts);
     //FUTURE printFourRegCMCC(opts);

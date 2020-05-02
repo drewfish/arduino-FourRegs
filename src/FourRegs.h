@@ -41,7 +41,7 @@ struct FourRegOptions {
 
 void printFourRegAC(FourRegOptions &opts);
 void printFourRegADC(FourRegOptions &opts, Adc* adc, uint8_t idx);
-//FUTURE void printFourRegAES(FourRegOptions &opts);
+void printFourRegAES(FourRegOptions &opts);
 //FUTURE void printFourRegCAN(FourRegOptions &opts);
 //FUTURE void printFourRegCCL(FourRegOptions &opts);
 //FUTURE void printFourRegCMCC(FourRegOptions &opts);
