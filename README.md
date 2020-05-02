@@ -1,4 +1,4 @@
-arduino FourRegs
+Arduino FourRegs
 ================
 This library prints the registers for Arduino-compatible boards which use an ARM SAMD51 processor.
 It specifically is designed to print the values of the _configuration_ register

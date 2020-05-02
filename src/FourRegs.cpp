@@ -3196,7 +3196,6 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegDAC(opts);
     printFourRegEIC(opts);
     printFourRegFREQM(opts);
-    //FUTURE printFourRegGMAC(opts);
     //FUTURE printFourRegI2S(opts);
     //FUTURE printFourRegICM(opts);
     printFourRegNVMCTRL(opts);

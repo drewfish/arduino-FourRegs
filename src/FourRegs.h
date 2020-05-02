@@ -52,7 +52,6 @@ void printFourRegEIC(FourRegOptions &opts);
 void printFourRegEVSYS(FourRegOptions &opts);
 void printFourRegFREQM(FourRegOptions &opts);
 void printFourRegGCLK(FourRegOptions &opts);
-//FUTURE void printFourRegGMAC(FourRegOptions &opts);
 //FUTURE void printFourRegI2S(FourRegOptions &opts);
 //FUTURE void printFourRegICM(FourRegOptions &opts);
 void printFourRegMCLK(FourRegOptions &opts);
