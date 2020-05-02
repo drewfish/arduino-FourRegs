@@ -76,6 +76,10 @@ Prints out configuration for the AES peripheral.
 Prints out configuration for the CCL peripheral.
 
 
+### void printFourRegCMCC(FourRegOptions &opts)
+Prints out configuration for the cache controller.
+
+
 ### void printFourRegEIC(FourRegOptions &opts)
 Prints out configuration for the external interrupt controller.
 

@@ -433,6 +433,83 @@ void printFourRegCCL(FourRegOptions &opts) {
 }
 
 
+void printFourRegCMCC(FourRegOptions &opts) {
+    if (!CMCC->SR.bit.CSTS && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- CMCC");
+
+    opts.print.print("TYPE: ");
+    // datasheet rev E has fields not in Atmel CMSIS header
+    if (CMCC->TYPE.reg & (1<<0)) { opts.print.print(" AP"); }
+    if (CMCC->TYPE.reg & (1<<1)) { opts.print.print(" GCLK"); }
+    if (CMCC->TYPE.reg & (1<<2)) { opts.print.print(" RANDP"); }
+    if (CMCC->TYPE.reg & (1<<3)) { opts.print.print(" LRUP"); }
+    PRINTFLAG(CMCC->TYPE, RRP);
+    opts.print.print(" waynum=");
+    switch (CMCC->TYPE.bit.WAYNUM) {
+        case 0x0: opts.print.print("DMAPPED"); break;
+        case 0x1: opts.print.print("ARCH2WAY"); break;
+        case 0x2: opts.print.print("ARCH4WAY"); break;
+        case 0x3: opts.print.print("ARCH8WAY"); break;
+    }
+    PRINTFLAG(CMCC->TYPE, LCKDOWN);
+    opts.print.print(" csize=");
+    switch (CMCC->TYPE.bit.CSIZE) {
+        case 0x0: opts.print.print("1KB"); break;
+        case 0x1: opts.print.print("2KB"); break;
+        case 0x2: opts.print.print("4KB"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    opts.print.print(" clsize=");
+    switch (CMCC->TYPE.bit.CLSIZE) {
+        case 0x0: opts.print.print("16B"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    PRINTNL();
+
+    opts.print.print("CFG: ");
+    PRINTFLAG(CMCC->CFG, ICDIS);
+    PRINTFLAG(CMCC->CFG, DCDIS);
+    opts.print.print(" csizesw=");
+    switch (CMCC->CFG.bit.CSIZESW) {
+        case 0x0: opts.print.print("1KB"); break;
+        case 0x1: opts.print.print("2KB"); break;
+        case 0x2: opts.print.print("4KB"); break;
+        case 0x3: opts.print.print("8KB"); break;
+        case 0x4: opts.print.print("16KB"); break;
+        case 0x5: opts.print.print("32KB"); break;
+        case 0x6: opts.print.print("64KB"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    PRINTNL();
+
+    opts.print.print("SR: ");
+    PRINTFLAG(CMCC->SR, CSTS);
+    PRINTNL();
+
+    opts.print.print("LCKWAY:  ");
+    PRINTHEX(CMCC->LCKWAY.bit.LCKWAY);
+    PRINTNL();
+
+
+    opts.print.print("MEN:  ");
+    PRINTFLAG(CMCC->MEN, MENABLE);
+    PRINTNL();
+
+    if (CMCC->MEN.bit.MENABLE) {
+        opts.print.print("MCFG:  mode=");
+        switch (CMCC->MCFG.bit.MODE) {
+            case 0x0: opts.print.print("CYCLE_COUNT"); break;
+            case 0x1: opts.print.print("IHIT_COUNT"); break;
+            case 0x2: opts.print.print("DHIT_COUNT"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        PRINTNL();
+    }
+}
+
+
 void printFourRegEIC_SENSE(FourRegOptions &opts, uint8_t sense) {
     switch (sense) {
         case 0x0: opts.print.print("none"); break;
@@ -2836,6 +2913,7 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegRTC(opts);
 
     // show core peripherals
+    printFourRegCMCC(opts);
     //FUTURE printFourRegDSU(opts);
     printFourRegPAC(opts);
     printFourRegPM(opts);
@@ -2849,7 +2927,6 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegAES(opts);
     //FUTURE printFourRegCAN(opts);
     printFourRegCCL(opts);
-    //FUTURE printFourRegCMCC(opts);
     //FUTURE printFourRegDAC(opts);
     //FUTURE printFourRegDMAC(opts);
     printFourRegEIC(opts);
