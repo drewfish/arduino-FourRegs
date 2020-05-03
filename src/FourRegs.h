@@ -53,7 +53,7 @@ void printFourRegEVSYS(FourRegOptions &opts);
 void printFourRegFREQM(FourRegOptions &opts);
 void printFourRegGCLK(FourRegOptions &opts);
 void printFourRegI2S(FourRegOptions &opts);
-//FUTURE void printFourRegICM(FourRegOptions &opts);
+void printFourRegICM(FourRegOptions &opts);
 void printFourRegMCLK(FourRegOptions &opts);
 void printFourRegNVMCTRL(FourRegOptions &opts);
 void printFourRegOSC32KCTRL(FourRegOptions &opts);

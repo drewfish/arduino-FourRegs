@@ -1122,6 +1122,136 @@ void printFourRegFREQM(FourRegOptions &opts) {
 }
 
 
+// table 14-4 (datasheet rev E)
+static const char* FourRegsGCLK_SRC00 = "XOSC0";
+static const char* FourRegsGCLK_SRC01 = "XOSC1";
+static const char* FourRegsGCLK_SRC02 = "GCLKIN";
+static const char* FourRegsGCLK_SRC03 = "GCLKGEN1";
+static const char* FourRegsGCLK_SRC04 = "OSCULP32K";
+static const char* FourRegsGCLK_SRC05 = "XOSC32K";
+static const char* FourRegsGCLK_SRC06 = "DFLL48M";
+static const char* FourRegsGCLK_SRC07 = "DPLL0";
+static const char* FourRegsGCLK_SRC08 = "DPLL1";
+static const char* const FourRegsGCLK_SRCs[] = {
+    FourRegsGCLK_SRC00, FourRegsGCLK_SRC01, FourRegsGCLK_SRC02, FourRegsGCLK_SRC03,
+    FourRegsGCLK_SRC04, FourRegsGCLK_SRC05, FourRegsGCLK_SRC06, FourRegsGCLK_SRC07,
+    FourRegsGCLK_SRC08,  FourRegs__UNKNOWN,  FourRegs__UNKNOWN,  FourRegs__UNKNOWN,
+    FourRegs__UNKNOWN,   FourRegs__UNKNOWN,  FourRegs__UNKNOWN,  FourRegs__UNKNOWN,
+};
+// table 14-9 (datasheet rev E)
+static const char* FourRegsGCLK_CHAN00 = "OSCCTRL_DFLL48M_REF";
+static const char* FourRegsGCLK_CHAN01 = "OSCCTRL_DPLL0_REF";
+static const char* FourRegsGCLK_CHAN02 = "OSCCTRL_DPLL1_REF";
+static const char* FourRegsGCLK_CHAN03 = "PCH03(slow)";
+static const char* FourRegsGCLK_CHAN04 = "EIC";
+static const char* FourRegsGCLK_CHAN05 = "FREQM_MSR";
+static const char* FourRegsGCLK_CHAN06 = "FREQM_REF";
+static const char* FourRegsGCLK_CHAN07 = "SERCOM0_CORE";
+static const char* FourRegsGCLK_CHAN08 = "SERCOM1_CORE";
+static const char* FourRegsGCLK_CHAN09 = "TC0_TC1";
+static const char* FourRegsGCLK_CHAN10 = "USB";
+static const char* FourRegsGCLK_CHAN11 = "EVSYS0";
+static const char* FourRegsGCLK_CHAN12 = "EVSYS1";
+static const char* FourRegsGCLK_CHAN13 = "EVSYS2";
+static const char* FourRegsGCLK_CHAN14 = "EVSYS3";
+static const char* FourRegsGCLK_CHAN15 = "EVSYS4";
+static const char* FourRegsGCLK_CHAN16 = "EVSYS5";
+static const char* FourRegsGCLK_CHAN17 = "EVSYS6";
+static const char* FourRegsGCLK_CHAN18 = "EVSYS7";
+static const char* FourRegsGCLK_CHAN19 = "EVSYS8";
+static const char* FourRegsGCLK_CHAN20 = "EVSYS9";
+static const char* FourRegsGCLK_CHAN21 = "EVSYS10";
+static const char* FourRegsGCLK_CHAN22 = "EVSYS11";
+static const char* FourRegsGCLK_CHAN23 = "SERCOM2_CORE";
+static const char* FourRegsGCLK_CHAN24 = "SERCOM3_CORE";
+static const char* FourRegsGCLK_CHAN25 = "TCC0_TCC1";
+static const char* FourRegsGCLK_CHAN26 = "TC2_TC3";
+static const char* FourRegsGCLK_CHAN27 = "CAN0";
+static const char* FourRegsGCLK_CHAN28 = "CAN1";
+static const char* FourRegsGCLK_CHAN29 = "TCC2_TCC3";
+static const char* FourRegsGCLK_CHAN30 = "TC4_TC5";
+static const char* FourRegsGCLK_CHAN31 = "PDEC";
+static const char* FourRegsGCLK_CHAN32 = "AC";
+static const char* FourRegsGCLK_CHAN33 = "CCL";
+static const char* FourRegsGCLK_CHAN34 = "SERCOM4_CORE";
+static const char* FourRegsGCLK_CHAN35 = "SERCOM5_CORE";
+static const char* FourRegsGCLK_CHAN36 = "SERCOM6_CORE";
+static const char* FourRegsGCLK_CHAN37 = "SERCOM7_CORE";
+static const char* FourRegsGCLK_CHAN38 = "TCC4";
+static const char* FourRegsGCLK_CHAN39 = "TC6_TC7";
+static const char* FourRegsGCLK_CHAN40 = "ADC0";
+static const char* FourRegsGCLK_CHAN41 = "ADC1";
+static const char* FourRegsGCLK_CHAN42 = "DAC";
+static const char* FourRegsGCLK_CHAN43 = "I2S_0";
+static const char* FourRegsGCLK_CHAN44 = "I2S_1";
+static const char* FourRegsGCLK_CHAN45 = "SDHC0";
+static const char* FourRegsGCLK_CHAN46 = "SDHC1";
+static const char* FourRegsGCLK_CHAN47 = "CM4_TRACE";
+static const char* const FourRegsGCLK_CHANs[] = {
+    FourRegsGCLK_CHAN00, FourRegsGCLK_CHAN01, FourRegsGCLK_CHAN02, FourRegsGCLK_CHAN03, FourRegsGCLK_CHAN04, FourRegsGCLK_CHAN05, FourRegsGCLK_CHAN06, FourRegsGCLK_CHAN07,
+    FourRegsGCLK_CHAN08, FourRegsGCLK_CHAN09, FourRegsGCLK_CHAN10, FourRegsGCLK_CHAN11, FourRegsGCLK_CHAN12, FourRegsGCLK_CHAN13, FourRegsGCLK_CHAN14, FourRegsGCLK_CHAN15,
+    FourRegsGCLK_CHAN16, FourRegsGCLK_CHAN17, FourRegsGCLK_CHAN18, FourRegsGCLK_CHAN19, FourRegsGCLK_CHAN20, FourRegsGCLK_CHAN21, FourRegsGCLK_CHAN22, FourRegsGCLK_CHAN23,
+    FourRegsGCLK_CHAN24, FourRegsGCLK_CHAN25, FourRegsGCLK_CHAN26, FourRegsGCLK_CHAN27, FourRegsGCLK_CHAN28, FourRegsGCLK_CHAN29, FourRegsGCLK_CHAN30, FourRegsGCLK_CHAN31,
+    FourRegsGCLK_CHAN32, FourRegsGCLK_CHAN33, FourRegsGCLK_CHAN34, FourRegsGCLK_CHAN35, FourRegsGCLK_CHAN36, FourRegsGCLK_CHAN37, FourRegsGCLK_CHAN38, FourRegsGCLK_CHAN39,
+    FourRegsGCLK_CHAN40, FourRegsGCLK_CHAN41, FourRegsGCLK_CHAN42, FourRegsGCLK_CHAN43, FourRegsGCLK_CHAN44, FourRegsGCLK_CHAN45, FourRegsGCLK_CHAN46, FourRegsGCLK_CHAN47,
+};
+void printFourRegGCLK(FourRegOptions &opts) {
+    opts.print.println("--------------------------- GCLK");
+    for (uint8_t genid = 0; genid < 12; genid++) {
+        GCLK_GENCTRL_Type gen;
+        while (GCLK->SYNCBUSY.reg) {}
+        COPYVOL(gen, GCLK->GENCTRL[genid]);
+        if (!gen.bit.GENEN && !opts.showDisabled) {
+            continue;
+        }
+        opts.print.print("GEN");
+        PRINTPAD2(genid);
+        opts.print.print(":  ");
+        if (!gen.bit.GENEN) {
+            opts.print.println(FourRegs__DISABLED);
+            continue;
+        }
+        opts.print.print(FourRegsGCLK_SRCs[gen.bit.SRC]);
+        opts.print.print("/");
+        if (gen.bit.DIVSEL) {
+            PRINTSCALE(gen.bit.DIV + 1);
+        } else {
+            if (gen.bit.DIV > 1) {
+                opts.print.print(gen.bit.DIV);
+            } else {
+                opts.print.print(1);
+            }
+        }
+        PRINTFLAG(gen, IDC);
+        PRINTFLAG(gen, OOV);
+        PRINTFLAG(gen, OE);
+        PRINTFLAG(gen, RUNSTDBY);
+        PRINTNL();
+    }
+    opts.print.println("GCLK_MAIN:  GEN00 (always)");
+    for (uint8_t pchid = 1; pchid < 48; pchid++) {
+        GCLK_PCHCTRL_Type pch;
+        while (GCLK->SYNCBUSY.reg) {}
+        COPYVOL(pch, GCLK->PCHCTRL[pchid]);
+        if (!pch.bit.CHEN && !opts.showDisabled) {
+            continue;
+        }
+        opts.print.print("GCLK_");
+        opts.print.print(FourRegsGCLK_CHANs[pchid]);
+        opts.print.print(": ");
+        if (pch.bit.CHEN) {
+            opts.print.print(" GEN");
+            PRINTPAD2(pch.bit.GEN);
+            PRINTFLAG(pch, WRTLOCK);
+            PRINTNL();
+        } else {
+            opts.print.print(" ");
+            opts.print.println(FourRegs__DISABLED);
+        }
+    }
+}
+
+
 void printFourRegI2S(FourRegOptions &opts) {
     while (I2S->SYNCBUSY.bit.ENABLE) {}
     if (!I2S->CTRLA.bit.ENABLE && !opts.showDisabled) {
@@ -1274,133 +1404,49 @@ void printFourRegI2S(FourRegOptions &opts) {
 }
 
 
-// table 14-4 (datasheet rev E)
-static const char* FourRegsGCLK_SRC00 = "XOSC0";
-static const char* FourRegsGCLK_SRC01 = "XOSC1";
-static const char* FourRegsGCLK_SRC02 = "GCLKIN";
-static const char* FourRegsGCLK_SRC03 = "GCLKGEN1";
-static const char* FourRegsGCLK_SRC04 = "OSCULP32K";
-static const char* FourRegsGCLK_SRC05 = "XOSC32K";
-static const char* FourRegsGCLK_SRC06 = "DFLL48M";
-static const char* FourRegsGCLK_SRC07 = "DPLL0";
-static const char* FourRegsGCLK_SRC08 = "DPLL1";
-static const char* const FourRegsGCLK_SRCs[] = {
-    FourRegsGCLK_SRC00, FourRegsGCLK_SRC01, FourRegsGCLK_SRC02, FourRegsGCLK_SRC03,
-    FourRegsGCLK_SRC04, FourRegsGCLK_SRC05, FourRegsGCLK_SRC06, FourRegsGCLK_SRC07,
-    FourRegsGCLK_SRC08,  FourRegs__UNKNOWN,  FourRegs__UNKNOWN,  FourRegs__UNKNOWN,
-    FourRegs__UNKNOWN,   FourRegs__UNKNOWN,  FourRegs__UNKNOWN,  FourRegs__UNKNOWN,
-};
-// table 14-9 (datasheet rev E)
-static const char* FourRegsGCLK_CHAN00 = "OSCCTRL_DFLL48M_REF";
-static const char* FourRegsGCLK_CHAN01 = "OSCCTRL_DPLL0_REF";
-static const char* FourRegsGCLK_CHAN02 = "OSCCTRL_DPLL1_REF";
-static const char* FourRegsGCLK_CHAN03 = "PCH03(slow)";
-static const char* FourRegsGCLK_CHAN04 = "EIC";
-static const char* FourRegsGCLK_CHAN05 = "FREQM_MSR";
-static const char* FourRegsGCLK_CHAN06 = "FREQM_REF";
-static const char* FourRegsGCLK_CHAN07 = "SERCOM0_CORE";
-static const char* FourRegsGCLK_CHAN08 = "SERCOM1_CORE";
-static const char* FourRegsGCLK_CHAN09 = "TC0_TC1";
-static const char* FourRegsGCLK_CHAN10 = "USB";
-static const char* FourRegsGCLK_CHAN11 = "EVSYS0";
-static const char* FourRegsGCLK_CHAN12 = "EVSYS1";
-static const char* FourRegsGCLK_CHAN13 = "EVSYS2";
-static const char* FourRegsGCLK_CHAN14 = "EVSYS3";
-static const char* FourRegsGCLK_CHAN15 = "EVSYS4";
-static const char* FourRegsGCLK_CHAN16 = "EVSYS5";
-static const char* FourRegsGCLK_CHAN17 = "EVSYS6";
-static const char* FourRegsGCLK_CHAN18 = "EVSYS7";
-static const char* FourRegsGCLK_CHAN19 = "EVSYS8";
-static const char* FourRegsGCLK_CHAN20 = "EVSYS9";
-static const char* FourRegsGCLK_CHAN21 = "EVSYS10";
-static const char* FourRegsGCLK_CHAN22 = "EVSYS11";
-static const char* FourRegsGCLK_CHAN23 = "SERCOM2_CORE";
-static const char* FourRegsGCLK_CHAN24 = "SERCOM3_CORE";
-static const char* FourRegsGCLK_CHAN25 = "TCC0_TCC1";
-static const char* FourRegsGCLK_CHAN26 = "TC2_TC3";
-static const char* FourRegsGCLK_CHAN27 = "CAN0";
-static const char* FourRegsGCLK_CHAN28 = "CAN1";
-static const char* FourRegsGCLK_CHAN29 = "TCC2_TCC3";
-static const char* FourRegsGCLK_CHAN30 = "TC4_TC5";
-static const char* FourRegsGCLK_CHAN31 = "PDEC";
-static const char* FourRegsGCLK_CHAN32 = "AC";
-static const char* FourRegsGCLK_CHAN33 = "CCL";
-static const char* FourRegsGCLK_CHAN34 = "SERCOM4_CORE";
-static const char* FourRegsGCLK_CHAN35 = "SERCOM5_CORE";
-static const char* FourRegsGCLK_CHAN36 = "SERCOM6_CORE";
-static const char* FourRegsGCLK_CHAN37 = "SERCOM7_CORE";
-static const char* FourRegsGCLK_CHAN38 = "TCC4";
-static const char* FourRegsGCLK_CHAN39 = "TC6_TC7";
-static const char* FourRegsGCLK_CHAN40 = "ADC0";
-static const char* FourRegsGCLK_CHAN41 = "ADC1";
-static const char* FourRegsGCLK_CHAN42 = "DAC";
-static const char* FourRegsGCLK_CHAN43 = "I2S_0";
-static const char* FourRegsGCLK_CHAN44 = "I2S_1";
-static const char* FourRegsGCLK_CHAN45 = "SDHC0";
-static const char* FourRegsGCLK_CHAN46 = "SDHC1";
-static const char* FourRegsGCLK_CHAN47 = "CM4_TRACE";
-static const char* const FourRegsGCLK_CHANs[] = {
-    FourRegsGCLK_CHAN00, FourRegsGCLK_CHAN01, FourRegsGCLK_CHAN02, FourRegsGCLK_CHAN03, FourRegsGCLK_CHAN04, FourRegsGCLK_CHAN05, FourRegsGCLK_CHAN06, FourRegsGCLK_CHAN07,
-    FourRegsGCLK_CHAN08, FourRegsGCLK_CHAN09, FourRegsGCLK_CHAN10, FourRegsGCLK_CHAN11, FourRegsGCLK_CHAN12, FourRegsGCLK_CHAN13, FourRegsGCLK_CHAN14, FourRegsGCLK_CHAN15,
-    FourRegsGCLK_CHAN16, FourRegsGCLK_CHAN17, FourRegsGCLK_CHAN18, FourRegsGCLK_CHAN19, FourRegsGCLK_CHAN20, FourRegsGCLK_CHAN21, FourRegsGCLK_CHAN22, FourRegsGCLK_CHAN23,
-    FourRegsGCLK_CHAN24, FourRegsGCLK_CHAN25, FourRegsGCLK_CHAN26, FourRegsGCLK_CHAN27, FourRegsGCLK_CHAN28, FourRegsGCLK_CHAN29, FourRegsGCLK_CHAN30, FourRegsGCLK_CHAN31,
-    FourRegsGCLK_CHAN32, FourRegsGCLK_CHAN33, FourRegsGCLK_CHAN34, FourRegsGCLK_CHAN35, FourRegsGCLK_CHAN36, FourRegsGCLK_CHAN37, FourRegsGCLK_CHAN38, FourRegsGCLK_CHAN39,
-    FourRegsGCLK_CHAN40, FourRegsGCLK_CHAN41, FourRegsGCLK_CHAN42, FourRegsGCLK_CHAN43, FourRegsGCLK_CHAN44, FourRegsGCLK_CHAN45, FourRegsGCLK_CHAN46, FourRegsGCLK_CHAN47,
-};
-void printFourRegGCLK(FourRegOptions &opts) {
-    opts.print.println("--------------------------- GCLK");
-    for (uint8_t genid = 0; genid < 12; genid++) {
-        GCLK_GENCTRL_Type gen;
-        while (GCLK->SYNCBUSY.reg) {}
-        COPYVOL(gen, GCLK->GENCTRL[genid]);
-        if (!gen.bit.GENEN && !opts.showDisabled) {
-            continue;
-        }
-        opts.print.print("GEN");
-        PRINTPAD2(genid);
-        opts.print.print(":  ");
-        if (!gen.bit.GENEN) {
-            opts.print.println(FourRegs__DISABLED);
-            continue;
-        }
-        opts.print.print(FourRegsGCLK_SRCs[gen.bit.SRC]);
-        opts.print.print("/");
-        if (gen.bit.DIVSEL) {
-            PRINTSCALE(gen.bit.DIV + 1);
-        } else {
-            if (gen.bit.DIV > 1) {
-                opts.print.print(gen.bit.DIV);
-            } else {
-                opts.print.print(1);
-            }
-        }
-        PRINTFLAG(gen, IDC);
-        PRINTFLAG(gen, OOV);
-        PRINTFLAG(gen, OE);
-        PRINTFLAG(gen, RUNSTDBY);
-        PRINTNL();
+void printFourRegICM(FourRegOptions &opts) {
+    if (!ICM->SR.bit.ENABLE && !opts.showDisabled) {
+        return;
     }
-    opts.print.println("GCLK_MAIN:  GEN00 (always)");
-    for (uint8_t pchid = 1; pchid < 48; pchid++) {
-        GCLK_PCHCTRL_Type pch;
-        while (GCLK->SYNCBUSY.reg) {}
-        COPYVOL(pch, GCLK->PCHCTRL[pchid]);
-        if (!pch.bit.CHEN && !opts.showDisabled) {
-            continue;
-        }
-        opts.print.print("GCLK_");
-        opts.print.print(FourRegsGCLK_CHANs[pchid]);
-        opts.print.print(": ");
-        if (pch.bit.CHEN) {
-            opts.print.print(" GEN");
-            PRINTPAD2(pch.bit.GEN);
-            PRINTFLAG(pch, WRTLOCK);
-            PRINTNL();
-        } else {
-            opts.print.print(" ");
-            opts.print.println(FourRegs__DISABLED);
+    opts.print.println("--------------------------- ICM");
+
+    opts.print.print("CFG: ");
+    PRINTFLAG(ICM->CFG, WBDIS);
+    PRINTFLAG(ICM->CFG, EOMDIS);
+    PRINTFLAG(ICM->CFG, SLBDIS);
+    opts.print.print(" BBC=");
+    opts.print.print(ICM->CFG.bit.BBC);
+    PRINTFLAG(ICM->CFG, ASCD);
+    PRINTFLAG(ICM->CFG, DUALBUFF);
+    PRINTFLAG(ICM->CFG, UIHASH);
+    if (ICM->CFG.bit.UIHASH) {
+        switch (ICM->CFG.bit.UALGO) {
+            case 0x0: opts.print.print("SHA1"); break;
+            case 0x1: opts.print.print("SHA256"); break;
+            case 0x2: opts.print.print("SHA224"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
         }
     }
+    opts.print.print(" HAPROT=");
+    PRINTHEX(ICM->CFG.bit.HAPROT);
+    opts.print.print(" DAPROT=");
+    PRINTHEX(ICM->CFG.bit.DAPROT);
+    PRINTNL();
+
+    opts.print.print("CTRL: ");
+    PRINTFLAG(ICM->CTRL, ENABLE);
+    PRINTFLAG(ICM->CTRL, DISABLE);
+    opts.print.print(" REHASH=");
+    PRINTHEX(ICM->CTRL.bit.REHASH);
+    opts.print.print(" RMDIS=");
+    PRINTHEX(ICM->CTRL.bit.RMDIS);
+    opts.print.print(" RMEN=");
+    PRINTHEX(ICM->CTRL.bit.RMEN);
+    PRINTNL();
+
+    opts.print.print("UASR:  URAT=");
+    PRINTHEX(ICM->UASR.bit.URAT);
+    PRINTNL();
 }
 
 
@@ -3351,7 +3397,7 @@ void printFourRegs(FourRegOptions &opts) {
 #ifdef I2S
     printFourRegI2S(opts);
 #endif
-    //FUTURE printFourRegICM(opts);
+    printFourRegICM(opts);
     printFourRegNVMCTRL(opts);
     //FUTURE printFourRegPCC(opts);
     //FUTURE printFourRegPDEC(opts);
