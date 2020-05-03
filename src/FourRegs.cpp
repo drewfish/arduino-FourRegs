@@ -1122,6 +1122,158 @@ void printFourRegFREQM(FourRegOptions &opts) {
 }
 
 
+void printFourRegI2S(FourRegOptions &opts) {
+    while (I2S->SYNCBUSY.bit.ENABLE) {}
+    if (!I2S->CTRLA.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- I2S");
+
+    opts.print.print("CTRLA: ");
+    while (I2S->SYNCBUSY.bit.ENABLE) {}
+    PRINTFLAG(I2S->CTRLA, ENABLE);
+    while (I2S->SYNCBUSY.bit.CKEN0) {}
+    PRINTFLAG(I2S->CTRLA, CKEN0);
+    while (I2S->SYNCBUSY.bit.CKEN1) {}
+    PRINTFLAG(I2S->CTRLA, CKEN1);
+    while (I2S->SYNCBUSY.bit.TXEN) {}
+    PRINTFLAG(I2S->CTRLA, TXEN);
+    while (I2S->SYNCBUSY.bit.RXEN) {}
+    PRINTFLAG(I2S->CTRLA, RXEN);
+    PRINTNL();
+
+    for (uint8_t i; i < 2; i++) {
+        opts.print.print("CLKCTRL");
+        opts.print.print(i);
+        opts.print.print(":  slots=");
+        opts.print.print(I2S->CLKCTRL[i].bit.NBSLOTS + 1);
+        opts.print.print("x");
+        switch (I2S->CLKCTRL[i].bit.SLOTSIZE) {
+            case 0x0: opts.print.print("8bit"); break;
+            case 0x1: opts.print.print("16bit"); break;
+            case 0x2: opts.print.print("24bit"); break;
+            case 0x3: opts.print.print("32bit"); break;
+        }
+        opts.print.print(" fswidth=");
+        switch (I2S->CLKCTRL[i].bit.FSWIDTH) {
+            case 0x0: opts.print.print("SLOT"); break;
+            case 0x1: opts.print.print("HALF"); break;
+            case 0x2: opts.print.print("BIT"); break;
+            case 0x3: opts.print.print("BURST"); break;
+        }
+        opts.print.print(" bitdelay=");
+        opts.print.print(I2S->CLKCTRL[i].bit.BITDELAY ? "I2S" : "LJ");
+        opts.print.print(" fssel=");
+        opts.print.print(I2S->CLKCTRL[i].bit.FSSEL ? "FSPIN" : "SCKDIV");
+        PRINTFLAG(I2S->CLKCTRL[i], FSINV);
+        PRINTFLAG(I2S->CLKCTRL[i], FSOUTINV);
+        opts.print.print(" scksel=");
+        opts.print.print(I2S->CLKCTRL[i].bit.SCKSEL ? "SCKPIN" : "MCKDIV");
+        PRINTFLAG(I2S->CLKCTRL[i], SCKOUTINV);
+        if (I2S->CLKCTRL[i].bit.MCKEN) {
+            opts.print.print(" MCKEN mcksel=");
+            if (I2S->CLKCTRL[i].bit.MCKSEL) {
+                opts.print.print("GCLK/");
+                opts.print.print(I2S->CLKCTRL[i].bit.MCKOUTDIV + 1);
+            } else {
+                opts.print.print("MCKPIN");
+            }
+        }
+        opts.print.print(" mkdiv=");
+        opts.print.print(I2S->CLKCTRL[i].bit.MCKDIV + 1);
+        PRINTNL();
+    }
+
+    opts.print.print("TXCTRL:  txdefault=");
+    switch (I2S->TXCTRL.bit.TXDEFAULT) {
+        case 0x0: opts.print.print("ZERO"); break;
+        case 0x1: opts.print.print("ONE"); break;
+        /*0x2*/
+        case 0x3: opts.print.print("HIZ"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    PRINTFLAG(I2S->TXCTRL, TXSAME);
+    opts.print.print(" slotadj=");
+    opts.print.print(I2S->TXCTRL.bit.SLOTADJ ? "LEFT" : "RIGHT");
+    opts.print.print(" datasize=");
+    switch (I2S->TXCTRL.bit.DATASIZE) {
+        case 0x0: opts.print.print("32"); break;
+        case 0x1: opts.print.print("24"); break;
+        case 0x2: opts.print.print("20"); break;
+        case 0x3: opts.print.print("18"); break;
+        case 0x4: opts.print.print("16"); break;
+        case 0x5: opts.print.print("16C"); break;
+        case 0x6: opts.print.print("8"); break;
+        case 0x7: opts.print.print("8C"); break;
+    }
+    opts.print.print(" wordadj=");
+    opts.print.print(I2S->TXCTRL.bit.WORDADJ ? "LEFT" : "RIGHT");
+    opts.print.print(" extend=");
+    switch (I2S->TXCTRL.bit.EXTEND) {
+        case 0x0: opts.print.print("ZERO"); break;
+        case 0x1: opts.print.print("ONE"); break;
+        case 0x2: opts.print.print("MSBIT"); break;
+        case 0x3: opts.print.print("LSBIT"); break;
+    }
+    opts.print.print(" bitrev=");
+    opts.print.print(I2S->TXCTRL.bit.BITREV ? "LSBIT" : "MSBIT");
+    for (uint8_t i = 0; i < 8; i++) {
+        if (I2S->TXCTRL.vec.SLOTDIS & (1<<i)) {
+            opts.print.print(" SLOTDIS");
+            opts.print.print(i);
+        }
+    }
+    opts.print.print(I2S->TXCTRL.bit.MONO ? " MONO" : " STEREO");
+    opts.print.print(" dma=");
+    opts.print.print(I2S->TXCTRL.bit.DMA ? "MULTIPLE" : "SINGLE");
+    PRINTNL();
+
+    opts.print.print("RXCTRL:  sermode=");
+    switch (I2S->RXCTRL.bit.SERMODE) {
+        case 0x0: opts.print.print("RX"); break;
+        case 0x2: opts.print.print("PDM2"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    opts.print.print(" clksel=CLK");
+    opts.print.print(I2S->RXCTRL.bit.CLKSEL);
+    opts.print.print(" slotadj=");
+    opts.print.print(I2S->RXCTRL.bit.SLOTADJ ? "LEFT" : "RIGHT");
+    opts.print.print(" datasize=");
+    switch (I2S->RXCTRL.bit.DATASIZE) {
+        case 0x0: opts.print.print("32"); break;
+        case 0x1: opts.print.print("24"); break;
+        case 0x2: opts.print.print("20"); break;
+        case 0x3: opts.print.print("18"); break;
+        case 0x4: opts.print.print("16"); break;
+        case 0x5: opts.print.print("16C"); break;
+        case 0x6: opts.print.print("8"); break;
+        case 0x7: opts.print.print("8C"); break;
+    }
+    opts.print.print(" wordadj=");
+    opts.print.print(I2S->RXCTRL.bit.WORDADJ ? "LEFT" : "RIGHT");
+    opts.print.print(" extend=");
+    switch (I2S->RXCTRL.bit.EXTEND) {
+        case 0x0: opts.print.print("ZERO"); break;
+        case 0x1: opts.print.print("ONE"); break;
+        case 0x2: opts.print.print("MSBIT"); break;
+        case 0x3: opts.print.print("LSBIT"); break;
+    }
+    opts.print.print(" bitrev=");
+    opts.print.print(I2S->RXCTRL.bit.BITREV ? "LSBIT" : "MSBIT");
+    for (uint8_t i = 0; i < 8; i++) {
+        if (I2S->RXCTRL.vec.SLOTDIS & (1<<i)) {
+            opts.print.print(" SLOTDIS");
+            opts.print.print(i);
+        }
+    }
+    opts.print.print(I2S->RXCTRL.bit.MONO ? " MONO" : " STEREO");
+    opts.print.print(" dma=");
+    opts.print.print(I2S->RXCTRL.bit.DMA ? "MULTIPLE" : "SINGLE");
+    PRINTFLAG(I2S->RXCTRL, RXLOOP);
+    PRINTNL();
+}
+
+
 // table 14-4 (datasheet rev E)
 static const char* FourRegsGCLK_SRC00 = "XOSC0";
 static const char* FourRegsGCLK_SRC01 = "XOSC1";
@@ -1182,8 +1334,8 @@ static const char* FourRegsGCLK_CHAN39 = "TC6_TC7";
 static const char* FourRegsGCLK_CHAN40 = "ADC0";
 static const char* FourRegsGCLK_CHAN41 = "ADC1";
 static const char* FourRegsGCLK_CHAN42 = "DAC";
-static const char* FourRegsGCLK_CHAN43 = "I2S";
-static const char* FourRegsGCLK_CHAN44 = "I2S";
+static const char* FourRegsGCLK_CHAN43 = "I2S_0";
+static const char* FourRegsGCLK_CHAN44 = "I2S_1";
 static const char* FourRegsGCLK_CHAN45 = "SDHC0";
 static const char* FourRegsGCLK_CHAN46 = "SDHC1";
 static const char* FourRegsGCLK_CHAN47 = "CM4_TRACE";
@@ -3196,7 +3348,9 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegDAC(opts);
     printFourRegEIC(opts);
     printFourRegFREQM(opts);
-    //FUTURE printFourRegI2S(opts);
+#ifdef I2S
+    printFourRegI2S(opts);
+#endif
     //FUTURE printFourRegICM(opts);
     printFourRegNVMCTRL(opts);
     //FUTURE printFourRegPCC(opts);

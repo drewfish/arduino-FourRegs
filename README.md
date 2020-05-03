@@ -130,6 +130,10 @@ GCLK_DAC:  GEN04
 ```
 
 
+### void printFourRegI2S(FourRegOptions &opts)
+Prints out configuration for the I2S peripheral.
+
+
 ### void printFourRegMCLK(FourRegOptions &opts)
 Prints out configuration for the main (CPU) clock.
 
