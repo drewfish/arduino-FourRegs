@@ -2199,6 +2199,34 @@ void printFourRegPAC(FourRegOptions &opts) {
 }
 
 
+void printFourRegPCC(FourRegOptions &opts) {
+    if (!PCC->MR.bit.PCEN && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- PCC");
+
+    opts.print.print("MR: ");
+    PRINTFLAG(PCC->MR, PCEN);
+    opts.print.print(" DSIZE=");
+    PRINTHEX(PCC->MR.bit.DSIZE);
+    PRINTFLAG(PCC->MR, SCALE);
+    PRINTFLAG(PCC->MR, ALWYS);
+    PRINTFLAG(PCC->MR, HALFS);
+    PRINTFLAG(PCC->MR, FRSTS);
+    opts.print.print(" isize=");
+    switch (PCC->MR.bit.ISIZE) {
+        case 0x0: opts.print.print("8BITS"); break;
+        case 0x1: opts.print.print("10BITS"); break;
+        case 0x2: opts.print.print("12BITS"); break;
+        case 0x3: opts.print.print("14BITS"); break;
+        default: opts.print.print(FourRegs__UNKNOWN); break;
+    }
+    opts.print.print(" isize=");
+    PRINTHEX(PCC->MR.bit.CID);
+    PRINTNL();
+}
+
+
 void printFourRegPM_CFG(FourRegOptions &opts, uint8_t v) {
     switch(v) {
         case 0x0: opts.print.print("RET"); break;
@@ -3399,7 +3427,7 @@ void printFourRegs(FourRegOptions &opts) {
 #endif
     printFourRegICM(opts);
     printFourRegNVMCTRL(opts);
-    //FUTURE printFourRegPCC(opts);
+    printFourRegPCC(opts);
     //FUTURE printFourRegPDEC(opts);
     printFourRegPORT(opts);
     //FUTURE printFourRegQSPI(opts);

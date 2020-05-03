@@ -213,6 +213,10 @@ STATUSD:
 ```
 
 
+### void printFourRegPCC(FourRegOptions &opts)
+Prints out configuration for the PCC peripheral.
+
+
 ### void printFourRegPM(FourRegOptions &opts)
 Prints out configuration for the power manager.
 
