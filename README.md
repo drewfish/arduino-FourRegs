@@ -132,6 +132,7 @@ GCLK_DAC:  GEN04
 
 ### void printFourRegI2S(FourRegOptions &opts)
 Prints out configuration for the I2S peripheral.
+This method only exists if the processor has the I2S peripheral.
 
 
 ### void printFourRegICM(FourRegOptions &opts)

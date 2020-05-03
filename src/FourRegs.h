@@ -52,7 +52,9 @@ void printFourRegEIC(FourRegOptions &opts);
 void printFourRegEVSYS(FourRegOptions &opts);
 void printFourRegFREQM(FourRegOptions &opts);
 void printFourRegGCLK(FourRegOptions &opts);
+#ifdef I2S
 void printFourRegI2S(FourRegOptions &opts);
+#endif
 void printFourRegICM(FourRegOptions &opts);
 void printFourRegMCLK(FourRegOptions &opts);
 void printFourRegNVMCTRL(FourRegOptions &opts);

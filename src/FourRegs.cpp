@@ -749,7 +749,7 @@ void printFourRegDMAC(FourRegOptions &opts) {
             switch (ch.CHEVCTRL.bit.EVOMODE) {
                 case 0x0: opts.print.print("DEFAULT"); break;
                 case 0x1: opts.print.print("TRIGACT"); break;
-                defaut: opts.print.print(FourRegs__RESERVED); break;
+                default: opts.print.print(FourRegs__RESERVED); break;
             }
         }
         PRINTNL();
@@ -1252,6 +1252,7 @@ void printFourRegGCLK(FourRegOptions &opts) {
 }
 
 
+#ifdef I2S
 void printFourRegI2S(FourRegOptions &opts) {
     while (I2S->SYNCBUSY.bit.ENABLE) {}
     if (!I2S->CTRLA.bit.ENABLE && !opts.showDisabled) {
@@ -1402,6 +1403,7 @@ void printFourRegI2S(FourRegOptions &opts) {
     PRINTFLAG(I2S->RXCTRL, RXLOOP);
     PRINTNL();
 }
+#endif
 
 
 void printFourRegICM(FourRegOptions &opts) {
