@@ -271,6 +271,10 @@ EVCTRL:
 ```
 
 
+### void printFourRegQSPI(FourRegOptions &opts)
+Prints out configuration for the QSPI peripheral.
+
+
 ### void printFourRegRTC(FourRegOptions &opts)
 Prints out configuration for the realtime clock.
 

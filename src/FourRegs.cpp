@@ -2645,6 +2645,94 @@ void printFourRegPORT(FourRegOptions &opts) {
 }
 
 
+void printFourRegQSPI(FourRegOptions &opts) {
+    if (!QSPI->STATUS.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- QSPI");
+
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(QSPI->CTRLA, ENABLE);
+    PRINTFLAG(QSPI->CTRLA, LASTXFER);
+    PRINTNL();
+
+    opts.print.print("CTRLB:  mode=");
+    opts.print.print(QSPI->CTRLB.bit.MODE ? "MEMORY" : "SPI");
+    PRINTFLAG(QSPI->CTRLB, LOOPEN);
+    PRINTFLAG(QSPI->CTRLB, WDRBT);
+    opts.print.print(" smemreg=");
+    opts.print.print(QSPI->CTRLB.bit.SMEMREG ? "APB" : "AHB");
+    opts.print.print(" smemreg=");
+    switch (QSPI->CTRLB.bit.CSMODE) {
+        case 0x0: opts.print.print("NORELOAD"); break;
+        case 0x1: opts.print.print("LASTXFER"); break;
+        case 0x2: opts.print.print("SYSTEMATICALLY"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    opts.print.print(" datalen=");
+    switch (QSPI->CTRLB.bit.DATALEN) {
+        case 0x0: opts.print.print("8BITS"); break;
+        case 0x1: opts.print.print("9BITS"); break;
+        case 0x2: opts.print.print("10BITS"); break;
+        case 0x3: opts.print.print("11BITS"); break;
+        case 0x4: opts.print.print("12BITS"); break;
+        case 0x5: opts.print.print("13BITS"); break;
+        case 0x6: opts.print.print("14BITS"); break;
+        case 0x7: opts.print.print("15BITS"); break;
+        case 0x8: opts.print.print("16BITS"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    opts.print.print(" DLYBCT=");
+    opts.print.print(QSPI->CTRLB.bit.DLYBCT);
+    opts.print.print(" DLYCS=");
+    opts.print.print(QSPI->CTRLB.bit.DLYCS);
+    PRINTNL();
+
+    opts.print.print("BAUD:  cpol=");
+    opts.print.print(QSPI->BAUD.bit.CPOL ? "HIGH" : "LOW");
+    opts.print.print(" cpha=");
+    opts.print.print(QSPI->BAUD.bit.CPHA);
+    opts.print.print(" BAUD=");
+    opts.print.print(QSPI->BAUD.bit.BAUD);
+    opts.print.print(" DLYBS=");
+    opts.print.print(QSPI->BAUD.bit.DLYBS);
+    PRINTNL();
+
+    opts.print.print("INSTRFRAME:  WIDTH=");
+    PRINTHEX(QSPI->INSTRFRAME.bit.WIDTH);
+    PRINTFLAG(QSPI->INSTRFRAME, INSTREN);
+    PRINTFLAG(QSPI->INSTRFRAME, ADDREN);
+    PRINTFLAG(QSPI->INSTRFRAME, OPTCODEEN);
+    PRINTFLAG(QSPI->INSTRFRAME, DATAEN);
+    opts.print.print(" optcodelen=");
+    switch (QSPI->INSTRFRAME.bit.OPTCODELEN) {
+        case 0x0: opts.print.print("1BIT"); break;
+        case 0x1: opts.print.print("2BITS"); break;
+        case 0x2: opts.print.print("4BITS"); break;
+        case 0x3: opts.print.print("8BITS"); break;
+    }
+    opts.print.print(" addrlen=");
+    opts.print.print(QSPI->INSTRFRAME.bit.ADDRLEN ? "32BITS" : "24BITS");
+    opts.print.print(" tfrtype=");
+    switch (QSPI->INSTRFRAME.bit.TFRTYPE) {
+        case 0x0: opts.print.print("READ"); break;
+        case 0x1: opts.print.print("READMEM"); break;
+        case 0x2: opts.print.print("WRITE"); break;
+        case 0x3: opts.print.print("WRITEMEM"); break;
+    }
+    PRINTFLAG(QSPI->INSTRFRAME, CRMODE);
+    PRINTFLAG(QSPI->INSTRFRAME, DDREN);
+    opts.print.print(" DUMMYLEN=");
+    opts.print.print(QSPI->INSTRFRAME.bit.DUMMYLEN);
+    PRINTNL();
+
+    opts.print.print("SCRAMBCTRL: ");
+    PRINTFLAG(QSPI->SCRAMBCTRL, ENABLE);
+    PRINTFLAG(QSPI->SCRAMBCTRL, RANDOMDIS);
+    PRINTNL();
+}
+
+
 void printFourRegSERCOM_I2CM(FourRegOptions &opts, SercomI2cm &i2cm) {
     opts.print.print("CTRLA: ");
     PRINTFLAG(i2cm.CTRLA, ENABLE);
@@ -3529,7 +3617,7 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegPCC(opts);
     printFourRegPDEC(opts);
     printFourRegPORT(opts);
-    //FUTURE printFourRegQSPI(opts);
+    printFourRegQSPI(opts);
     printFourRegSERCOM(opts, SERCOM0, 0);
     printFourRegSERCOM(opts, SERCOM1, 1);
     printFourRegSERCOM(opts, SERCOM2, 2);
