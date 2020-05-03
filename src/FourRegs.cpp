@@ -3555,6 +3555,23 @@ void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
 }
 
 
+void printFourRegTRNG(FourRegOptions &opts) {
+    if (!TRNG->CTRLA.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- TRNG");
+
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(TRNG->CTRLA, ENABLE);
+    PRINTFLAG(TRNG->CTRLA, RUNSTDBY);
+    PRINTNL();
+
+    opts.print.print("EVCTRL: ");
+    PRINTFLAG(TRNG->EVCTRL, DATARDYEO);
+    PRINTNL();
+}
+
+
 void printFourRegWDT(FourRegOptions &opts) {
     WDT_CTRLA_Type ctrla;
     while (WDT->SYNCBUSY.reg) {}
@@ -3655,7 +3672,7 @@ void printFourRegs(FourRegOptions &opts) {
 #ifdef TC7
     printFourRegTC(opts, TC7, 7);
 #endif
-    //FUTURE printFourRegTRNG(opts);
+    printFourRegTRNG(opts);
     //FUTURE printFourRegUSB(opts);
 }
 

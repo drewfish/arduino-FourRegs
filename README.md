@@ -326,6 +326,10 @@ CC1:  0
 Prints out configuration for a TCC peripheral.
 
 
+### void printFourRegTRNG(FourRegOptions &opts)
+Prints out configuration for the TRNG peripheral.
+
+
 ### void printFourRegWDT(FourRegOptions &opts)
 Prints out configuration for the watchdog timer.
 

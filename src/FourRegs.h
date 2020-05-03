@@ -71,7 +71,7 @@ void printFourRegSERCOM(FourRegOptions &opts, Sercom* sercom, uint8_t idx);
 void printFourRegSUPC(FourRegOptions &opts);
 void printFourRegTC(FourRegOptions &opts, Tc* tc, uint8_t idx);
 void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx);
-//FUTURE void printFourRegTRNG(FourRegOptions &opts);
+void printFourRegTRNG(FourRegOptions &opts);
 //FUTURE void printFourRegUSB(FourRegOptions &opts);
 void printFourRegWDT(FourRegOptions &opts);
 
