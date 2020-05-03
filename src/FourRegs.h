@@ -62,7 +62,7 @@ void printFourRegOSC32KCTRL(FourRegOptions &opts);
 void printFourRegOSCCTRL(FourRegOptions &opts);
 void printFourRegPAC(FourRegOptions &opts);
 void printFourRegPCC(FourRegOptions &opts);
-//FUTURE void printFourRegPDEC(FourRegOptions &opts);
+void printFourRegPDEC(FourRegOptions &opts);
 void printFourRegPM(FourRegOptions &opts);
 void printFourRegPORT(FourRegOptions &opts);
 //FUTURE void printFourRegQSPI(FourRegOptions &opts);

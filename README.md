@@ -218,6 +218,10 @@ STATUSD:
 Prints out configuration for the PCC peripheral.
 
 
+### void printFourRegPDEC(FourRegOptions &opts)
+Prints out configuration for the PDEC peripheral.
+
+
 ### void printFourRegPM(FourRegOptions &opts)
 Prints out configuration for the power manager.
 

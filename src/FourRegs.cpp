@@ -550,7 +550,7 @@ void printFourRegDAC(FourRegOptions &opts) {
         PRINTFLAG(DAC->DACCTRL[i], LEFTADJ);
         PRINTFLAG(DAC->DACCTRL[i], ENABLE);
         opts.print.print(" cctrl=");
-        switch(DAC->DACCTRL[i].bit.CCTRL) {
+        switch (DAC->DACCTRL[i].bit.CCTRL) {
             case 0x0: opts.print.print("CC100K"); break;
             case 0x1: opts.print.print("CC1M"); break;
             case 0x2: opts.print.print("CC12M"); break;
@@ -1635,7 +1635,7 @@ void printFourRegOSC32KCTRL(FourRegOptions &opts) {
     PRINTNL();
 
     opts.print.print("RTCCTRL:  rtcsel=");
-    switch(OSC32KCTRL->RTCCTRL.bit.RTCSEL) {
+    switch (OSC32KCTRL->RTCCTRL.bit.RTCSEL) {
         case 0x0: opts.print.print("ULP1K"); break;
         case 0x1: opts.print.print("ULP32K"); break;
         case 0x4: opts.print.print("XOSC1K"); break;
@@ -2229,8 +2229,105 @@ void printFourRegPCC(FourRegOptions &opts) {
 }
 
 
+void printFourRegPDEC(FourRegOptions &opts) {
+    if (!PDEC->CTRLA.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- PDEC");
+
+    opts.print.print("CTRLA: ");
+    while (PDEC->SYNCBUSY.bit.ENABLE) {}
+    PRINTFLAG(PDEC->CTRLA, ENABLE);
+    opts.print.print(" mode=");
+    switch (PDEC->CTRLA.bit.MODE) {
+        case 0x0: opts.print.print("QDEC"); break;
+        case 0x1: opts.print.print("HALL"); break;
+        case 0x2: opts.print.print("COUNTER"); break;
+        default: opts.print.print(FourRegs__UNKNOWN); break;
+    }
+    PRINTFLAG(PDEC->CTRLA, RUNSTDBY);
+    if (PDEC->CTRLA.bit.MODE == PDEC_CTRLA_MODE_QDEC_Val) {
+        opts.print.print(" CONF=");
+        PRINTHEX(PDEC->CTRLA.bit.CONF);
+        if (PDEC->CTRLA.bit.CONF == 4) {
+            opts.print.print(" MAXCMP=");
+            PRINTHEX(PDEC->CTRLA.bit.MAXCMP);
+        }
+    }
+    PRINTFLAG(PDEC->CTRLA, ALOCK);
+    PRINTFLAG(PDEC->CTRLA, SWAP);
+    PRINTFLAG(PDEC->CTRLA, PEREN);
+    PRINTFLAG(PDEC->CTRLA, PINEN0);
+    PRINTFLAG(PDEC->CTRLA, PINEN1);
+    PRINTFLAG(PDEC->CTRLA, PINEN2);
+    PRINTFLAG(PDEC->CTRLA, PINVEN0);
+    PRINTFLAG(PDEC->CTRLA, PINVEN1);
+    PRINTFLAG(PDEC->CTRLA, PINVEN2);
+    opts.print.print(" ANGULAR=");
+    PRINTHEX(PDEC->CTRLA.bit.ANGULAR);
+    PRINTNL();
+
+    opts.print.print("EVCTRL: ");
+    if (PDEC->CTRLA.bit.MODE == PDEC_CTRLA_MODE_COUNTER_Val) {
+        opts.print.print(" evact=");
+        switch (PDEC->EVCTRL.bit.EVACT) {
+            case 0x0: opts.print.print("OFF"); break;
+            case 0x1: opts.print.print("RETRIGGER"); break;
+            case 0x2: opts.print.print("COUNT"); break;
+            default: opts.print.print(FourRegs__UNKNOWN); break;
+        }
+        for (uint8_t i = 0; i < 3; i++) {
+            if (PDEC->EVCTRL.bit.EVINV & (1<<i)) {
+                opts.print.print(" EVINV");
+                opts.print.print(i);
+            }
+        }
+        for (uint8_t i = 0; i < 3; i++) {
+            if (PDEC->EVCTRL.bit.EVEI & (1<<i)) {
+                opts.print.print(" EVEI");
+                opts.print.print(i);
+            }
+        }
+    } else {
+        PRINTFLAG(PDEC->EVCTRL, VLCEO);
+    }
+    PRINTFLAG(PDEC->EVCTRL, OVFEO);
+    PRINTFLAG(PDEC->EVCTRL, ERREO);
+    PRINTFLAG(PDEC->EVCTRL, DIREO);
+    PRINTFLAG(PDEC->EVCTRL, MCEO0);
+    PRINTFLAG(PDEC->EVCTRL, MCEO1);
+    PRINTNL();
+
+    while (PDEC->SYNCBUSY.bit.PRESC) {}
+    opts.print.print("PRESC:  ");
+    if (PDEC->PRESC.bit.PRESC <= 10) {
+        opts.print.print("DIV");
+        PRINTSCALE(PDEC->PRESC.bit.PRESC);
+    } else {
+        opts.print.print(FourRegs__UNKNOWN);
+    }
+    PRINTNL();
+
+    if (PDEC->CTRLA.bit.MODE != PDEC_CTRLA_MODE_COUNTER_Val) {
+        while (PDEC->SYNCBUSY.bit.FILTER) {}
+        opts.print.print("FILTER:  ");
+        opts.print.print(PDEC->FILTER.bit.FILTER);
+        PRINTNL();
+    }
+
+    for (uint8_t cc = 0; cc < 2; cc++) {
+        while (PDEC->SYNCBUSY.vec.CC & (1<<cc)) {}
+        opts.print.print("CC");
+        opts.print.print(cc);
+        opts.print.print(":  ");
+        opts.print.print(PDEC->CC[cc].bit.CC);
+        PRINTNL();
+    }
+}
+
+
 void printFourRegPM_CFG(FourRegOptions &opts, uint8_t v) {
-    switch(v) {
+    switch (v) {
         case 0x0: opts.print.print("RET"); break;
         case 0x1: opts.print.print("PARTIAL"); break;
         case 0x2: opts.print.print("OFF"); break;
@@ -2960,7 +3057,7 @@ void printFourRegSUPC(FourRegOptions &opts) {
 
 void printFourReg_TC_TCC_PRESCSYNC(FourRegOptions &opts, uint8_t prescsync) {
     opts.print.print(" prescsync=");
-    switch(prescsync) {
+    switch (prescsync) {
         case 0x0: opts.print.print("GCLK"); break;
         case 0x1: opts.print.print("PRESC"); break;
         case 0x2: opts.print.print("RESYNC"); break;
@@ -2992,7 +3089,7 @@ void printFourRegTC_CTRLB(FourRegOptions &opts, volatile TC_CTRLBSET_Type& ctrlb
     PRINTFLAG(ctrlb, LUPD);
     PRINTFLAG(ctrlb, ONESHOT);
     opts.print.print(" cmd=");
-    switch(ctrlb.bit.CMD) {
+    switch (ctrlb.bit.CMD) {
         case 0x0: opts.print.print("NONE"); break;
         case 0x1: opts.print.print("RETRIGGER"); break;
         case 0x2: opts.print.print("STOP"); break;
@@ -3004,7 +3101,7 @@ void printFourRegTC_CTRLB(FourRegOptions &opts, volatile TC_CTRLBSET_Type& ctrlb
 }
 void printFourRegTC_EVCTRL(FourRegOptions &opts, volatile TC_EVCTRL_Type& evctrl) {
     opts.print.print("EVCTRL:  evact=");
-    switch(evctrl.bit.EVACT) {
+    switch (evctrl.bit.EVACT) {
         case 0x0: opts.print.print("OFF"); break;
         case 0x1: opts.print.print("RETRIGGER"); break;
         case 0x2: opts.print.print("COUNT"); break;
@@ -3145,7 +3242,7 @@ void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
     PRINTFLAG(tcc->CTRLA, RUNSTDBY);
     uint8_t dith = tcc->CTRLA.bit.RESOLUTION;
     opts.print.print(" resolution=");
-    switch(dith) {
+    switch (dith) {
         case 0x0: opts.print.print("NONE"); break;
         case 0x1: opts.print.print("DITH4"); break;
         case 0x2: opts.print.print("DITH5"); break;
@@ -3173,7 +3270,7 @@ void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
     opts.print.print(" IDXCMD=");
     PRINTHEX(tcc->CTRLBSET.bit.IDXCMD);
     opts.print.print(" cmd=");
-    switch(tcc->CTRLBSET.bit.CMD) {
+    switch (tcc->CTRLBSET.bit.CMD) {
         case 0x0: opts.print.print("NONE"); break;
         case 0x1: opts.print.print("RETRIGGER"); break;
         case 0x2: opts.print.print("STOP"); break;
@@ -3318,7 +3415,7 @@ void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
 
     while (tcc->SYNCBUSY.bit.PER) {}
     opts.print.print("PER:  ");
-    switch(dith) {
+    switch (dith) {
         case 0x0:
             opts.print.print(tcc->PER.bit.PER);
             break;
@@ -3345,7 +3442,7 @@ void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
         opts.print.print("CC");
         opts.print.print(id);
         opts.print.print(":  ");
-        switch(dith) {
+        switch (dith) {
             case 0x0:
                 opts.print.print(tcc->CC[id].bit.CC);
                 break;
@@ -3430,7 +3527,7 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegICM(opts);
     printFourRegNVMCTRL(opts);
     printFourRegPCC(opts);
-    //FUTURE printFourRegPDEC(opts);
+    printFourRegPDEC(opts);
     printFourRegPORT(opts);
     //FUTURE printFourRegQSPI(opts);
     printFourRegSERCOM(opts, SERCOM0, 0);
