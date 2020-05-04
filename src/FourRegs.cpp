@@ -779,9 +779,8 @@ void printFourRegEIC_SENSE(FourRegOptions &opts, uint8_t sense) {
     }
 }
 void printFourRegEIC(FourRegOptions &opts) {
-    //FUTURE -- NMI is enabled if NMICTRL.NMISENSE is set, regardless of CTRLA.ENABLE
     while (EIC->SYNCBUSY.bit.ENABLE) {}
-    if (!EIC->CTRLA.bit.ENABLE && !opts.showDisabled) {
+    if (!EIC->CTRLA.bit.ENABLE && !EIC->NMICTRL.bit.NMISENSE && !opts.showDisabled) {
         return;
     }
     opts.print.println("--------------------------- EIC");
