@@ -47,6 +47,16 @@ static const char* FourRegs__empty = "";
 // ~/.platformio/packages/framework-arduinosam/system/samd/CMSIS-Atmel/CMSIS/Device/ATMEL/samd51/include/component/
 
 
+void printFourReg_QOS(FourRegOptions &opts, uint8_t qos) {
+    switch (qos) {
+        case 0x0: opts.print.print("DISABLE"); break;
+        case 0x1: opts.print.print("LOW"); break;
+        case 0x2: opts.print.print("MEDIUM"); break;
+        case 0x3: opts.print.print("HIGH"); break;
+    }
+}
+
+
 void printFourRegAC(FourRegOptions &opts) {
     while (AC->SYNCBUSY.bit.ENABLE) {}
     if (!AC->CTRLA.bit.ENABLE && !opts.showDisabled) {
@@ -607,7 +617,7 @@ void printFourRegDMAC(FourRegOptions &opts) {
         opts.print.print(" lvl");
         opts.print.print(lvl);
         opts.print.print(":qos=");
-        opts.print.print(pri.bit.QOS);
+        printFourReg_QOS(opts, pri.bit.QOS);
         if (pri.bit.RREN) {
             opts.print.print(",rren");
         }
@@ -3572,6 +3582,205 @@ void printFourRegTRNG(FourRegOptions &opts) {
 }
 
 
+void printFourRegUSB_PADCAL(FourRegOptions &opts, volatile USB_PADCAL_Type &pad) {
+    opts.print.print("PADCAL:  TRANSP=");
+    PRINTHEX(pad.bit.TRANSP);
+    opts.print.print(" TRANSN=");
+    PRINTHEX(pad.bit.TRANSN);
+    opts.print.print(" TRIM=");
+    PRINTHEX(pad.bit.TRIM);
+    PRINTNL();
+}
+
+void printFourRegUSB_DESCADD(FourRegOptions &opts, uint8_t n, uint8_t b, bool isHost) {
+    uint32_t addr = USB->HOST.DESCADD.bit.DESCADD;
+    // UsbHostDescBank has all the fields we care about
+    UsbHostDescBank* desc = (UsbHostDescBank*)(addr + (n * sizeof(UsbHostDescriptor)) + (b * sizeof(UsbHostDescBank)));
+    opts.print.print(" ADDR=");
+    PRINTHEX(desc->ADDR.bit.ADDR);
+    opts.print.print(" size=");
+    switch (desc->PCKSIZE.bit.SIZE) {
+        case 0x0: opts.print.print("8byte"); break;
+        case 0x1: opts.print.print("16byte"); break;
+        case 0x2: opts.print.print("32byte"); break;
+        case 0x3: opts.print.print("64byte"); break;
+        case 0x4: opts.print.print("128byte"); break;
+        case 0x5: opts.print.print("256byte"); break;
+        case 0x6: opts.print.print("512byte"); break;
+        case 0x7: opts.print.print("1023byte"); break;
+    }
+    PRINTFLAG(desc->PCKSIZE, AUTO_ZLP);
+    if (b == 0) {
+        //FUTURE -- parse out SUBPID:4 and VARIABLE:11
+        opts.print.print(" EXTREG=");
+        PRINTHEX(desc->EXTREG.reg);
+    }
+    if (isHost) {
+        opts.print.print(" PDADDR=");
+        PRINTHEX(desc->CTRL_PIPE.bit.PDADDR);
+        opts.print.print(" PEPNUM=");
+        opts.print.print(desc->CTRL_PIPE.bit.PEPNUM);
+        opts.print.print(" PERMAX=");
+        opts.print.print(desc->CTRL_PIPE.bit.PERMAX);
+    }
+}
+
+void printFourRegUSB_DEVICE(FourRegOptions &opts, UsbDevice &dev) {
+    opts.print.print("CTRLB: ");
+    PRINTFLAG(dev.CTRLB, DETACH);
+    opts.print.print(" spdconf=");
+    switch (dev.CTRLB.bit.SPDCONF) {
+        case 0x0: opts.print.print("FS"); break;
+        case 0x1: opts.print.print("LS"); break;
+        default: opts.print.print(FourRegs__RESERVED); break;
+    }
+    PRINTFLAG(dev.CTRLB, NREPLY);
+    // CMSIS-Atmel 1.2.0 headers also show the following, which aren't in datasheet rev E
+    //  TSTJ:1
+    //  TSTK:1
+    //  TSTPCKT:1
+    //  OPMODE2:1
+    PRINTFLAG(dev.CTRLB, GNAK);
+    opts.print.print(" LPMHDSK=");
+    PRINTHEX(dev.CTRLB.bit.LPMHDSK);
+    PRINTNL();
+
+    opts.print.print("DADD:  ");
+    PRINTHEX(dev.DADD.bit.DADD);
+    PRINTFLAG(dev.DADD, ADDEN);
+    PRINTNL();
+
+    printFourRegUSB_PADCAL(opts, dev.PADCAL);
+
+    for (uint8_t n = 0; n < 8; n++) {
+        opts.print.print("ENDPOINT");
+        opts.print.print(n);
+        PRINTFLAG(dev.DeviceEndpoint[n].EPCFG, NYETDIS);
+        opts.print.println(":");
+
+        uint8_t b = 0;
+        bool disabled = false;
+        opts.print.print("    BANK0:  eptype=");
+        switch (dev.DeviceEndpoint[n].EPCFG.bit.EPTYPE0) {
+            case 0x0:
+                opts.print.print(FourRegs__DISABLED);
+                disabled = true;
+                break;
+            case 0x1: opts.print.print("CTRL-out"); break;
+            case 0x2: opts.print.print("ISO-out"); break;
+            case 0x3: opts.print.print("BULK-out"); break;
+            case 0x4: opts.print.print("INT-out"); break;
+            case 0x5: opts.print.print("DUAL-in"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        if (!disabled || opts.showDisabled) {
+            printFourRegUSB_DESCADD(opts, n, b, false);
+        }
+        PRINTNL();
+
+        b = 1;
+        disabled = false;
+        opts.print.print("    BANK1:  eptype=");
+        switch (dev.DeviceEndpoint[n].EPCFG.bit.EPTYPE1) {
+            case 0x0:
+                opts.print.print(FourRegs__DISABLED);
+                disabled = true;
+                break;
+            case 0x1: opts.print.print("CTRL-in"); break;
+            case 0x2: opts.print.print("ISO-in"); break;
+            case 0x3: opts.print.print("BULK-in"); break;
+            case 0x4: opts.print.print("INT-in"); break;
+            case 0x5: opts.print.print("DUAL-out"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        if (!disabled || opts.showDisabled) {
+            printFourRegUSB_DESCADD(opts, n, b, false);
+        }
+        PRINTNL();
+    }
+}
+
+void printFourRegUSB_HOST(FourRegOptions &opts, UsbHost &host) {
+    opts.print.print("CTRLB:  SPDCONF=");
+    PRINTHEX(host.CTRLB.bit.SPDCONF);
+    PRINTFLAG(host.CTRLB, AUTORESUME);
+    // CMSIS-Atmel 1.2.0 headers also show the following, which aren't in datasheet rev E
+    //  TSTJ:1
+    //  TSTK:1
+    PRINTFLAG(host.CTRLB, SOFE);
+    PRINTNL();
+
+    opts.print.print("HSOFC:  FLENC=");
+    PRINTHEX(host.HSOFC.bit.FLENC);
+    PRINTFLAG(host.HSOFC, FLENCE);
+    PRINTNL();
+
+    printFourRegUSB_PADCAL(opts, host.PADCAL);
+
+    for (uint8_t n = 0; n < 8; n++) {
+        opts.print.print("PIPE");
+        opts.print.print(n);
+        opts.print.print(":  ptype=");
+        bool disabled = false;
+        switch (host.HostPipe[n].PCFG.bit.PTYPE) {
+            case 0x0:
+                opts.print.print(FourRegs__DISABLED);
+                disabled = true;
+                break;
+            case 0x1: opts.print.print("CTRL"); break;
+            case 0x2: opts.print.print("ISO"); break;
+            case 0x3: opts.print.print("BULK"); break;
+            case 0x4: opts.print.print("INT"); break;
+            case 0x5: opts.print.print("EXT"); break;
+            default: opts.print.print(FourRegs__RESERVED); break;
+        }
+        if (disabled && !opts.showDisabled) {
+            continue;
+        }
+        opts.print.print(" bk=");
+        opts.print.print(host.HostPipe[n].PCFG.bit.BK ? "DUAL" : "SINGLE");
+        opts.print.print(" BINTERVAL=");
+        opts.print.print(host.HostPipe[n].BINTERVAL.bit.BITINTERVAL);
+        PRINTNL();
+
+        opts.print.print("    BANK0: ");
+        printFourRegUSB_DESCADD(opts, n, 0, true);
+        PRINTNL();
+
+        opts.print.print("    BANK1: ");
+        printFourRegUSB_DESCADD(opts, n, 1, true);
+        PRINTNL();
+    }
+}
+
+void printFourRegUSB(FourRegOptions &opts) {
+    while (USB->DEVICE.SYNCBUSY.bit.ENABLE) {}
+    if (!USB->DEVICE.CTRLA.bit.ENABLE && !opts.showDisabled) {
+        return;
+    }
+    opts.print.println("--------------------------- USB");
+
+    opts.print.print("CTRLA: ");
+    PRINTFLAG(USB->DEVICE.CTRLA, ENABLE);
+    PRINTFLAG(USB->DEVICE.CTRLA, RUNSTDBY);
+    opts.print.print(" mode=");
+    opts.print.print(USB->DEVICE.CTRLA.bit.MODE ? "HOST" : "DEVICE");
+    PRINTNL();
+
+    opts.print.print("QOSCTRL:  cqos=");
+    printFourReg_QOS(opts, USB->DEVICE.QOSCTRL.bit.CQOS);
+    opts.print.print(" dqos=");
+    printFourReg_QOS(opts, USB->DEVICE.QOSCTRL.bit.DQOS);
+    PRINTNL();
+
+    if (USB->DEVICE.CTRLA.bit.MODE) {
+        printFourRegUSB_HOST(opts, USB->HOST);
+    } else {
+        printFourRegUSB_DEVICE(opts, USB->DEVICE);
+    }
+}
+
+
 void printFourRegWDT(FourRegOptions &opts) {
     WDT_CTRLA_Type ctrla;
     while (WDT->SYNCBUSY.reg) {}
@@ -3673,7 +3882,7 @@ void printFourRegs(FourRegOptions &opts) {
     printFourRegTC(opts, TC7, 7);
 #endif
     printFourRegTRNG(opts);
-    //FUTURE printFourRegUSB(opts);
+    printFourRegUSB(opts);
 }
 
 

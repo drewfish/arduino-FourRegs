@@ -330,6 +330,44 @@ Prints out configuration for a TCC peripheral.
 Prints out configuration for the TRNG peripheral.
 
 
+### void printFourRegUSB(FourRegOptions &opts)
+Prints out configuration for the USB peripheral.
+
+example output:
+```text
+--------------------------- USB
+CTRLA:  ENABLE RUNSTDBY mode=DEVICE
+QOSCTRL:  cqos=HIGH dqos=HIGH
+CTRLB:  spdconf=FS LPMHDSK=0x0
+DADD:  0x29 ADDEN
+PADCAL:  TRANSP=0x19 TRANSN=0x9 TRIM=0x6
+ENDPOINT0:
+    BANK0:  eptype=CTRL-out ADDR=0x20000A4C size=64byte EXTREG=0x0
+    BANK1:  eptype=CTRL-in ADDR=0x20000888 size=64byte
+ENDPOINT1:
+    BANK0:  eptype=--disabled--
+    BANK1:  eptype=INT-in ADDR=0x200008C8 size=64byte
+ENDPOINT2:
+    BANK0:  eptype=BULK-out ADDR=0x20000DA0 size=64byte EXTREG=0x0
+    BANK1:  eptype=--disabled--
+ENDPOINT3:
+    BANK0:  eptype=--disabled--
+    BANK1:  eptype=BULK-in ADDR=0x20000948 size=64byte
+ENDPOINT4:
+    BANK0:  eptype=--disabled--
+    BANK1:  eptype=--disabled--
+ENDPOINT5:
+    BANK0:  eptype=--disabled--
+    BANK1:  eptype=--disabled--
+ENDPOINT6:
+    BANK0:  eptype=--disabled--
+    BANK1:  eptype=--disabled--
+ENDPOINT7:
+    BANK0:  eptype=--disabled--
+    BANK1:  eptype=--disabled--
+```
+
+
 ### void printFourRegWDT(FourRegOptions &opts)
 Prints out configuration for the watchdog timer.
 

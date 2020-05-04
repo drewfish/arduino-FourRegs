@@ -72,7 +72,7 @@ void printFourRegSUPC(FourRegOptions &opts);
 void printFourRegTC(FourRegOptions &opts, Tc* tc, uint8_t idx);
 void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx);
 void printFourRegTRNG(FourRegOptions &opts);
-//FUTURE void printFourRegUSB(FourRegOptions &opts);
+void printFourRegUSB(FourRegOptions &opts);
 void printFourRegWDT(FourRegOptions &opts);
 
 void printFourRegs(FourRegOptions &opts);
