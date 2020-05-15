@@ -243,7 +243,7 @@ Prints out configuration for the I/O pin controller ports.
 
 example output:
 ```text
---------------------------- PORTA
+--------------------------- PORT A
 PA02:  input INEN
 PA04:  input INEN
 PA05:  input INEN
@@ -261,14 +261,14 @@ PA24:  pmux USB:DM
 PA25:  pmux USB:DP
 PA30:  pmux CORTEX_CM4:SWCLK
 EVCTRL:
---------------------------- PORTB
+--------------------------- PORT B
 PB02:  input INEN
 PB08:  input INEN
 PB09:  input INEN
 EVCTRL:
---------------------------- PORTC
+--------------------------- PORT C
 EVCTRL:
---------------------------- PORTD
+--------------------------- PORT D
 EVCTRL:
 ```
 

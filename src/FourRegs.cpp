@@ -99,7 +99,7 @@ void printFourRegAC(FourRegOptions &opts) {
         opts.print.print(": ");
         PRINTFLAG(AC->COMPCTRL[id], ENABLE);
         PRINTFLAG(AC->COMPCTRL[id], SINGLE);
-        opts.print.print("intsel=");
+        opts.print.print(" intsel=");
         switch (AC->COMPCTRL[id].bit.INTSEL) {
             case 0x0: opts.print.print("TOGGLE"); break;
             case 0x1: opts.print.print("RISING"); break;
@@ -107,7 +107,7 @@ void printFourRegAC(FourRegOptions &opts) {
             case 0x3: opts.print.print("EOC"); break;
         }
         PRINTFLAG(AC->COMPCTRL[id], RUNSTDBY);
-        opts.print.print("muxneg=");
+        opts.print.print(" muxneg=");
         switch (AC->COMPCTRL[id].bit.MUXNEG) {
             case 0x0: opts.print.print("PIN0"); break;
             case 0x1: opts.print.print("PIN1"); break;
@@ -118,7 +118,7 @@ void printFourRegAC(FourRegOptions &opts) {
             case 0x6: opts.print.print("BANDGAP"); break;
             case 0x7: opts.print.print("DAC"); break;
         }
-        opts.print.print("muxpos=");
+        opts.print.print(" muxpos=");
         switch (AC->COMPCTRL[id].bit.MUXPOS) {
             case 0x0: opts.print.print("PIN0"); break;
             case 0x1: opts.print.print("PIN1"); break;
@@ -730,7 +730,7 @@ void printFourRegDMAC(FourRegOptions &opts) {
             case 0x0: opts.print.print("BLOCK"); break;
             /*case 0x1*/
             case 0x2: opts.print.print("BURST"); break;
-            case 0x3: opts.print.print("TRANSACTION"); break;
+            case 0x3: opts.print.print("TRANS"); break;
             default: opts.print.print(FourRegs__RESERVED); break;
         }
         opts.print.print(" burstlen=");
@@ -764,6 +764,8 @@ void printFourRegDMAC(FourRegOptions &opts) {
         }
         PRINTNL();
     }
+
+    //FUTURE -- show DmacDescriptors?
 }
 
 
@@ -1080,7 +1082,7 @@ void printFourRegEVSYS(FourRegOptions &opts) {
         }
         opts.print.print("CHANNEL");
         PRINTPAD2(id);
-        opts.print.print(": ");
+        opts.print.print(":  ");
         opts.print.print(FourRegsEVSYS_EVGENs[EVSYS->Channel[id].CHANNEL.bit.EVGEN]);
         opts.print.print(" path=");
         switch (EVSYS->Channel[id].CHANNEL.bit.PATH) {
@@ -1108,7 +1110,7 @@ void printFourRegEVSYS(FourRegOptions &opts) {
             continue;
         }
         opts.print.print(" CHANNEL=");
-        opts.print.print(chid);
+        opts.print.print(chid - 1);
         PRINTNL();
     }
 }
@@ -1232,8 +1234,11 @@ void printFourRegGCLK(FourRegOptions &opts) {
             }
         }
         PRINTFLAG(gen, IDC);
-        PRINTFLAG(gen, OOV);
-        PRINTFLAG(gen, OE);
+        if (gen.bit.SRC != 2) {
+            PRINTFLAG(gen, OE);
+            opts.print.print(" OOV=");
+            opts.print.print(gen.bit.OOV);
+        }
         PRINTFLAG(gen, RUNSTDBY);
         PRINTNL();
     }
@@ -2542,7 +2547,7 @@ static const FourRegsPORT_Pin FourRegsPORT_pins[4][32] = {
 };
 void printFourRegPORT(FourRegOptions &opts) {
     for (uint8_t gid = 0; gid < 4; gid++) {
-        opts.print.print("--------------------------- PORT");
+        opts.print.print("--------------------------- PORT ");
         opts.print.print(char('A' + gid));
         PRINTNL();
 
@@ -2888,6 +2893,15 @@ void printFourRegSERCOM_SPI(FourRegOptions &opts, SercomSpi &spi, bool master) {
     opts.print.print("BAUD:  ");
     PRINTHEX(spi.BAUD.bit.BAUD);
     PRINTNL();
+
+    if (spi.CTRLA.bit.FORM == 0x2) {
+        opts.print.print("ADDR: ");
+        opts.print.print(" ADDR=");
+        PRINTHEX(spi.ADDR.bit.ADDR);
+        opts.print.print(" ADDRMASK=");
+        PRINTHEX(spi.ADDR.bit.ADDRMASK);
+        PRINTNL();
+    }
 }
 
 void printFourRegSERCOM_USART(FourRegOptions &opts, SercomUsart &usart) {
@@ -2947,7 +2961,10 @@ void printFourRegSERCOM_USART(FourRegOptions &opts, SercomUsart &usart) {
     PRINTFLAG(usart.CTRLB, COLDEN);
     PRINTFLAG(usart.CTRLB, SFDE);
     PRINTFLAG(usart.CTRLB, ENC);
-    PRINTFLAG(usart.CTRLB, PMODE);
+    if (usart.CTRLA.bit.FORM == 1) {
+        opts.print.print(" pmode=");
+        opts.print.print(usart.CTRLB.bit.PMODE ? "ODD" : "EVEN");
+    }
     PRINTFLAG(usart.CTRLB, TXEN);
     PRINTFLAG(usart.CTRLB, RXEN);
     opts.print.print(" LINCMD=");
@@ -3654,8 +3671,9 @@ void printFourRegUSB_DEVICE(FourRegOptions &opts, UsbDevice &dev) {
     for (uint8_t n = 0; n < 8; n++) {
         opts.print.print("ENDPOINT");
         opts.print.print(n);
+        opts.print.print(": ");
         PRINTFLAG(dev.DeviceEndpoint[n].EPCFG, NYETDIS);
-        opts.print.println(":");
+        PRINTNL();
 
         uint8_t b = 0;
         bool disabled = false;
@@ -3808,9 +3826,9 @@ void printFourRegWDT(FourRegOptions &opts) {
 
 void printFourRegs(FourRegOptions &opts) {
     // show clocks
-    printFourRegGCLK(opts);
     printFourRegOSCCTRL(opts);
     printFourRegOSC32KCTRL(opts);
+    printFourRegGCLK(opts);
     printFourRegMCLK(opts);
     printFourRegRTC(opts);
 
