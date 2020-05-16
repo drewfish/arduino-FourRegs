@@ -34,6 +34,19 @@ SOFTWARE.
 static const char* FourRegs__DISABLED = "--disabled--";
 static const char* FourRegs__RESERVED = "--reserved--";
 static const char* FourRegs__UNKNOWN = "--unknown--";
+static const char* FourRegs__i2c_scl = "i2c:scl";
+static const char* FourRegs__i2c_sclout = "i2c:sclout";
+static const char* FourRegs__i2c_sda = "i2c:sda";
+static const char* FourRegs__i2c_sdaout = "i2c:sdaout";
+static const char* FourRegs__spi_miso = "spi:miso";
+static const char* FourRegs__spi_mosi = "spi:mosi";
+static const char* FourRegs__spi_sck = "spi:sck";
+static const char* FourRegs__spi_ss = "spi:ss";
+static const char* FourRegs__usart_cts = "usart:cts";
+static const char* FourRegs__usart_rts = "usart:rts";
+static const char* FourRegs__usart_rx = "usart:rx";
+static const char* FourRegs__usart_tx = "usart:tx";
+static const char* FourRegs__usart_xck = "usart:xck";
 static const char* FourRegs__empty = "";
 #define PRINTFLAG(x,y) do { if (x.bit.y) { opts.print.print(" " #y); } } while(0)
 #define PRINTHEX(x) do { opts.print.print("0x"); opts.print.print(x, HEX); } while(0)
@@ -41,6 +54,7 @@ static const char* FourRegs__empty = "";
 #define PRINTNL() opts.print.println(FourRegs__empty)
 #define PRINTPAD2(x) do { if (x < 10) { opts.print.print("0"); } opts.print.print(x, DEC); } while(0)
 #define COPYVOL(dst,src) do { memcpy((void*)(&(dst)), (void*)(&(src)), sizeof(dst)); } while(0)
+void printFourRegSERCOM_pinhint(FourRegOptions &opts, const char* pmux);
 
 
 // When using platformio.org, peripheral details can be found in
@@ -1287,7 +1301,7 @@ void printFourRegI2S(FourRegOptions &opts) {
     PRINTFLAG(I2S->CTRLA, RXEN);
     PRINTNL();
 
-    for (uint8_t i; i < 2; i++) {
+    for (uint8_t i = 0; i < 2; i++) {
         opts.print.print("CLKCTRL");
         opts.print.print(i);
         opts.print.print(":  slots=");
@@ -2575,11 +2589,20 @@ void printFourRegPORT(FourRegOptions &opts) {
                 }
                 opts.print.print("pmux ");
                 const char *pmuxName = FourRegsPORT_pins[gid][pid].pmux[pmux];
-                if (!pmuxName) {
-                    pmuxName = FourRegsPORT_PMUXs[pmux].name;
+                if (pmuxName) {
+                    opts.print.print(pmuxName);
+                    if (pmux == 2 || pmux == 3) {
+                        printFourRegSERCOM_pinhint(opts, pmuxName);
+                    }
+                } else {
+                    opts.print.print(FourRegsPORT_PMUXs[pmux].name);
                 }
-                opts.print.println(pmuxName);
-                continue;
+                if (!dir && !inen && !pullen) {
+                    // [32.6.3.4] Digital Functionality Disabled
+                    PRINTNL();
+                    continue;
+                }
+                opts.print.print(" ");
             }
             if (dir) {
                 opts.print.print("output");
@@ -2746,6 +2769,169 @@ void printFourRegQSPI(FourRegOptions &opts) {
     PRINTNL();
 }
 
+
+// `pmux` is a string "SERCOMx:y"
+void printFourRegSERCOM_pinhint(FourRegOptions &opts, const char* pmux) {
+    if (!pmux) {
+        return;
+    }
+    uint8_t x = pmux[6] - '0';
+    uint8_t y = pmux[8] - '0';
+    Sercom* sercom;
+    switch (x) {
+        case 0: sercom = SERCOM0; break;
+        case 1: sercom = SERCOM1; break;
+        case 2: sercom = SERCOM2; break;
+        case 3: sercom = SERCOM3; break;
+        case 4: sercom = SERCOM4; break;
+        case 5: sercom = SERCOM5; break;
+#ifdef SERCOM6
+        case 6: sercom = SERCOM6; break;
+#endif
+#ifdef SERCOM7
+        case 7: sercom = SERCOM7; break;
+#endif
+        default: return;
+    }
+    const char* pads[4];
+    pads[0] = NULL;
+    pads[1] = NULL;
+    pads[2] = NULL;
+    pads[3] = NULL;
+    switch (sercom->I2CM.CTRLA.bit.MODE) {
+        case 0x0:
+            // USART external clock
+            switch (sercom->USART.CTRLA.bit.RXPO) {
+                case 0x0: pads[0] = FourRegs__usart_rx; break;
+                case 0x1: pads[1] = FourRegs__usart_rx; break;
+                case 0x2: pads[2] = FourRegs__usart_rx; break;
+                case 0x3: pads[3] = FourRegs__usart_rx; break;
+            }
+            switch (sercom->USART.CTRLA.bit.TXPO) {
+                case 0x0:
+                    pads[0] = FourRegs__usart_tx;
+                    pads[1] = FourRegs__usart_xck;
+                    break;
+                case 0x1:
+                    pads[2] = FourRegs__usart_tx;
+                    pads[3] = FourRegs__usart_xck;
+                    break;
+                case 0x2:
+                    pads[0] = FourRegs__usart_tx;
+                    pads[2] = FourRegs__usart_rts;
+                    pads[2] = FourRegs__usart_cts;
+                    break;
+            }
+            break;
+        case 0x1:
+            // USART internal clock
+            switch (sercom->USART.CTRLA.bit.RXPO) {
+                case 0x0: pads[0] = FourRegs__usart_rx; break;
+                case 0x1: pads[1] = FourRegs__usart_rx; break;
+                case 0x2: pads[2] = FourRegs__usart_rx; break;
+                case 0x3: pads[3] = FourRegs__usart_rx; break;
+            }
+            switch (sercom->USART.CTRLA.bit.TXPO) {
+                case 0x0:
+                    pads[0] = FourRegs__usart_tx;
+                    break;
+                case 0x1:
+                    pads[2] = FourRegs__usart_tx;
+                    break;
+                case 0x2:
+                    pads[0] = FourRegs__usart_tx;
+                    pads[2] = FourRegs__usart_rts;
+                    pads[2] = FourRegs__usart_cts;
+                    break;
+            }
+            break;
+        case 0x2:
+            // SPI slave
+            switch (sercom->SPI.CTRLA.bit.DIPO) {
+                case 0x0: pads[0] = FourRegs__spi_mosi; break;
+                case 0x1: pads[1] = FourRegs__spi_mosi; break;
+                case 0x2: pads[2] = FourRegs__spi_mosi; break;
+                case 0x3: pads[3] = FourRegs__spi_mosi; break;
+            }
+            switch (sercom->SPI.CTRLA.bit.DOPO) {
+                case 0x0:
+                    pads[0] = FourRegs__spi_miso;
+                    pads[1] = FourRegs__spi_sck;
+                    pads[2] = FourRegs__spi_ss;
+                    break;
+                case 0x1:
+                    pads[2] = FourRegs__spi_miso;
+                    pads[3] = FourRegs__spi_sck;
+                    pads[1] = FourRegs__spi_ss;
+                    break;
+                case 0x2:
+                    pads[3] = FourRegs__spi_miso;
+                    pads[1] = FourRegs__spi_sck;
+                    pads[2] = FourRegs__spi_ss;
+                    break;
+                case 0x3:
+                    pads[0] = FourRegs__spi_miso;
+                    pads[3] = FourRegs__spi_sck;
+                    pads[1] = FourRegs__spi_ss;
+                    break;
+            }
+            break;
+        case 0x3:
+            // SPI master
+            switch (sercom->SPI.CTRLA.bit.DIPO) {
+                case 0x0: pads[0] = FourRegs__spi_miso; break;
+                case 0x1: pads[1] = FourRegs__spi_miso; break;
+                case 0x2: pads[2] = FourRegs__spi_miso; break;
+                case 0x3: pads[3] = FourRegs__spi_miso; break;
+            }
+            switch (sercom->SPI.CTRLA.bit.DOPO) {
+                case 0x0:
+                    pads[0] = FourRegs__spi_mosi;
+                    pads[1] = FourRegs__spi_sck;
+                    if (sercom->SPI.CTRLB.bit.MSSEN) {
+                        pads[2] = FourRegs__spi_ss;
+                    }
+                    break;
+                case 0x1:
+                    pads[2] = FourRegs__spi_mosi;
+                    pads[3] = FourRegs__spi_sck;
+                    if (sercom->SPI.CTRLB.bit.MSSEN) {
+                        pads[1] = FourRegs__spi_ss;
+                    }
+                    break;
+                case 0x2:
+                    pads[3] = FourRegs__spi_mosi;
+                    pads[1] = FourRegs__spi_sck;
+                    if (sercom->SPI.CTRLB.bit.MSSEN) {
+                        pads[2] = FourRegs__spi_ss;
+                    }
+                    break;
+                case 0x3:
+                    pads[0] = FourRegs__spi_mosi;
+                    pads[3] = FourRegs__spi_sck;
+                    if (sercom->SPI.CTRLB.bit.MSSEN) {
+                        pads[1] = FourRegs__spi_ss;
+                    }
+                    break;
+            }
+            break;
+        case 0x4:
+        case 0x5:
+            // I2S (master or slave)
+            pads[0] = FourRegs__i2c_sda;
+            pads[1] = FourRegs__i2c_scl;
+            pads[2] = FourRegs__i2c_sdaout;
+            pads[3] = FourRegs__i2c_sclout;
+            break;
+        default:
+            return;
+    }
+    if (pads[y]) {
+        opts.print.print("(");
+        opts.print.print(pads[y]);
+        opts.print.print(")");
+    }
+}
 
 void printFourRegSERCOM_I2CM(FourRegOptions &opts, SercomI2cm &i2cm) {
     opts.print.print("CTRLA: ");

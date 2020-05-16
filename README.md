@@ -249,14 +249,16 @@ PA04:  input INEN
 PA05:  input INEN
 PA06:  input INEN
 PA07:  input INEN
-PA12:  input INEN
-PA13:  input INEN
+PA12:  pmux SERCOM2:0(usart:tx) input INEN
+PA13:  pmux SERCOM2:1(usart:rx) input INEN
 PA15:  input INEN
-PA16:  input INEN
+PA16:  pmux TCC0:4 output INEN DRVSTR
 PA17:  output INEN
 PA18:  input INEN
-PA19:  pmux EIC:3
+PA19:  pmux EIC:3 input INEN pull=UP
 PA20:  input INEN
+PA22:  pmux SERCOM3:0(i2c:sda)
+PA23:  pmux SERCOM3:1(i2c:scl)
 PA24:  pmux USB:DM
 PA25:  pmux USB:DP
 PA30:  pmux CORTEX_CM4:SWCLK
@@ -264,7 +266,10 @@ EVCTRL:
 --------------------------- PORT B
 PB02:  input INEN
 PB08:  input INEN
-PB09:  input INEN
+PB09:  pmux ADC0:3,ADC1:1,X2/Y2 input INEN
+PB11:  pmux SERCOM4:3(spi:miso)
+PB12:  pmux SERCOM4:0(spi:mosi)
+PB13:  pmux SERCOM4:1(spi:sck)
 EVCTRL:
 --------------------------- PORT C
 EVCTRL:
