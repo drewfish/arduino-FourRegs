@@ -67,6 +67,7 @@ void printFourRegPM(FourRegOptions &opts);
 void printFourRegPORT(FourRegOptions &opts);
 void printFourRegQSPI(FourRegOptions &opts);
 void printFourRegRTC(FourRegOptions &opts);
+void printFourRegSCS(FourRegOptions &opts);
 void printFourRegSERCOM(FourRegOptions &opts, Sercom* sercom, uint8_t idx);
 void printFourRegSUPC(FourRegOptions &opts);
 void printFourRegTC(FourRegOptions &opts, Tc* tc, uint8_t idx);

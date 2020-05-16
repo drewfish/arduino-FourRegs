@@ -54,6 +54,7 @@ static const char* FourRegs__empty = "";
 #define PRINTNL() opts.print.println(FourRegs__empty)
 #define PRINTPAD2(x) do { if (x < 10) { opts.print.print("0"); } opts.print.print(x, DEC); } while(0)
 #define COPYVOL(dst,src) do { memcpy((void*)(&(dst)), (void*)(&(src)), sizeof(dst)); } while(0)
+#define READSCS(val,name) ( (val & (name##_Msk)) >> (name##_Pos) )
 void printFourRegSERCOM_pinhint(FourRegOptions &opts, const char* pmux);
 
 
@@ -1652,6 +1653,10 @@ void printFourRegNVMCTRL(FourRegOptions &opts) {
     opts.print.print(" PSZ=");
     opts.print.print(NVMCTRL->SEESTAT.bit.PSZ);
     PRINTNL();
+
+    //FUTURE -- user page [9.4 DSrevF]
+    //FUTURE -- software calibration [9.5 DSrevF]
+    //FUTURE -- serial number [9.6 DSrevF]
 }
 
 
@@ -2767,6 +2772,195 @@ void printFourRegQSPI(FourRegOptions &opts) {
     PRINTFLAG(QSPI->SCRAMBCTRL, ENABLE);
     PRINTFLAG(QSPI->SCRAMBCTRL, RANDOMDIS);
     PRINTNL();
+}
+
+
+void printFourRegSCS(FourRegOptions &opts) {
+    opts.print.println("--------------------------- SCS");
+
+    opts.print.print("CPUID:  REV=");
+    PRINTHEX(READSCS(SCB->CPUID, SCB_CPUID_REVISION));
+    opts.print.print(" PARTNO=");
+    PRINTHEX(READSCS(SCB->CPUID, SCB_CPUID_PARTNO));
+    opts.print.print(" ARCH=");
+    PRINTHEX(READSCS(SCB->CPUID, SCB_CPUID_ARCHITECTURE));
+    opts.print.print(" VAR=");
+    PRINTHEX(READSCS(SCB->CPUID, SCB_CPUID_VARIANT));
+    opts.print.print(" IMPL=");
+    PRINTHEX(READSCS(SCB->CPUID, SCB_CPUID_IMPLEMENTER));
+    PRINTNL();
+
+    opts.print.print("SysTick: ");
+    if (READSCS(SysTick->CTRL, SysTick_CTRL_ENABLE)) {
+        opts.print.print(" ENABLE");
+    }
+    if (READSCS(SysTick->CTRL, SysTick_CTRL_TICKINT)) {
+        opts.print.print(" TICKINT");
+    }
+    opts.print.print(" clksource=");
+    opts.print.print(READSCS(SysTick->CTRL, SysTick_CTRL_CLKSOURCE) ? "CPU" : "EXT");
+    opts.print.print(" RELOAD=");
+    opts.print.print(READSCS(SysTick->LOAD, SysTick_LOAD_RELOAD));
+    opts.print.print(" TENMS=");
+    opts.print.print(READSCS(SysTick->CALIB, SysTick_CALIB_TENMS));
+    if (READSCS(SysTick->CALIB, SysTick_CALIB_SKEW)) {
+        opts.print.print(" SKEW");
+    }
+    if (READSCS(SysTick->CALIB, SysTick_CALIB_NOREF)) {
+        opts.print.print(" NOREF");
+    }
+    PRINTNL();
+
+    for (uint8_t pri = 0; pri < 8; pri++) {
+        opts.print.print("irq pri");
+        opts.print.print(pri);
+        opts.print.print(": ");
+        for (uint8_t irq = 0; irq < PERIPH_COUNT_IRQn; irq++) {
+            if (pri == NVIC_GetPriority((IRQn_Type) irq)) {
+                switch (irq) {
+                    case   0: opts.print.print(" PM"); break;
+                    case   1: opts.print.print(" MCLK"); break;
+                    case   2: opts.print.print(" OSCCTRL:0"); break;
+                    case   3: opts.print.print(" OSCCTRL:1"); break;
+                    case   4: opts.print.print(" OSCCTRL:2"); break;
+                    case   5: opts.print.print(" OSCCTRL:3"); break;
+                    case   6: opts.print.print(" OSCCTRL:4"); break;
+                    case   7: opts.print.print(" OSC32KCTRL"); break;
+                    case   8: opts.print.print(" SUPC:0"); break;
+                    case   9: opts.print.print(" SUPC:1"); break;
+                    case  10: opts.print.print(" WDT"); break;
+                    case  11: opts.print.print(" RTC"); break;
+                    case  12: opts.print.print(" EIC:0"); break;
+                    case  13: opts.print.print(" EIC:1"); break;
+                    case  14: opts.print.print(" EIC:2"); break;
+                    case  15: opts.print.print(" EIC:3"); break;
+                    case  16: opts.print.print(" EIC:4"); break;
+                    case  17: opts.print.print(" EIC:5"); break;
+                    case  18: opts.print.print(" EIC:6"); break;
+                    case  19: opts.print.print(" EIC:7"); break;
+                    case  20: opts.print.print(" EIC:8"); break;
+                    case  21: opts.print.print(" EIC:9"); break;
+                    case  22: opts.print.print(" EIC:10"); break;
+                    case  23: opts.print.print(" EIC:11"); break;
+                    case  24: opts.print.print(" EIC:12"); break;
+                    case  25: opts.print.print(" EIC:13"); break;
+                    case  26: opts.print.print(" EIC:14"); break;
+                    case  27: opts.print.print(" EIC:15"); break;
+                    case  28: opts.print.print(" FREQM"); break;
+                    case  29: opts.print.print(" NVMCTRL:0"); break;
+                    case  30: opts.print.print(" NVMCTRL:1"); break;
+                    case  31: opts.print.print(" DMAC:0"); break;
+                    case  32: opts.print.print(" DMAC:1"); break;
+                    case  33: opts.print.print(" DMAC:2"); break;
+                    case  34: opts.print.print(" DMAC:3"); break;
+                    case  35: opts.print.print(" DMAC:4"); break;
+                    case  36: opts.print.print(" EVSYS:0"); break;
+                    case  37: opts.print.print(" EVSYS:1"); break;
+                    case  38: opts.print.print(" EVSYS:2"); break;
+                    case  39: opts.print.print(" EVSYS:3"); break;
+                    case  40: opts.print.print(" EVSYS:4"); break;
+                    case  41: opts.print.print(" PAC"); break;
+                    case  42: opts.print.print(" TAL:0"); break;
+                    case  43: opts.print.print(" TAL:1"); break;
+                    /*    44 -- FUTURE */
+                    case  45: opts.print.print(" RAMECC"); break;
+                    case  46: opts.print.print(" SERCOM0:0"); break;
+                    case  47: opts.print.print(" SERCOM0:1"); break;
+                    case  48: opts.print.print(" SERCOM0:2"); break;
+                    case  49: opts.print.print(" SERCOM0:3"); break;
+                    case  50: opts.print.print(" SERCOM1:0"); break;
+                    case  51: opts.print.print(" SERCOM1:1"); break;
+                    case  52: opts.print.print(" SERCOM1:2"); break;
+                    case  53: opts.print.print(" SERCOM1:3"); break;
+                    case  54: opts.print.print(" SERCOM2:0"); break;
+                    case  55: opts.print.print(" SERCOM2:1"); break;
+                    case  56: opts.print.print(" SERCOM2:2"); break;
+                    case  57: opts.print.print(" SERCOM2:3"); break;
+                    case  58: opts.print.print(" SERCOM3:0"); break;
+                    case  59: opts.print.print(" SERCOM3:1"); break;
+                    case  60: opts.print.print(" SERCOM3:2"); break;
+                    case  61: opts.print.print(" SERCOM3:3"); break;
+                    case  62: opts.print.print(" SERCOM4:0"); break;
+                    case  63: opts.print.print(" SERCOM4:1"); break;
+                    case  64: opts.print.print(" SERCOM4:2"); break;
+                    case  65: opts.print.print(" SERCOM4:3"); break;
+                    case  66: opts.print.print(" SERCOM5:0"); break;
+                    case  67: opts.print.print(" SERCOM5:1"); break;
+                    case  68: opts.print.print(" SERCOM5:2"); break;
+                    case  69: opts.print.print(" SERCOM5:3"); break;
+                    case  70: opts.print.print(" SERCOM6:0"); break;
+                    case  71: opts.print.print(" SERCOM6:1"); break;
+                    case  72: opts.print.print(" SERCOM6:2"); break;
+                    case  73: opts.print.print(" SERCOM6:3"); break;
+                    case  74: opts.print.print(" SERCOM7:0"); break;
+                    case  75: opts.print.print(" SERCOM7:1"); break;
+                    case  76: opts.print.print(" SERCOM7:2"); break;
+                    case  77: opts.print.print(" SERCOM7:3"); break;
+                    /*    78*/
+                    /*    79*/
+                    case  80: opts.print.print(" USB:0"); break;
+                    case  81: opts.print.print(" USB:1"); break;
+                    case  82: opts.print.print(" USB:2"); break;
+                    case  83: opts.print.print(" USB:3"); break;
+                    /*    84*/
+                    case  85: opts.print.print(" TCC0:0"); break;
+                    case  86: opts.print.print(" TCC0:1"); break;
+                    case  87: opts.print.print(" TCC0:2"); break;
+                    case  88: opts.print.print(" TCC0:3"); break;
+                    case  89: opts.print.print(" TCC0:4"); break;
+                    case  90: opts.print.print(" TCC0:5"); break;
+                    case  91: opts.print.print(" TCC0:6"); break;
+                    case  92: opts.print.print(" TCC1:0"); break;
+                    case  93: opts.print.print(" TCC1:1"); break;
+                    case  94: opts.print.print(" TCC1:2"); break;
+                    case  95: opts.print.print(" TCC1:3"); break;
+                    case  96: opts.print.print(" TCC1:4"); break;
+                    case  97: opts.print.print(" TCC2:0"); break;
+                    case  98: opts.print.print(" TCC2:1"); break;
+                    case  99: opts.print.print(" TCC2:2"); break;
+                    case 100: opts.print.print(" TCC2:3"); break;
+                    case 101: opts.print.print(" TCC3:0"); break;
+                    case 102: opts.print.print(" TCC3:1"); break;
+                    case 103: opts.print.print(" TCC3:2"); break;
+                    case 104: opts.print.print(" TCC4:0"); break;
+                    case 105: opts.print.print(" TCC4:1"); break;
+                    case 106: opts.print.print(" TCC4:2"); break;
+                    case 107: opts.print.print(" TC0"); break;
+                    case 108: opts.print.print(" TC1"); break;
+                    case 109: opts.print.print(" TC2"); break;
+                    case 110: opts.print.print(" TC3"); break;
+                    case 111: opts.print.print(" TC4"); break;
+                    case 112: opts.print.print(" TC5"); break;
+                    case 113: opts.print.print(" TC6"); break;
+                    case 114: opts.print.print(" TC7"); break;
+                    case 115: opts.print.print(" PDEC:0"); break;
+                    case 116: opts.print.print(" PDEC:1"); break;
+                    case 117: opts.print.print(" PDEC:2"); break;
+                    case 118: opts.print.print(" ADC0:0"); break;
+                    case 119: opts.print.print(" ADC0:1"); break;
+                    case 120: opts.print.print(" ADC1:0"); break;
+                    case 121: opts.print.print(" ADC1:1"); break;
+                    case 122: opts.print.print(" AC"); break;
+                    case 123: opts.print.print(" DAC:0"); break;
+                    case 124: opts.print.print(" DAC:1"); break;
+                    case 125: opts.print.print(" DAC:2"); break;
+                    case 126: opts.print.print(" DAC:3"); break;
+                    case 127: opts.print.print(" DAC:4"); break;
+                    case 128: opts.print.print(" I2S"); break;
+                    case 129: opts.print.print(" PCC"); break;
+                    case 130: opts.print.print(" AES"); break;
+                    case 131: opts.print.print(" TRNG"); break;
+                    case 132: opts.print.print(" ICM"); break;
+                    case 133: opts.print.print(" PUKCC"); break;
+                    case 134: opts.print.print(" QSPI"); break;
+                    case 135: opts.print.print(" SDHC0"); break;
+                    /*   136 -- FUTURE */
+                    default: opts.print.print(" "); PRINTHEX(irq); break;
+                }
+            }
+        }
+        PRINTNL();
+    }
 }
 
 
@@ -4011,7 +4205,8 @@ void printFourRegWDT(FourRegOptions &opts) {
 
 
 void printFourRegs(FourRegOptions &opts) {
-    // show clocks
+    // show system basics
+    printFourRegSCS(opts);
     printFourRegOSCCTRL(opts);
     printFourRegOSC32KCTRL(opts);
     printFourRegGCLK(opts);
