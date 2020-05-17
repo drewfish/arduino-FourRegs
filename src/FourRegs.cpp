@@ -2827,6 +2827,7 @@ void printFourRegSCS(FourRegOptions &opts) {
         for (uint8_t irq = 0; irq < PERIPH_COUNT_IRQn; irq++) {
             if (pri == NVIC_GetPriority((IRQn_Type) irq)) {
                 switch (irq) {
+                    // [10.2.2 DSrevF] Interrupt Line Mapping
                     case   0: opts.print.print(" PM"); break;
                     case   1: opts.print.print(" MCLK"); break;
                     case   2: opts.print.print(" OSCCTRL:0"); break;
@@ -2869,9 +2870,9 @@ void printFourRegSCS(FourRegOptions &opts) {
                     case  39: opts.print.print(" EVSYS:3"); break;
                     case  40: opts.print.print(" EVSYS:4"); break;
                     case  41: opts.print.print(" PAC"); break;
-                    case  42: opts.print.print(" TAL:0"); break;
-                    case  43: opts.print.print(" TAL:1"); break;
-                    /*    44 -- FUTURE */
+                    /*    42*/
+                    /*    43*/
+                    /*    44*/
                     case  45: opts.print.print(" RAMECC"); break;
                     case  46: opts.print.print(" SERCOM0:0"); break;
                     case  47: opts.print.print(" SERCOM0:1"); break;
@@ -2897,21 +2898,31 @@ void printFourRegSCS(FourRegOptions &opts) {
                     case  67: opts.print.print(" SERCOM5:1"); break;
                     case  68: opts.print.print(" SERCOM5:2"); break;
                     case  69: opts.print.print(" SERCOM5:3"); break;
+#ifdef SERCOM6
                     case  70: opts.print.print(" SERCOM6:0"); break;
                     case  71: opts.print.print(" SERCOM6:1"); break;
                     case  72: opts.print.print(" SERCOM6:2"); break;
                     case  73: opts.print.print(" SERCOM6:3"); break;
+#endif
+#ifdef SERCOM7
                     case  74: opts.print.print(" SERCOM7:0"); break;
                     case  75: opts.print.print(" SERCOM7:1"); break;
                     case  76: opts.print.print(" SERCOM7:2"); break;
                     case  77: opts.print.print(" SERCOM7:3"); break;
-                    /*    78*/
-                    /*    79*/
+#endif
+#ifdef CAN0
+                    case  78: opts.print.print(" CAN0"); break;
+#endif
+#ifdef CAN1
+                    case  79: opts.print.print(" CAN1"); break;
+#endif
                     case  80: opts.print.print(" USB:0"); break;
                     case  81: opts.print.print(" USB:1"); break;
                     case  82: opts.print.print(" USB:2"); break;
                     case  83: opts.print.print(" USB:3"); break;
-                    /*    84*/
+#ifdef GMAC
+                    case  84: opts.print.print(" GMAC"); break;
+#endif
                     case  85: opts.print.print(" TCC0:0"); break;
                     case  86: opts.print.print(" TCC0:1"); break;
                     case  87: opts.print.print(" TCC0:2"); break;
@@ -2928,20 +2939,32 @@ void printFourRegSCS(FourRegOptions &opts) {
                     case  98: opts.print.print(" TCC2:1"); break;
                     case  99: opts.print.print(" TCC2:2"); break;
                     case 100: opts.print.print(" TCC2:3"); break;
+#ifdef TCC3
                     case 101: opts.print.print(" TCC3:0"); break;
                     case 102: opts.print.print(" TCC3:1"); break;
                     case 103: opts.print.print(" TCC3:2"); break;
+#endif
+#ifdef TCC4
                     case 104: opts.print.print(" TCC4:0"); break;
                     case 105: opts.print.print(" TCC4:1"); break;
                     case 106: opts.print.print(" TCC4:2"); break;
+#endif
                     case 107: opts.print.print(" TC0"); break;
                     case 108: opts.print.print(" TC1"); break;
                     case 109: opts.print.print(" TC2"); break;
                     case 110: opts.print.print(" TC3"); break;
+#ifdef TC4
                     case 111: opts.print.print(" TC4"); break;
+#endif
+#ifdef TC5
                     case 112: opts.print.print(" TC5"); break;
+#endif
+#ifdef TC6
                     case 113: opts.print.print(" TC6"); break;
+#endif
+#ifdef TC7
                     case 114: opts.print.print(" TC7"); break;
+#endif
                     case 115: opts.print.print(" PDEC:0"); break;
                     case 116: opts.print.print(" PDEC:1"); break;
                     case 117: opts.print.print(" PDEC:2"); break;
@@ -2955,7 +2978,9 @@ void printFourRegSCS(FourRegOptions &opts) {
                     case 125: opts.print.print(" DAC:2"); break;
                     case 126: opts.print.print(" DAC:3"); break;
                     case 127: opts.print.print(" DAC:4"); break;
+#ifdef I2S
                     case 128: opts.print.print(" I2S"); break;
+#endif
                     case 129: opts.print.print(" PCC"); break;
                     case 130: opts.print.print(" AES"); break;
                     case 131: opts.print.print(" TRNG"); break;
@@ -2963,8 +2988,9 @@ void printFourRegSCS(FourRegOptions &opts) {
                     case 133: opts.print.print(" PUKCC"); break;
                     case 134: opts.print.print(" QSPI"); break;
                     case 135: opts.print.print(" SDHC0"); break;
-                    /*   136 -- FUTURE */
-                    default: opts.print.print(" "); PRINTHEX(irq); break;
+#ifdef SDHC1
+                    case 136: opts.print.print(" SDHC1"); break;
+#endif
                 }
             }
         }
