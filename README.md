@@ -361,6 +361,27 @@ CC1:  0
 ### void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx)
 Prints out configuration for a TCC peripheral.
 
+example output:
+```text
+--------------------------- TCC1
+CTRLA:  ENABLE resolution=NONE PRESCALER=0x6 prescsync=GCLK
+CTRLB:  dir=DOWN
+FCTRLA:  SRC=0x0 BLANK=0x0 HALT=0x0 chsel=CC0 CAPTURE=0x0 BLANKVAL=0x0 FILTERVAL=0x0
+FCTRLB:  SRC=0x0 BLANK=0x0 HALT=0x0 chsel=CC0 CAPTURE=0x0 BLANKVAL=0x0 FILTERVAL=0x0
+WEXCTRL:  OTMX=0x0 DTLS=0 DTHS=0
+DRVCTRL:  FILTERVAL0=0x0 FILTERVAL1=0x0
+EVCTRL:  EVACT0=0x0 EVACT1=0x0
+PATT:  ........
+WAVE:  WAVEGEN=0x2 RAMP=0x0 POL0=0 POL1=0 POL2=0 POL3=0 POL4=0 POL5=0
+PER:  255
+CC0:  9
+CC1:  0
+CC2:  0
+CC3:  0
+CC4:  0
+CC5:  0
+```
+
 
 ### void printFourRegTRNG(FourRegOptions &opts)
 Prints out configuration for the TRNG peripheral.

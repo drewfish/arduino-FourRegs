@@ -3814,18 +3814,6 @@ void printFourRegTCC(FourRegOptions &opts, Tcc* tcc, uint8_t idx) {
     opts.print.print(tcc->CTRLBSET.bit.DIR ? "UP": "DOWN");
     PRINTFLAG(tcc->CTRLBSET, LUPD);
     PRINTFLAG(tcc->CTRLBSET, ONESHOT);
-    opts.print.print(" IDXCMD=");
-    PRINTHEX(tcc->CTRLBSET.bit.IDXCMD);
-    opts.print.print(" cmd=");
-    switch (tcc->CTRLBSET.bit.CMD) {
-        case 0x0: opts.print.print("NONE"); break;
-        case 0x1: opts.print.print("RETRIGGER"); break;
-        case 0x2: opts.print.print("STOP"); break;
-        case 0x3: opts.print.print("UPDATE"); break;
-        case 0x4: opts.print.print("READSYNC"); break;
-        case 0x5: opts.print.print("DMAOS"); break;
-        default:  opts.print.print(FourRegs__UNKNOWN); break;
-    }
     PRINTNL();
 
     for (id = 0; id < 2; id++) {
