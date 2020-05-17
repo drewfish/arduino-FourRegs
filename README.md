@@ -311,10 +311,20 @@ Prints out configuration for a SERCOM peripheral.
 example otuput:
 ```text
 --------------------------- SERCOM2 USART (internal clock)
-CTRLA:  ENABLE sampr=16x tx=PAD0 xck=PAD1 rx=PAD1 SAMPA=0x0 FORM=0x0 cmode=ASYNC CPOL=0 dord=MSB
+CTRLA:  ENABLE sampr=16x tx=PAD0 rx=PAD1 SAMPA=0x0 FORM=0x0 cmode=ASYNC CPOL=0 dord=MSB
 CTRLB:  chsize=8bit TXEN RXEN LINCMD=0x0
 CTRLC:  GTIME=0x0 DATA32B=0x0
 BAUD:  312.4
+--------------------------- SERCOM3 I2C master
+CTRLA:  ENABLE SDAHOLD=0x0 SPEED=0x0 INACTOUT=0x0
+CTRLB:  ackact=ACK
+CTRLC:
+BAUD:  BAUD=0xEF BAUDLOW=0x0 HSBAUD=0x0 HSBAUDLOW=0x0
+--------------------------- SERCOM4 SPI master
+CTRLA:  ENABLE mosi=PAD0 sck=PAD1 miso=PAD3 form=SPI cpha=LEADING cpol=LOW dord=MSB
+CTRLB:  chsize=8bit amode=MASK RXEN
+CTRLC:  ICSPACE=0
+BAUD:  0x5
 ```
 
 

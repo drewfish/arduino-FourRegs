@@ -3337,10 +3337,20 @@ void printFourRegSERCOM_USART(FourRegOptions &opts, SercomUsart &usart) {
         default: opts.print.print(FourRegs__RESERVED); break;
     }
     switch (usart.CTRLA.bit.TXPO) {
-        case 0x0: opts.print.print(" tx=PAD0 xck=PAD1"); break;
+        case 0x0:
+            opts.print.print(" tx=PAD0");
+            if (usart.CTRLA.bit.MODE == 0) {
+                opts.print.print(" xck=PAD1");
+            }
+            break;
         case 0x1: opts.print.print(FourRegs__RESERVED); break;
         case 0x2: opts.print.print(" tx=PAD0 rts=PAD2 cts=PAD3"); break;
-        case 0x3: opts.print.print(" tx=PAD0 xck=PAD1 rts=PAD2"); break;
+        case 0x3:
+            opts.print.print(" tx=PAD0 rts=PAD2");
+            if (usart.CTRLA.bit.MODE == 0) {
+                opts.print.print(" xck=PAD1");
+            }
+            break;
     }
     switch (usart.CTRLA.bit.RXPO) {
         case 0x0: opts.print.print(" rx=PAD0"); break;
