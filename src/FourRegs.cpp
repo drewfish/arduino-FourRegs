@@ -268,11 +268,11 @@ void printFourRegADC(FourRegOptions &opts, Adc* adc, uint8_t idx) {
     opts.print.print("REFCTRL:  refsel=");
     switch (adc->REFCTRL.bit.REFSEL) {
         case 0x0: opts.print.print("INTREF"); break;
-        case 0x1: opts.print.print("INTVCC0"); break;
-        case 0x2: opts.print.print("INTVCC1"); break;
-        case 0x3: opts.print.print("AREFA"); break;
-        case 0x4: opts.print.print("AREFB"); break;
-        case 0x5: opts.print.print("AREFC"); break;
+        case 0x2: opts.print.print("INTVCC0"); break;
+        case 0x3: opts.print.print("INTVCC1"); break;
+        case 0x4: opts.print.print("AREFA"); break;
+        case 0x5: opts.print.print("AREFB"); break;
+        case 0x6: opts.print.print("AREFC"); break;
         default: opts.print.print(FourRegs__RESERVED); break;
     }
     PRINTFLAG(adc->REFCTRL, REFCOMP);
